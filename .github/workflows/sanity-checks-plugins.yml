@@ -1,0 +1,34 @@
+name: Test Ansible Collection
+
+on:
+  push:
+    paths:
+      - 'plugins/**'
+      - 'tests/**'
+      - '.github/workflows/sanity-checks-plugins.yml'
+  pull_request:
+    paths:
+      - 'plugins/**'
+      - 'tests/**'
+      - '.github/workflows/sanity-checks-plugins.yml'
+
+jobs:
+  sanity:
+    strategy:
+      matrix:
+        ansible:
+          - stable-2.14
+          - stable-2.15
+        os:
+          - ubuntu-20.04
+          - ubuntu-22.04
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Perform sanity testing
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: ${{ matrix.ansible }}
+          testing-type: sanity
+          pull-request-change-detection: true

@@ -3,7 +3,7 @@ requires_ansible: '>=2.10'
 plugin_routing:
   modules:
     ovh_dns_record:
-      redirect: jetune.general.ovh.dns.ovh_dns_record
+      redirect: kubecloud.general.ovh.dns.ovh_dns_record
 
 # Collections must specify a minimum required ansible version to upload
 # to galaxy
