@@ -43,7 +43,6 @@ jobs:
           - ubuntu-20.04
           - ubuntu-22.04
         python:
-          - 3.8
           - 3.9
 
     runs-on: ${{ matrix.os }}
@@ -53,7 +52,7 @@ jobs:
         uses: ansible-community/ansible-test-gh-action@release/v1
         with:
           ansible-core-version: ${{ matrix.ansible }}
-          python-version: ${{ matrix.python }}
+          origin-python-version: ${{ matrix.python }}
           testing-type: units
           requirements: tests/requirements.yml
           collection-dir: .
