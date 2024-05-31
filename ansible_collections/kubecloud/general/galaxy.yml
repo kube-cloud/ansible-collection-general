@@ -1,0 +1,54 @@
+# Collection Namespace
+namespace: kubecloud
+
+# Collection Name
+name: general
+
+# Collection Version
+version: 1.0.0
+
+# Collection README (Summary)
+readme: README.md
+
+# Collection Authors
+authors:
+- KubeCloud (github.com/kube-cloud)
+- Jean-Jacques ETUNE NGI <jetune@kube-cloud.com>
+
+
+# Vollection Description
+description: KubeCloud Ansible General OPS Collection
+
+# Collection License (https://spdx.org/licenses/)
+license:
+- Apache-2.0
+
+# Collection License File
+license_file: 'LICENSE'
+
+# A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
+# requirements as 'namespace' and 'name'
+tags:
+- cloud
+- ops
+- system
+- proxy
+- linux
+
+# Collection Dependencies
+# collection label 'namespace.name'. The value is a version range
+# L(specifiers,https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification). Multiple version
+# range specifiers can be set and are separated by ','
+dependencies: {}
+
+# The URL of the originating SCM repository
+repository: https://github.com/kube-cloud/ansible-collection-general
+
+# The URL to any online docs
+documentation: https://github.com/kube-cloud/ansible-collection-general/tree/main/docs
+
+# The URL to the homepage of the collection/project
+homepage: https://github.com/kube-cloud/ansible-collection-general
+
+# The URL to the collection issue tracker
+issues: https://github.com/kube-cloud/ansible-collection-general/issues
