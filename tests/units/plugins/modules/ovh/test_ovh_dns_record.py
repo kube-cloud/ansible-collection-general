@@ -2,11 +2,13 @@ import pytest
 
 from ansible_collections.kubecloud.general.plugins.modules.ovh.dns.ovh_dns_record import run_module
 
+
 @pytest.fixture
 def mock_module(mocker):
 
     # Build and Return Mocked nsible Main Module
     return mocker.patch('ansible.module_utils.basic.AnsibleModule')
+
 
 # Test ADD Record
 def test_ovh_dns_record_add(mock_module):
@@ -27,6 +29,7 @@ def test_ovh_dns_record_add(mock_module):
 
     # Vérifie que le module a retourné le résultat attendu
     mock_module.return_value.exit_json.assert_called_once_with(changed=True)
+
 
 # Test Remove Record
 def test_ovh_dns_record_remove(mock_module):
