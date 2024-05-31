@@ -1,5 +1,6 @@
 import pytest
 
+from __future__ import (absolute_import, division, print_function)
 from ansible_collections.kubecloud.general.plugins.modules.ovh.dns.ovh_dns_record import run_module
 
 __metaclass__ = type
