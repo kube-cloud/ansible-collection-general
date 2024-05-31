@@ -1,0 +1,10 @@
+{
+    "docs": "https://docs.ansible.com/ansible-core/2.15/dev_guide/testing/sanity/compile.html", 
+    "results": [
+        {
+            "message": "The test `ansible-test sanity --test compile --python 2.7` [[explain](https://docs.ansible.com/ansible-core/2.15/dev_guide/testing/sanity/compile.html)] failed with 1 error:", 
+            "output": "plugins/modules/ovh/dns/ovh_dns_record.py:161:43: SyntaxError: f\"/domain/zone/{domain}/record\","
+        }
+    ], 
+    "verified": false
+}

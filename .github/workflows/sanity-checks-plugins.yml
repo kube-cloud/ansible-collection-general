@@ -54,6 +54,6 @@ jobs:
           ansible-core-version: ${{ matrix.ansible }}
           origin-python-version: ${{ matrix.python }}
           testing-type: units
-          requirements: tests/requirements.yml
+          requirements: test/requirements.yml
           collection-dir: .
           
