@@ -92,7 +92,7 @@ EXAMPLES = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.kubecloud.general.plugins.module_utils.ovh import ovh_client
+from plugins.module_utils.ovh import ovh_client
 
 
 try:
@@ -139,6 +139,12 @@ def run_module():
     ttl = module.params['ttl']
     state = module.params['state']
 
+    # OVH Record URI
+    ovh_record_uri = "/domain/zone/{0}/record/{1}"
+
+    # OVH Zone Refresh URI
+    ovh_zone_refresh_uri = "/domain/zone/{0}/refresh"
+
     try:
 
         # Find OVH Account Domain
@@ -148,18 +154,18 @@ def run_module():
         if domain not in available_domains:
 
             # Set Module Error
-            module.fail_json(msg="The target domain [{}] is unknown".format(domain))
+            module.fail_json(msg="The target domain [{0}] is unknown".format(domain))
 
     except APIError as api_error:
 
         # Set Module Error
-        module.fail_json(msg="[Find Zone] - Failed to call OVH API (/domain/zone) : {}".format(api_error))
+        module.fail_json(msg="[Find Zone] - Failed to call OVH API (/domain/zone) : {0}".format(api_error))
 
     try:
 
         # Find if Target record Name already exists
         existing_records = client.get(
-            "/domain/zone/{}/record".format(domain),
+            "/domain/zone/{0}/record".format(domain),
             fieldType=record_type,
             subDomain=record_name
         )
@@ -167,7 +173,7 @@ def run_module():
     except APIError as api_error:
 
         # Set Module Error
-        module.fail_json(msg="[Find Record] - Failed to call OVH API (/domain/zone/{}/record) for record [{}]: {}".format(domain, record_name, api_error))
+        module.fail_json(msg="[Find Record] - Failed to call OVH API (/domain/zone/{0}/record) for record [{1}]: {2}".format(domain, record_name, api_error))
 
     # Requested State is 'present'
     if state == 'present':
@@ -182,7 +188,7 @@ def run_module():
 
                     # Get Current Entry Details
                     record = client.get(
-                        "/domain/zone/{}/record/{}".format(domain, index)
+                        ovh_record_uri.format(domain, index)
                     )
 
                     # If Entry match requested record name and target
@@ -190,7 +196,7 @@ def run_module():
 
                         # Initialize response (No Change)
                         module.exit_json(
-                            msg="[{} {}.{}] Not Changed".format(record_type, record_name, domain),
+                            msg="[{0} {1}.{2}] Not Changed".format(record_type, record_name, domain),
                             changed=False
                         )
 
@@ -198,7 +204,7 @@ def run_module():
 
                         # Create record
                         result = client.put(
-                            "/domain/zone/{}/record/{}".format(domain, index),
+                            ovh_record_uri.format(domain, index),
                             fieldType=record_type,
                             subDomain=record_name,
                             target=target,
@@ -207,26 +213,26 @@ def run_module():
 
                         # Refresh Domain
                         client.post(
-                            "/domain/zone/{}/refresh".format(domain)
+                            ovh_zone_refresh_uri.format(domain)
                         )
 
                         # Initialize Module Response : Changed
                         module.exit_json(
                             changed=True,
-                            msg="[{} {}.{}] Has been Updated".format(record_type, record_name, domain)
+                            msg="[{0} {1}.{2}] Has been Updated".format(record_type, record_name, domain)
                         )
 
                 except APIError as api_error:
 
                     # Set Module Error
                     module.fail_json(
-                        msg="Failed to call OVH API: {}".format(api_error)
+                        msg="Failed to call OVH API: {0}".format(api_error)
                     )
         else:
 
             # Create record
             result = client.post(
-                "/domain/zone/{}/record".format(domain),
+                "/domain/zone/{0}/record".format(domain),
                 fieldType=record_type,
                 subDomain=record_name,
                 target=target,
@@ -235,13 +241,13 @@ def run_module():
 
             # Refresh Domain
             client.post(
-                "/domain/zone/{}/refresh".format(domain)
+                ovh_zone_refresh_uri.format(domain)
             )
 
             # Initialize Module Response : Changed
             module.exit_json(
                 changed=True,
-                msg="[{} {}.{}] Has been Created".format(record_type, record_name, domain),
+                msg="[{0} {1}.{2}] Has been Created".format(record_type, record_name, domain),
                 **result
             )
 
@@ -252,7 +258,7 @@ def run_module():
 
             # Initialize Response : No Change
             module.exit_json(
-                msg="[{} {}.{}] Not Found".format(record_type, record_name, domain),
+                msg="[{0} {1}.{2}] Not Found".format(record_type, record_name, domain),
                 changed=False
             )
 
@@ -266,12 +272,12 @@ def run_module():
 
                 # Get Current Record Details
                 record = client.get(
-                    "/domain/zone/{}/record/{}".format(domain, index)
+                    ovh_record_uri.format(domain, index)
                 )
 
                 # Delete Current Record
                 client.delete(
-                    "/domain/zone/{}/record/{}".format(domain, index)
+                    ovh_record_uri.format(domain, index)
                 )
 
                 # Append Record to the Deleted Records Array
@@ -283,12 +289,12 @@ def run_module():
 
             # Refresh Domain
             client.post(
-                "/domain/zone/{}/refresh".format(domain)
+                ovh_zone_refresh_uri.format(domain)
             )
 
             # Exit Module
             module.exit_json(
-                msg="[{} {}.{}] Has been Deleted".format(record_type, record_name, domain),
+                msg="[{0} {1}.{2}] Has been Deleted".format(record_type, record_name, domain),
                 changed=True
             )
 
