@@ -1,6 +1,6 @@
 import pytest
 
-from plugins.modules.ovh.dns.ovh_dns_record import run_module
+from ansible_collections.kubecloud.general.plugins.modules.ovh.dns.ovh_dns_record import run_module
 
 @pytest.fixture
 def mock_module(mocker):
