@@ -92,7 +92,7 @@ EXAMPLES = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from plugins.module_utils.ovh import ovh_client
+from ansible_collections.kubecloud.general.plugins.module_utils.ovh import ovh_client
 
 
 try:
