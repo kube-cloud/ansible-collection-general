@@ -48,4 +48,4 @@ def test_ovh_dns_record_remove(mock_module):
     }
 
     run_module()
-    mock_module.return_value.exit_json.assert_called_once_with(changed=False)
+    mock_module.return_value.exit_json.assert_called_once_with(changed=True)
