@@ -1,4 +1,4 @@
-
+---
 # Ensure HA Proxy Enabled and Started
 - name: restart haproxy
   service:
