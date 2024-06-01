@@ -50,4 +50,6 @@ jobs:
           pip install ansible
 
       - name: Publish to Ansible Galaxy
-        run: ansible-galaxy collection publish ./ --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+        run: |
+          ansible-galaxy collection build --output-path kube_cloud-general-1.0.0.tar.gz
+          ansible-galaxy collection publish --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
