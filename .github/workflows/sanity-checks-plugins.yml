@@ -56,6 +56,5 @@ jobs:
         run: |
           MODULE_VERSION=$(yq e '.version' galaxy.yml)
           echo "Version: $MODULE_VERSION"
-          echo "::set-output name=version::$MODULE_VERSION"
           ansible-galaxy collection build --output-path kube_cloud-general-$MODULE_VERSION.tar.gz
-          ansible-galaxy collection publish kube_cloud-general-$MODULE_VERSION.tar.gz --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+          ansible-galaxy collection publish kube_cloud-general-$MODULE_VERSION.tar.gz --api-key d92c618fc436c392bf4c77d823e3ee6dd21b512c
