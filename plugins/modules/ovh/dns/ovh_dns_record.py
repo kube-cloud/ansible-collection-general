@@ -128,6 +128,11 @@ def run_module():
         supports_check_mode=True
     )
 
+    # If Check Mode Enabled
+    if module.check_mode:
+        result['changed'] = True
+        module.exit_json(**result)
+
     # Build OVH Client from Module
     client = ovh_client(module)
 
