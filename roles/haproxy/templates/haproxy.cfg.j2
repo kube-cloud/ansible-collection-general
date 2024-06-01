@@ -22,7 +22,7 @@ global
 program api
     command dataplaneapi -f {{ _haproxy_dataplane_config_file }}
     no option start-on-reload
-{% enfif %}
+{% endif %}
 
 defaults
     log global
