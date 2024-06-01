@@ -46,13 +46,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          apt-get install -y jq
           python -m pip install --upgrade pip
-          pip install ansible
+          pip install ansible yq
 
       - name: Create Collection Archive
         run: |
-          ansible-galaxy collection build --output-path kube_cloud-general-1.0.0.tar.gz
-  
-      - name: Publish to Ansible Galaxy
-        run: |
-          ansible-galaxy collection publish kube_cloud-general-1.0.0.tar.gz --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+          MODULE_VERSION=$(yq e '.version' galaxy.yml)
+          echo "Version: $MODULE_VERSION"
+          echo "::set-output name=version::$MODULE_VERSION"
+          ansible-galaxy collection build --output-path kube_cloud-general-$MODULE_VERSION.tar.gz
+          ansible-galaxy collection publish kube_cloud-general-$MODULE_VERSION.tar.gz --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
