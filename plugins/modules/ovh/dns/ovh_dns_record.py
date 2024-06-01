@@ -151,7 +151,7 @@ def build_ansible_module():
 
 
 # Check OVH Zone
-def check_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
+def check_ovh_zone(module, client, zone_name):
 
     try:
 
@@ -171,7 +171,7 @@ def check_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
 
 
 # Refresh OVH Zone
-def refresh_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
+def refresh_ovh_zone(module, client, zone_name):
 
     try:
 
@@ -187,7 +187,7 @@ def refresh_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
 
 
 # Find and Return OVH Record ID List
-def get_ovh_record_id(module:AnsibleModule, client:ovh.Client, domain:str, record_name:str, record_type:str) -> list:
+def get_ovh_record_id(module, client, domain, record_name, record_type) -> list:
 
     try:
 
@@ -205,7 +205,7 @@ def get_ovh_record_id(module:AnsibleModule, client:ovh.Client, domain:str, recor
 
 
 # Find and Return OVH Record
-def get_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, record_id:str):
+def get_ovh_record(module, client, domain, record_id):
 
     try:
 
@@ -224,14 +224,14 @@ def get_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, record_i
 
 # Find and Return OVH Record
 def create_ovh_record(
-        module:AnsibleModule,
-        client:ovh.Client,
-        domain:str,
-        record_id:str,
-        record_name:str,
+        module,
+        client,
+        domain,
+        record_id,
+        record_name,
         record_type,
-        record_value:str,
-        ttl:int):
+        record_value,
+        ttl):
 
     try:
 
@@ -253,14 +253,14 @@ def create_ovh_record(
 
 
 # Find and Return OVH Record
-def update_ovh_record(module:AnsibleModule,
-                    client:ovh.Client,
-                    domain:str,
-                    record_id:str,
-                    record_name:str,
-                    record_type:str,
-                    record_value:str,
-                    ttl:int):
+def update_ovh_record(module,
+                    client,
+                    domain,
+                    record_id,
+                    record_name,
+                    record_type,
+                    record_value,
+                    ttl):
 
     try:
 
@@ -282,7 +282,7 @@ def update_ovh_record(module:AnsibleModule,
 
 
 # Delete OVH Record
-def delete_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, record_id:str):
+def delete_ovh_record(module, client, domain, record_id):
 
     try:
 
@@ -298,7 +298,7 @@ def delete_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, recor
 
 
 # Porcess Module Execution
-def run_module(module:AnsibleModule, client:ovh.Client):
+def run_module(module, client):
 
     # Extract Module Parameters
     domain = module.params['domain']
