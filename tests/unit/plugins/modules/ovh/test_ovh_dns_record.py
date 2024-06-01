@@ -7,7 +7,7 @@ from mock import patch
 __metaclass__ = type
 
 
-# OVH Zone URI
+# OVH Zone URI.
 OVH_ZONE_URI = "/domain/zone"
 
 
