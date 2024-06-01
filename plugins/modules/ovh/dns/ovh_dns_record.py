@@ -201,7 +201,13 @@ def get_ovh_record_id(module, client, domain, record_name, record_type):
     except APIError as api_error:
 
         # Set Module Error
-        module.fail_json(msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record) for record [{1}]: {2}".format(domain, record_name, api_error))
+        module.fail_json(
+            msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record) for record [{1}]: {2}".format(
+                domain,
+                record_name,
+                api_error
+            )
+        )
 
 
 # Find and Return OVH Record
@@ -223,15 +229,7 @@ def get_ovh_record(module, client, domain, record_id):
 
 
 # Find and Return OVH Record
-def create_ovh_record(
-        module,
-        client,
-        domain,
-        record_id,
-        record_name,
-        record_type,
-        record_value,
-        ttl):
+def create_ovh_record(module, client, domain, record_id, record_name, record_type, record_value, ttl):
 
     try:
 
@@ -253,14 +251,7 @@ def create_ovh_record(
 
 
 # Find and Return OVH Record
-def update_ovh_record(module,
-                    client,
-                    domain,
-                    record_id,
-                    record_name,
-                    record_type,
-                    record_value,
-                    ttl):
+def update_ovh_record(module, client, domain, record_id, record_name, record_type, record_value, ttl):
 
     try:
 
