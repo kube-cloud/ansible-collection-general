@@ -4,11 +4,13 @@ on:
   push:
     paths:
       - 'plugins/**'
+      - 'roles/**'
       - 'tests/**'
       - '.github/workflows/sanity-checks-plugins.yml'
   pull_request:
     paths:
       - 'plugins/**'
+      - 'roles/**'
       - 'tests/**'
       - '.github/workflows/sanity-checks-plugins.yml'
 
