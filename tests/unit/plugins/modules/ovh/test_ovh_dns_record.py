@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 from ansible_collections.kubecloud.general.plugins.modules.ovh.dns.ovh_dns_record import run_module
 from ansible.module_utils.basic import AnsibleModule
-from unittest.mock import patch, MagicMock
+from mock import patch, MagicMock
 import pytest
 
 try:
