@@ -1,5 +1,5 @@
 # Collection Namespace
-namespace: kubecloud
+namespace: kube_cloud
 
 # Collection Name
 name: general
