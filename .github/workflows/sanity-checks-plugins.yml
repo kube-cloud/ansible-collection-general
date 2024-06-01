@@ -59,6 +59,8 @@ jobs:
       - name: Publish Collection to Galaxy
         run: |
           MODULE_VERSION=$(yq e '.version' galaxy.yml)
+          MODULE_NAMESPACE=$(yq e '.namespace' galaxy.yml)
+          MODULE_NAME=$(yq e '.name' galaxy.yml)
           echo "Version: $MODULE_VERSION"
-          ansible-galaxy collection publish kube_cloud-general-$MODULE_VERSION.tar.gz --api-key {{ secrets.ANSIBLE_GALAXY_API_KEY}}
+          ansible-galaxy collection publish $MODULE_NAMESPACE-$MODULE_NAME-$MODULE_VERSION.tar.gz --api-key {{ secrets.ANSIBLE_GALAXY_API_KEY}}
   
