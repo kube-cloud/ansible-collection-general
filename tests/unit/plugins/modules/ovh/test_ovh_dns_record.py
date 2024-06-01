@@ -93,6 +93,9 @@ def test_ovh_dns_record_add(mocker):
         "state": "present"
     }
 
+    # Configure Clien Mock
+    mock_client.get.side_effect = mock_ovh_client_get
+
     # Execute Module
     run_module(mock_module, mock_client)
 
