@@ -66,7 +66,7 @@ def mock_ovh_client_get(url, **kwargs):
     if url == GET_OVH_RECORD_ID_URI.format(ZONE) and kwargs == {'fieldType': RECORD_TYPE, 'subDomain': RECORD_NAME}:
         return [RECORD_ID]
     if url == OVH_RECORD_URI.format(ZONE, RECORD_ID):
-        return { "target": RECORD_VALUE, "ttl": RECORD_TTL }
+        return {"target": RECORD_VALUE, "ttl": RECORD_TTL}
     return {}
 
 
