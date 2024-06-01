@@ -96,14 +96,35 @@ from ansible_collections.kubecloud.general.plugins.module_utils.ovh import ovh_c
 
 
 try:
+    import ovh
     from ovh.exceptions import APIError
     HAS_OVH = True
 except ImportError:
     HAS_OVH = False
 
 
-# Porcess Module Execution
-def run_module():
+# OVH Zone URI
+OVH_ZONE_URI = "/domain/zone"
+
+
+# Zone Refresh URI
+OVH_ZONE_REFRESH_URI = "/domain/zone/{0}/refresh"
+
+
+# OVH Record Resource URI
+OVH_RECORD_URI = "/domain/zone/{0}/record/{1}"
+
+
+# OVH Record Creation Resource URI
+CREATE_OVH_RECORD_URI = "/domain/zone/{0}/record"
+
+
+# OVH Record ID Resource URI
+GET_OVH_RECORD_ID_URI = "/domain/zone/{0}/record"
+
+
+# Instantiate Ansible Module
+def build_ansible_module():
 
     # Build Module Arguments Specification
     module_specification = dict(
@@ -123,18 +144,161 @@ def run_module():
     )
 
     # Build ansible Module
-    module = AnsibleModule(
+    return AnsibleModule(
         argument_spec=module_specification,
         supports_check_mode=True
     )
 
-    # If Check Mode Enabled
-    if module.check_mode:
-        result['changed'] = True
-        module.exit_json(**result)
 
-    # Build OVH Client from Module
-    client = ovh_client(module)
+# Check OVH Zone
+def check_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
+
+    try:
+
+        # Find OVH Account Domain
+        available_domains = client.get(OVH_ZONE_URI)
+
+        # If Module domain is not managed on OVH Account
+        if zone_name not in available_domains:
+
+            # Set Module Error
+            module.fail_json(msg="The target domain [{0}] is unknown".format(zone_name))
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(msg="[Find Zone] - Failed to call OVH API (GET /domain/zone) : {0}".format(api_error))
+
+
+# Refresh OVH Zone
+def refresh_ovh_zone(module:AnsibleModule, client:ovh.Client, zone_name:str):
+
+    try:
+
+        # Refresh Domain
+        client.post(
+            OVH_ZONE_REFRESH_URI.format(zone_name)
+        )
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(msg="[Refresh Zone] - Failed to call OVH API (POST /domain/zone/{0}/refresh) : {1}".format(zone_name, api_error))
+
+
+# Find and Return OVH Record ID List
+def get_ovh_record_id(module:AnsibleModule, client:ovh.Client, domain:str, record_name:str, record_type:str) -> list:
+
+    try:
+
+        # Find if Target record Name already exists
+        return client.get(
+            GET_OVH_RECORD_ID_URI.format(domain),
+            fieldType=record_type,
+            subDomain=record_name
+        )
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record) for record [{1}]: {2}".format(domain, record_name, api_error))
+
+
+# Find and Return OVH Record
+def get_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, record_id:str):
+
+    try:
+
+        # Get Current Entry Details
+        return client.get(
+            OVH_RECORD_URI.format(domain, record_id)
+        )
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(
+            msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record/{1}".format(domain, record_id, api_error)
+        )
+
+
+# Find and Return OVH Record
+def create_ovh_record(
+        module:AnsibleModule,
+        client:ovh.Client,
+        domain:str,
+        record_id:str,
+        record_name:str,
+        record_type,
+        record_value:str,
+        ttl:int):
+
+    try:
+
+        # Create record
+        client.post(
+            CREATE_OVH_RECORD_URI.format(domain),
+            fieldType=record_type,
+            subDomain=record_name,
+            target=record_value,
+            ttl=ttl
+        )
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(
+            msg="[Create Record] - Failed to call OVH API (POST /domain/zone/{0}/record/{1}) : {2}".format(domain, record_id, api_error)
+        )
+
+
+# Find and Return OVH Record
+def update_ovh_record(module:AnsibleModule,
+                    client:ovh.Client,
+                    domain:str,
+                    record_id:str,
+                    record_name:str,
+                    record_type:str,
+                    record_value:str,
+                    ttl:int):
+
+    try:
+
+        # Update record
+        client.put(
+            OVH_RECORD_URI.format(domain, record_id),
+            fieldType=record_type,
+            subDomain=record_name,
+            target=record_value,
+            ttl=ttl
+        )
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(
+            msg="[Update Record] - Failed to call OVH API (PUT /domain/zone/{0}/record/{1}) : {2}".format(domain, record_id, api_error)
+        )
+
+
+# Delete OVH Record
+def delete_ovh_record(module:AnsibleModule, client:ovh.Client, domain:str, record_id:str):
+
+    try:
+
+        # Delete record
+        client.delete(OVH_RECORD_URI.format(domain, record_id))
+
+    except APIError as api_error:
+
+        # Set Module Error
+        module.fail_json(
+            msg="[Delete Record] - Failed to call OVH API (PUT /domain/zone/{0}/record/{1}) : {2}".format(domain, record_id, api_error)
+        )
+
+
+# Porcess Module Execution
+def run_module(module:AnsibleModule, client:ovh.Client):
 
     # Extract Module Parameters
     domain = module.params['domain']
@@ -144,176 +308,93 @@ def run_module():
     ttl = module.params['ttl']
     state = module.params['state']
 
-    # OVH Record URI
-    ovh_record_uri = "/domain/zone/{0}/record/{1}"
+    # Find OVH Domain
+    check_ovh_zone(module, client, domain)
 
-    # OVH Zone Refresh URI
-    ovh_zone_refresh_uri = "/domain/zone/{0}/refresh"
+    # Find Existing Record IDs
+    existing_records = get_ovh_record_id(module, client, domain, record_name, record_type)
+    
+    # If Requested State is 'present' and Record exists
+    if state == 'present' and len(existing_records) >= 1:
 
-    try:
+        # Record ID
+        record_id = existing_records[0]
 
-        # Find OVH Account Domain
-        available_domains = client.get('/domain/zone')
+        # Get Current Entry Details
+        record = get_ovh_record(module, client, domain, record_id)
 
-        # If Module domain is not managed on OVH Account
-        if domain not in available_domains:
+        # If Entry match requested record name and target
+        if record['target'] == target and record['ttl'] == ttl:
 
-            # Set Module Error
-            module.fail_json(msg="The target domain [{0}] is unknown".format(domain))
-
-    except APIError as api_error:
-
-        # Set Module Error
-        module.fail_json(msg="[Find Zone] - Failed to call OVH API (/domain/zone) : {0}".format(api_error))
-
-    try:
-
-        # Find if Target record Name already exists
-        existing_records = client.get(
-            "/domain/zone/{0}/record".format(domain),
-            fieldType=record_type,
-            subDomain=record_name
-        )
-
-    except APIError as api_error:
-
-        # Set Module Error
-        module.fail_json(msg="[Find Record] - Failed to call OVH API (/domain/zone/{0}/record) for record [{1}]: {2}".format(domain, record_name, api_error))
-
-    # Requested State is 'present'
-    if state == 'present':
-
-        # If There are records summaries in previous response array
-        if len(existing_records) >= 1:
-
-            # Iterate on each array entries
-            for index in existing_records:
-
-                try:
-
-                    # Get Current Entry Details
-                    record = client.get(
-                        ovh_record_uri.format(domain, index)
-                    )
-
-                    # If Entry match requested record name and target
-                    if record['target'] == target or record['ttl'] == ttl:
-
-                        # Initialize response (No Change)
-                        module.exit_json(
-                            msg="[{0} {1}.{2}] Not Changed".format(record_type, record_name, domain),
-                            changed=False
-                        )
-
-                    else:
-
-                        # Create record
-                        result = client.put(
-                            ovh_record_uri.format(domain, index),
-                            fieldType=record_type,
-                            subDomain=record_name,
-                            target=target,
-                            ttl=ttl
-                        )
-
-                        # Refresh Domain
-                        client.post(
-                            ovh_zone_refresh_uri.format(domain)
-                        )
-
-                        # Initialize Module Response : Changed
-                        module.exit_json(
-                            changed=True,
-                            msg="[{0} {1}.{2}] Has been Updated".format(record_type, record_name, domain)
-                        )
-
-                except APIError as api_error:
-
-                    # Set Module Error
-                    module.fail_json(
-                        msg="Failed to call OVH API: {0}".format(api_error)
-                    )
-        else:
-
-            # Create record
-            result = client.post(
-                "/domain/zone/{0}/record".format(domain),
-                fieldType=record_type,
-                subDomain=record_name,
-                target=target,
-                ttl=ttl
-            )
-
-            # Refresh Domain
-            client.post(
-                ovh_zone_refresh_uri.format(domain)
-            )
-
-            # Initialize Module Response : Changed
+            # Initialize response (No Change)
             module.exit_json(
-                changed=True,
-                msg="[{0} {1}.{2}] Has been Created".format(record_type, record_name, domain),
-                **result
-            )
-
-    else:
-
-        # If Record not exists
-        if not existing_records:
-
-            # Initialize Response : No Change
-            module.exit_json(
-                msg="[{0} {1}.{2}] Not Found".format(record_type, record_name, domain),
+                msg="[{0} {1}.{2}] Not Changed".format(record_type, record_name, domain),
                 changed=False
             )
 
-        # Initialize Deleted Record Array
-        record_deleted = []
+        # Update Record
+        update_ovh_record(module, client, domain, record_id, record_name, record_type, target, ttl)
 
-        try:
+        # refresh Zone
+        refresh_ovh_zone(module, client, domain)
 
-            # Iterate on existing record entries
-            for index in existing_records:
+        # Initialize Module Response : Changed
+        module.exit_json(
+            changed=True,
+            msg="[{0} {1}.{2}] Has been Updated".format(record_type, record_name, domain)
+        )
 
-                # Get Current Record Details
-                record = client.get(
-                    ovh_record_uri.format(domain, index)
-                )
+    # If Requested State is 'present' and Record don't exists
+    if state == 'present' and not existing_records:
 
-                # Delete Current Record
-                client.delete(
-                    ovh_record_uri.format(domain, index)
-                )
+        # Create Record
+        create_ovh_record(module, client, domain, record_id, record_name, record_type, target, ttl)
 
-                # Append Record to the Deleted Records Array
-                record_deleted.append("%s IN %s %s" % (
-                    record.get('subDomain'),
-                    record.get('fieldType'),
-                    record.get('target')
-                ))
+        # refresh Zone
+        refresh_ovh_zone(module, client, domain)
 
-            # Refresh Domain
-            client.post(
-                ovh_zone_refresh_uri.format(domain)
-            )
+        # Initialize Module Response : Changed
+        module.exit_json(
+            changed=True,
+            msg="[{0} {1}.{2}] Has been Created".format(record_type, record_name, domain)
+        )
 
-            # Exit Module
-            module.exit_json(
-                msg="[{0} {1}.{2}] Has been Deleted".format(record_type, record_name, domain),
-                changed=True
-            )
+    # If Requested State is 'absent' and Record exists
+    if state == 'absent' and len(existing_records) >= 1:
 
-        except APIError as api_error:
+        # Delete Record
+        delete_ovh_record(module, client, domain, existing_records[0])
 
-            # Set Module Error
-            module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
+        # refresh Zone
+        refresh_ovh_zone(module, client, domain)
+
+        # Exit Module
+        module.exit_json(
+            msg="[{0} {1}.{2}] Has been Deleted".format(record_type, record_name, domain),
+            changed=True
+        )
+
+    # If Requested State is 'absent' and Record don't exists
+    else:
+
+        # Initialize Response : No Change
+        module.exit_json(
+            msg="[{0} {1}.{2}] Not Found".format(record_type, record_name, domain),
+            changed=False
+        )
 
 
 # Entrypoint Function
 def main():
 
+    # Build Module
+    module = build_ansible_module()
+
+    # Build OVH Client from Module
+    client = ovh_client(module)
+
     # Execute Module
-    run_module()
+    run_module(module, client)
 
 
 # If file is executed directly (pythos ovh_dns_record.py [not imported])
