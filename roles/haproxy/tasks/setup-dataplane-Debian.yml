@@ -1,0 +1,7 @@
+---
+
+# Ensure HA Proxy Dataplane API Installed
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HA Proxy Dataplane API Installed"
+  ansible.builtin.apt:
+    deb: "{{ _haproxy_dataplane_api_package_url }}"
+    state: "{{ 'present' if haproxy_dataplane.enabled | default(true) == true else 'absent' }}"

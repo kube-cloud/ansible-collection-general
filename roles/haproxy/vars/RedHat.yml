@@ -1,0 +1,16 @@
+---
+
+# HA Proxy Dataplane API Package
+_haproxy_dataplane_api_package_url: "https://github.com/haproxytech/dataplaneapi/releases/download/v{{ _haproxy_dataplane_version }}/dataplaneapi_{{ _haproxy_dataplane_version }}_linux_amd64.rpm"
+
+# HA Proxy Service Name
+_haproxy_service_name: "haproxy"
+
+# HA Proxy Default Status Command
+_haproxy_status_cmd: "systemctl status {{ _haproxy_service_name }}"
+
+# HA Proxy Default Reload Command
+_haproxy_reload_cmd: "systemctl reload {{ _haproxy_service_name }}"
+
+# HA Proxy Default Restart Command
+_haproxy_restart_cmd: "systemctl restart {{ _haproxy_service_name }}"

@@ -1,0 +1,76 @@
+---
+
+# Ensure HA Proxy Installed
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HAProxy is installed"
+  package:
+    name: haproxy
+    state: present
+
+# Ensure HA Proxy is Enabled
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HAProxy enabled (DEBIAN)"
+  lineinfile:
+    dest: /etc/default/haproxy
+    regexp: "^ENABLED.+$"
+    line: "ENABLED=1"
+    state: present
+  when: ansible_os_family == 'Debian'
+
+# Get HA Proxy Version
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Get HAProxy version"
+  command: haproxy -v
+  register: haproxy_version_result
+  changed_when: false
+  check_mode: false
+
+# Extract HA Proxy Version Number
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Extract HA Proxy Version Number"
+  set_fact:
+    _haproxy_version: '{{ haproxy_version_result.stdout_lines[0] | regex_replace("^HA-?Proxy version (\d+(\.\d+)*).*$", "\1") }}'
+
+# Ensure OS Specific Vars Included
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure OS Specific Vars Included"
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "vars/{{ ansible_distribution }}.yml"
+        - "vars/{{ ansible_os_family }}.yml"
+        - "vars/none.yml"
+
+# Ensure Dataplane API Installed
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure Dataplane API Installed"
+  include_tasks: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "setup-dataplane-{{ ansible_distribution }}.yml"
+        - "setup-dataplane-{{ ansible_os_family }}.yml"
+        - "none.yml"
+
+# Ensure HA Proxy Dataplane API Configuration Generated
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HA Proxy Dataplane API Configuration Generated"
+  ansible.builtin.template:
+    src: dataplaneapi.yml.j2
+    dest: "{{ _haproxy_dataplane_config_file }}"
+    mode: 0644
+  notify: restart haproxy
+  when:
+    - haproxy_dataplane.enabled | default(true) == true
+
+# Ensure HA Proxy Configuration Generated
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HA Proxy Configuration Generated"
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+    validate: haproxy -f %s -c -q
+  vars:
+    haproxy_version: "{{ _haproxy_version }}"
+  notify: restart haproxy
+
+# Ensure HA Proxy Enabled and Started
+- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HA Proxy Restarted"
+  service:
+    name: haproxy
+    state: started
+    enabled: yes

@@ -1,0 +1,98 @@
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    master-worker
+{% if haproxy_socket_path != '' %}
+    stats socket {{ haproxy_socket_path }} mode {{ haproxy_socket_mode }} level {{ haproxy_socket_level }} expose-fd listeners
+{% endif %}
+{% if haproxy_chroot_path != '' %}
+    chroot {{ haproxy_chroot_path }}
+{% endif %}
+    user {{ haproxy_user }}
+    group {{ haproxy_group }}
+    daemon
+    ca-base {{ haproxy_ca_base }}
+    crt-base {{ haproxy_crt_base }}
+{% for global_var in haproxy_global_vars | default([]) %}
+    {{ global_var }}
+{% endfor %}
+
+{% if _haproxy_dataplane_enabled %}
+# Program : Dataplane API
+program api
+    command dataplaneapi -f {{ _haproxy_dataplane_config_file }}
+    no option start-on-reload
+{% enfif %}
+
+defaults
+    log global
+    mode  http
+    option  httplog
+    option  dontlognull
+{% if haproxy_version is version('1.4', '<=') %}
+        contimeout {{ haproxy_connect_timeout }}
+        clitimeout {{ haproxy_client_timeout }}
+        srvtimeout {{ haproxy_server_timeout }}
+{% else %}
+        timeout connect {{ haproxy_connect_timeout }}
+        timeout client {{ haproxy_client_timeout }}
+        timeout server {{ haproxy_server_timeout }}
+{% endif %}
+{% for custom_timeout in haproxy_custom_timeouts | default([]) %}
+        {{ custom_timeout }}
+{% endfor %}
+{% for global_error in haproxy_global_errors | default([]) %}
+    {{ global_error }}
+{% endfor %}
+
+{% if haproxy_stats.enabled | default(true) %}
+# HA Proxy Statistics Front End
+frontend {{ haproxy_stats.name | default('stats') }}
+    bind {{ haproxy_stats.bind | default('*:9000') }}
+    mode {{ haproxy_stats.mode | default('http') }}
+    stats enable
+    stats uri {{ haproxy_stats.uri | default('/') }}
+    stats refresh {{ haproxy_stats.refresh | default('5s') }}
+{% if haproxy_stats.basic_auth_enabled | default(true) %}
+    stats auth {{ haproxy_stats.basic_auth_username | default('admin') }}:{{ haproxy_stats.basic_auth_password | default('admin') }}
+{% else %}
+    stats http-request {{ haproxy_stats.http_request | default('allow') }}
+{% endif %}
+{% for custom_property in haproxy_stats.custom_properties | default([]) %}
+    {{ custom_property }}
+{% endfor %}
+{% endif %}
+
+# Front End Configurations
+{% for frontend in haproxy_frontends | default([]) %}
+# {{ frontend.description | default('Frontend Configuration') }}
+frontend {{ frontend.name | default('_EMPTY_NAME_') }}
+    bind {{ frontend.bind | default('_EMPTY_BIND_') }}
+    {% if frontend.mode != '' %}
+    mode {{ frontend.mode }}
+    {% endif %}
+    {% for custom_property in frontend.custom_properties | default([]) %}
+    {{ custom_property }}
+    {% endfor %}
+{% endfor %}
+
+# Backends Configurations
+{% for backend in haproxy_backends | default([]) %}
+# {{ backend.description | default('Backend Configuration') }}
+backend {{ backend.name | default('_EMPTY_NAME_') }}
+{% if backend.mode != '' %}
+    mode {{ backend.mode }}
+{% endif %}
+{% if backend.upstream_balance != '' %}
+    balance {{ backend.upstream_balance }}
+{% endif %}
+{% for custom_property in backend.custom_properties | default([]) %}
+    {{ custom_property }}
+{% endfor %}
+{% if backend.upstream_default_config != '' %}
+    default-server {{ backend.upstream_default_config }}
+{% endif %}
+{% for server in backend.upstream_servers | default([]) %}
+    server {{ backend.name | default('_EMPTY_BACKEND_NAME_') }}-upsetram-{{ loop.index0 }} {{ server.upstream_host | default('_EMPTY_UPSTREAM_HOST_') }}:{{ server.upstream_port | default('_EMPTY_UPSTREAM_PORT_') }}{{ ' check' if server.upstream_check | default(true) == true else '' }} {{ server.upstream_custom_attribute | default('') }}
+{% endfor %}
+{% endfor %}

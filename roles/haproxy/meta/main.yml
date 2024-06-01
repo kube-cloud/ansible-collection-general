@@ -1,0 +1,29 @@
+---
+galaxy_info:
+    author: jetune
+    role_name: haproxy
+    description: Ansible Role for HA Proxy Installation
+    company: "Kube Cloud"
+    issue_tracker_url: https://github.com/kube-cloud/ansible-collection-general/issues
+    license: "license (Apache 2.0)"
+    min_ansible_version: "2.9"
+    github_branch: master
+    platforms:
+        - name: EL
+          versions:
+              - "6"
+              - "7"
+        - name: Debian
+          versions:
+              - jessie
+              - stretch
+        - name: Ubuntu
+          versions:
+              - trusty
+              - xenial
+              - bionic
+    galaxy_tags:
+        - proxy
+        - lb
+        - linux
+dependencies: []

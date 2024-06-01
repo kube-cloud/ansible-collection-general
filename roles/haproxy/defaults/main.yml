@@ -1,0 +1,193 @@
+---
+
+# HA Proxy chroot path
+haproxy_chroot_path: "/var/lib/haproxy"
+
+# HA Proxy Admin/Stats Socket Path
+haproxy_socket_path: "/var/run/haproxy.sock"
+
+# HA Proxy Admin/Stats Socket Mode
+haproxy_socket_mode: "600"
+
+# HA Proxy Admin/Stats Socket Level
+haproxy_socket_level: "admin"
+
+# HA Proxy OS User
+haproxy_user: "haproxy"
+
+# HA Proxy OS Group
+haproxy_group: "haproxy"
+
+# HA Proxy CA Base Dir
+haproxy_ca_base: /etc/ssl/certs
+
+# HA Proxy CRT Base Dir
+haproxy_crt_base: /etc/ssl/private
+
+# HA Proxy Global Variables
+haproxy_global_vars: []
+#  - "ca-base /etc/ssl/certs"
+#  - "crt-base /etc/ssl/private"
+#  - "ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+#  - "ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256"
+#  - "ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets"
+#  - maxconn 4096
+#  - maxcompcpuusage 100
+#  - maxcomprate 0
+#  - nbproc 1
+#  - ssl-server-verify required
+#  - nbthread 1
+
+# HA Proxy Connection Timeout
+haproxy_connect_timeout: 5000
+
+# HA Proxy Client Timeout
+haproxy_client_timeout: 50000
+
+# HA Proxy Server Timeout
+haproxy_server_timeout: 50000
+
+# HA Proxy Custom Timeout
+haproxy_custom_timeouts: []
+#  - "timeout check 1m"
+#  - "timeout http-keep-alive 1m"
+#  - "timeout http-request 1m"
+
+# HA Proxy Global Errors
+haproxy_global_errors: []
+#  - errorfile 400 /etc/haproxy/errors/400.http
+#  - errorfile 403 /etc/haproxy/errors/403.http
+#  - errorfile 408 /etc/haproxy/errors/408.http
+#  - errorfile 500 /etc/haproxy/errors/500.http
+#  - errorfile 502 /etc/haproxy/errors/502.http
+#  - errorfile 503 /etc/haproxy/errors/503.http
+#  - errorfile 504 /etc/haproxy/errors/504.http
+
+# HA Proxy Stats Enabled
+haproxy_stats:
+  enabled: true
+  name: "stats"
+  bind: "*:9000"
+  uri: "/"
+  mode: "http"
+  basic_auth_enabled: true
+  basic_auth_username: "admin"
+  basic_auth_password: "admin"
+  refresh: "10s"
+  http_request: 'allow'
+  custom_properties: []
+
+# HA Proxy Frontends
+haproxy_frontends: []
+#  - name: "stats"
+#    description: "HA Proxy Statistics Front End"
+#    bind: "localhost:9000"
+#    custom_properties:
+#      - "stats enable"
+#      - "stats uri /"
+#      - "stats refresh 10s"
+#      - "stats http-request allow"
+
+# HA Proxy Backends
+haproxy_backends: []
+#  - name: ovpn-udp-1194
+#    description: OpenVPN AS UDP Front End
+#    mode: tcp
+#    upstream_balance: roundrobin
+#    upstream_default_config: inter 5s fall 3 rise 2
+#    custom_properties:
+#    - timeout server 10s
+#    - timeout connect 10s
+#    - timeout client 1m
+#   upstream_servers:
+#    - upstream_host: ovpn-vm.oprm.kube-cloud.com
+#      upstream_port: '1194'
+#      upstream_check: true
+#      upstream_custom_attribute: ''
+#  - name: vm-jira-oprm-https
+#    description: Jira HTTP Backend
+#    mode: http
+#    upstream_balance: roundrobin
+#    upstream_default_config: inter 5s fall 3 rise 2
+#    custom_properties:
+#    - timeout server 20m
+#    - timeout connect 10s
+#    - timeout client 1m
+#    - timeout server 20m
+#    - timeout check 1m
+#    - timeout http-keep-alive 20m
+#    - timeout http-request 20m
+#    - option httpclose
+#    - option http-server-close
+#    - option forwardfor
+#    - http-request set-header X-Forwarded-Port %[dst_port]
+#    upstream_servers:
+#    - upstream_host: jira-vm.oprm.kube-cloud.com
+#      upstream_port: '8080'
+#      upstream_check: true
+#      upstream_custom_attribute: 'inter 10s fall 3 rise 2 verify none'
+
+# HA Proxy Dataplane
+haproxy_dataplane:
+  enabled: true
+  config_file: "/etc/haproxy/dataplaneapi.yml"
+  version: "2.9.3"
+  name: "kc-is-ops-haproxy-api"
+  mode: "single"
+  api:
+    scheme:
+      - "http"
+    host: "0.0.0.0"
+    port: 5555
+    transaction:
+      transaction_dir: "/tmp/haproxy"
+    users:
+      - insecure: true
+        username: "admin"
+        password: "admin"
+    custom_properties:
+      - 'cleanup_timeout: 10s'
+      - 'graceful_timeout: 15s'
+      - 'max_header_size: 1MiB'
+      - 'socket_path: /var/run/data-plane.sock'
+      - 'debug_socket_path: /var/run/dataplane-debug.sock'
+      - 'keep_alive: 3m'
+      - 'read_timeout: 30s'
+      - 'write_timeout: 60s'
+      - 'show_system_info: false'
+  haproxy:
+    service_name: "haproxy"
+    config_file: "/etc/haproxy/haproxy.cfg"
+    bin: "/usr/sbin/haproxy"
+    reload_delay: 5
+    reload_strategy: "custom"
+    reload_retention: 1
+    reload_cmd: "service haproxy reload"
+    restart_cmd: "service haproxy restart"
+    status_cmd: "service haproxy status"
+  file_logs:
+    path: "/var/log/dataplanepi.log"
+    level: "info"
+    format: "json"
+    types:
+      - app
+      - access
+  console_logs:
+    enabled: true
+    level: "info"
+    format: "json"
+    types:
+      - app
+      - access
+  syslog_logs:
+    enabled: false
+    address: "127.0.0.1"
+    protocol: "protocol"
+    tag: "dataplaneapi"
+    syslog_level: "debug"
+    facility: "local0"
+    level: "debug"
+    format: "text"
+    types:
+      - app
+      - access

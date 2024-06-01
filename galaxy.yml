@@ -1,5 +1,5 @@
 # Collection Namespace
-namespace: kubecloud
+namespace: kube_cloud
 
 # Collection Name
 name: general
@@ -49,3 +49,7 @@ homepage: https://github.com/kube-cloud/ansible-collection-general
 
 # The URL to the collection issue tracker
 issues: https://github.com/kube-cloud/ansible-collection-general/issues
+
+build_ignore:
+  - ".editorconfig"
+  - ".gitignore"

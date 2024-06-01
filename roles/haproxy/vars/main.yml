@@ -1,0 +1,22 @@
+---
+
+# HA Proxy Dataplane Version
+_haproxy_dataplane_version: "{{ haproxy_dataplane.version | default('2.9.3') }}"
+
+# HA Proxy Dataplane Config file
+_haproxy_dataplane_config_file: "{{ haproxy_dataplane.config_file | default('/etc/haproxy/dataplaneapi.yml')  }}"
+
+# HA Proxy Data API Enabled
+_haproxy_dataplane_enabled: "{{ haproxy_dataplane.enabled | default(true) }}"
+
+# HA Proxy Config File
+_haproxy_config_file: "{{ haproxy_dataplane.haproxy.config_file | default('/etc/haproxy/haproxy.cfg') }}"
+_haproxy_bin: "{{ haproxy_dataplane.haproxy.bin | default('/usr/sbin/haproxy') }}"
+
+# Required Packages
+_required_packages: 
+  - ca-certificates
+  - wget
+  - net-tools
+  - gnupg
+  - haproxy

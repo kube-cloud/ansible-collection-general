@@ -1,0 +1,54 @@
+name: {{ haproxy_dataplane.name | default('kc-is-ops-haproxy-api') }}
+mode: {{ haproxy_dataplane.mode | default('single') }}
+dataplaneapi:
+    host: {{ haproxy_dataplane.api.host | default('0.0.0.0') }}
+    port: {{ haproxy_dataplane.api.port | default(5555) }}
+    scheme: {{ haproxy_dataplane.api.scheme | default(['http']) }}
+{% for custom_property in haproxy_dataplane.api.custom_properties | default([]) %}
+    {{ custom_property }}
+{% endfor %}
+{% if haproxy_dataplane.api.users | default([]) | length > 0 %}
+    user:
+{% for user in haproxy_dataplane.api.users | default([]) %}
+        - name: {{ user.username }}
+          password: {{ user.password }}
+          insecure: {{ user.insecure | default(false) }}
+{% endfor %}
+{% endif %}
+    resources:
+        maps_dir: /etc/haproxy/maps
+        ssl_certs_dir: /etc/haproxy/ssl
+        spoe_dir: /etc/haproxy/spoe
+haproxy:
+    config_file: {{ _haproxy_config_file }}
+    haproxy_bin: {{ _haproxy_bin }}
+    reload:
+        reload_delay: {{ haproxy_dataplane.haproxy.reload_delay | default(5) }}
+        reload_strategy: {{ haproxy_dataplane.haproxy.reload_strategy | default('custom') }}
+        reload_retention: {{ haproxy_dataplane.haproxy.reload_retention | default(1) }}
+        reload_cmd: {{ haproxy_dataplane.haproxy.reload_cmd | default(_haproxy_reload_cmd) }}
+        restart_cmd: {{ haproxy_dataplane.haproxy.restart_cmd | default(_haproxy_restart_cmd) }}
+        status_cmd: {{ haproxy_dataplane.haproxy.status_cmd | default(_haproxy_status_cmd) }}
+        service_name: {{ haproxy_dataplane.haproxy.service_name | default(_haproxy_service_name) }}
+log_targets:
+    - log_to: file
+      log_file: {{ haproxy_dataplane.file_logs.path | default('/var/log/dataplanepi.log') }}
+      log_level: {{ haproxy_dataplane.file_logs.level | default('info') }}
+      log_format: {{ haproxy_dataplane.file_logs.format | default('json') }}
+      log_types: {{ haproxy_dataplane.file_logs.types | default(['app', 'access']) }}
+{% if haproxy_dataplane.console_logs.enabled | default(true) %}
+    - log_to: stdout
+      log_level: {{ haproxy_dataplane.console_logs.path | default('debug') }}
+      log_format: {{ haproxy_dataplane.console_logs.level | default('text') }}
+      log_types: {{ haproxy_dataplane.console_logs.types | default(['app', 'access']) }}
+{% endif %}
+{% if haproxy_dataplane.syslog_logs.enabled | default(true) %}
+    - log_to: syslog
+      syslog_address: {{ haproxy_dataplane.syslog_logs.address | default('127.0.0.1') }}
+      syslog_protocol: {{ haproxy_dataplane.syslog_logs.protocol | default('tcp') }}
+      syslog_tag: {{ haproxy_dataplane.syslog_logs.tag | default('dataplaneapi') }}
+      syslog_level: {{ haproxy_dataplane.syslog_logs.syslog_level | default('debug') }}
+      syslog_facility: {{ haproxy_dataplane.syslog_logs.facility | default('local0') }}
+      log_level: {{ haproxy_dataplane.syslog_logs.level | default('debug') }}
+      log_types: {{ haproxy_dataplane.syslog_logs.types | default(['app', 'access']) }}
+{% endif %}
