@@ -304,7 +304,7 @@ def run_module(module, client):
 
     # Find Existing Record IDs
     existing_records = get_ovh_record_id(module, client, domain, record_name, record_type)
-    
+
     # If Requested State is 'present' and Record exists
     if state == 'present' and len(existing_records) >= 1:
 
