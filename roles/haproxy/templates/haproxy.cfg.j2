@@ -17,7 +17,7 @@ global
     {{ global_var }}
 {% endfor %}
 
-{% if _haproxy_dataplane_enabled %}
+{% if haproxy_dataplane.enabled | default(true) %}
 # Program : Dataplane API
 program api
     command dataplaneapi -f {{ _haproxy_dataplane_config_file }}
