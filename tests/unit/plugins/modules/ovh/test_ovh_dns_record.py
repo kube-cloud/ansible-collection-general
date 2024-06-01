@@ -29,7 +29,7 @@ def mock_ovh_client(mocker):
 
 
 # Test ADD Record
-def test_ovh_dns_record_add(mock_module:AnsibleModule, mock_client:ovh.Client):
+def test_ovh_dns_record_add(mock_module, mock_client):
 
     # Simule les arguments passés au module
     mock_module.return_value.params = {
@@ -52,7 +52,7 @@ def test_ovh_dns_record_add(mock_module:AnsibleModule, mock_client:ovh.Client):
 
 
 # Test Remove Record
-def test_ovh_dns_record_remove(mock_module:AnsibleModule, mock_client:ovh.Client):
+def test_ovh_dns_record_remove(mock_module, mock_client):
     mock_module.return_value.params = {
         "endpoint": "ovh-eu",
         "application_key": "fake_key",

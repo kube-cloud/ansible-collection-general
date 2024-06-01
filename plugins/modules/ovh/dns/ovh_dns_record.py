@@ -187,7 +187,7 @@ def refresh_ovh_zone(module, client, zone_name):
 
 
 # Find and Return OVH Record ID List
-def get_ovh_record_id(module, client, domain, record_name, record_type) -> list:
+def get_ovh_record_id(module, client, domain, record_name, record_type):
 
     try:
 
@@ -218,7 +218,7 @@ def get_ovh_record(module, client, domain, record_id):
 
         # Set Module Error
         module.fail_json(
-            msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record/{1}".format(domain, record_id, api_error)
+            msg="[Find Record] - Failed to call OVH API (GET /domain/zone/{0}/record/{1}) : {2}".format(domain, record_id, api_error)
         )
 
 
