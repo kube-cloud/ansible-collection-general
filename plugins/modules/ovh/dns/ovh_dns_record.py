@@ -79,7 +79,7 @@ options:
 
 EXAMPLES = r'''
 - name: "Create TXT Entrty to OVH"
-  kube_cloud.general.ovh.dns.ovh_dns_record:
+  kubecloud.general.ovh.dns.ovh_dns_record:
     endpoint: "ovh-eu"
     application_key: "2566789999999999"
     application_secret: "me4567009132467nhst5"
@@ -92,7 +92,7 @@ EXAMPLES = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.kube_cloud.general.plugins.module_utils.ovh import ovh_client
+from ansible_collections.kubecloud.general.plugins.module_utils.ovh import ovh_client
 
 
 try:
