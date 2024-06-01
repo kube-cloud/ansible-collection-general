@@ -96,7 +96,6 @@ from ansible_collections.kubecloud.general.plugins.module_utils.ovh import ovh_c
 
 
 try:
-    import ovh
     from ovh.exceptions import APIError
     HAS_OVH = True
 except ImportError:
