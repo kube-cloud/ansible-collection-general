@@ -68,12 +68,30 @@ frontend {{ haproxy_stats.name | default('stats') }}
 # {{ frontend.description | default('Frontend Configuration') }}
 frontend {{ frontend.name | default('_EMPTY_NAME_') }}
     bind {{ frontend.bind | default('_EMPTY_BIND_') }}
-    {% if frontend.mode != '' %}
+{% if frontend.mode != '' %}
     mode {{ frontend.mode }}
-    {% endif %}
-    {% for custom_property in frontend.custom_properties | default([]) %}
+{% endif %}
+{% if frontend.log_format != '' %}
+    log-format "{{ frontend.log_format }}"
+{% endif %}
+{% for capture in frontend.http_captures | default([]) %}
+    http-request capture {{ capture }}
+{% endfor %}
+{% for header in frontend.http_headers | default([]) %}
+    http-request set-header {{ header.name }} {{ header.value }}
+{% endfor %}
+{% for acl in frontend.acls | default([]) %}
+    acl {{ acl.name }} {{ acl.value }}
+{% endfor %}
+{% for action in frontend.actions | default([]) %}
+    {{ action }}
+{% endfor %}
+{% for custom_property in frontend.custom_properties | default([]) %}
     {{ custom_property }}
-    {% endfor %}
+{% endfor %}
+{% for backend_usage in frontend.backend_usages | default([]) %}
+    use_backend {{ backend_usage }}
+{% endfor %}
 {% endfor %}
 
 # Backends Configurations

@@ -1,0 +1,190 @@
+---
+
+# Root DNS Zone of the Target DNS Certificate (All DNS Suffix : CN and SAN)
+root_domain: kube-cloud.com
+
+# Master Subdomain (Common Name Prefix)
+# Common Name will be : {{ master_dns_subdomain }}.{{ root_dns_zone }})
+common_name_subdomain: jenkins.devcentral
+
+# DNS Subject Alternative Subdomain (DNS SAN Prefix List)
+dns_san_subdomains: []
+
+# Email Subject Alternative Subdomain (EMAIL SAN Prefix List)
+# eg.: email:admin@kube-cloud.com
+email_san_subdomains: []
+
+# URI Subject Alternative Subdomain (URI SAN Prefix List)
+# eg.: URI:https://jira.kube-cloud.com
+uri_san_subdomains: []
+
+# IP Subject Alternative Subdomain (IP SAN Prefix List)
+# eg.: IP:172.16.125.3
+ip_san_subdomains: []
+
+# Prefixed Subject Alternative Subdomain (Already Prefixed SAN List)
+prefixed_san_subdomains: []
+
+# ACME Protocol Version
+acme_version: 2
+
+# ACME Directory
+acme_directory: https://acme-v02.api.letsencrypt.org/directory
+
+# ACME Certificate Remaining Days
+acme_certificate_remaining_days: 10
+
+# ACME Account Key
+acme_account_key_src:
+
+# ACME Account Content
+acme_account_key_content:
+
+# ACME Account Email
+acme_account_email: administrator@kube-cloud.com
+
+# Certificate Basepath
+acme_base_path: "/etc/letsecnrypt/live"
+
+# Certificate Owner (OS User with Full Right)
+acme_cert_owner: root
+
+# Certificate Group (OS Group with Full Right)
+acme_cert_group: root
+
+# certificate Access mode
+acme_cert_permissions: "0755"
+
+# ACME SE Level
+acme_selevel: _default
+
+# ACME SE Role
+acme_serole: _default
+
+# ACME SE Type
+acme_setype: _default
+
+# ACME SE User
+acme_seuser: _default
+
+# Private Key Backup (If true, existing Private Key will be Backup on Update/Overwrite)
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+acme_private_key_backup: true
+
+# Private Key Cipher
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+acme_private_key_cipher: auto
+
+# Private Key Curve
+# Max Interoperability : secp384r1, secp256r1
+# Recommended : secp224r1, secp256k1, secp256r1, secp384r1, secp521r1
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+acme_private_key_curve: secp384r1
+
+# ACME Private Key Force Regenerated
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+acme_private_key_force_regenerate: false
+
+# ACME Private Key Format
+# Choices : pkcs1, pkcs8, raw, auto, auto_ignore
+# "auto_ignore" is same as "auto", but dont regenerate Key if its format is not automatically selected
+# one for generation
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+acme_private_key_format: auto_ignore
+
+# Action to do When Actual Format mismatch the required one
+# Choices : regenerate, convert
+acme_private_key_format_mismatch: regenerate
+
+# ACME Private Key Passphrase
+acme_private_key_passphrase:
+
+# ACME Private Key Regenerate Policy
+# Choices : never, fail, partial_idempotence, full_idempotence, always
+acme_private_key_regenerate: full_idempotence
+
+# ACME Private Key Content returned to Caller
+acme_private_key_return_content: false
+
+# ACME Private Key Crypto Backend
+# Choices : auto, cryptography
+acme_private_key_crypto_backend: auto
+
+# ACME Private Key Size
+acme_private_key_size: 4096
+
+# ACME Private Key Type
+acme_private_key_type: RSA
+
+# CSR Backup (If true, existing CSR will be Backup on Update/Overwrite)
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_csr_module.html
+acme_csr_backup: true
+
+# ACME CSR Country Name
+acme_csr_country_name: "FR"
+
+# ACME CSR Locality Name
+acme_csr_locality_name: "SEINE-ET-MARNE"
+
+# ACME CSR Organisation Name
+acme_csr_organization_name: "KubeCloud"
+
+# ACME CSR Organizational Unit Name
+acme_csr_organizational_unit_name: "DPEP - Digital Products Engineering and Platform"
+
+# ACME CSR Organization Contact Email
+acme_csr_email_address: "contact@kube-cloud.com"
+
+# ACME CSR Digest Algorithm
+acme_csr_digest: sha256
+
+# ACME CSR Key Usage
+acme_csr_key_usage:
+  - digitalSignature
+  - keyAgreement
+
+# ACME CSR Key Usage Critical or Not
+acme_csr_key_usage_critical: false
+
+# ACME CSR Key Extended Usage
+acme_csr_extended_key_usage:
+  - clientAuth
+
+# ACME CSR Key Extended Usage Critical or Not
+acme_csr_extended_key_usage_critical: false
+
+# ACME CSR Certificate Subject Key Identifier Created
+acme_csr_create_subject_key_identifier: false
+
+# ACME CSR Force Regenerate
+acme_csr_force_regenerate: false
+
+# OVH API Endpoint
+ovh_endpoint: ovh-eu
+
+# OVH Application Key
+ovh_application_key: "__PROVIDE_APPLICATION_KEY__"
+
+# OVH Application Secret
+ovh_application_secret: "__PROVIDE_APPLICATION_SECRET__"
+
+# OVH Application Secret
+ovh_consumer_key: "__PROVIDE_CONSUMER_KEY__"
+
+# ACME Certificate File Path Var
+acme_cert_file_path_var: "acme_cert_file"
+
+# ACME Certificate File Path Var
+acme_fullchain_cert_file_path_var: "acme_fullchain_cert_file"
+
+# ACME Certificate and Key File Path Var
+acme_fullchain_cert_and_key_file_path_var: "acme_fullchain_cert_and_key_file"
+
+# ACME Certificate File Path Var
+acme_intermediate_cert_file_path_var: "acme_intermediate_cert_file"
+
+# ACME Certificate File Path Var
+acme_csr_file_path_var: "acme_csr_file"
+
+# ACME Certificate File Path Var
+acme_private_key_file_path_var: "acme_private_key_file"

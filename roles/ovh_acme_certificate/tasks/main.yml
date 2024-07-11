@@ -1,0 +1,232 @@
+---
+
+# Ensure All Required Paths are Created
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure All Required Paths are Created"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "{{ acme_cert_permissions }}"
+    owner: "{{ acme_cert_owner }}"
+    group: "{{ acme_cert_group }}"
+  loop:
+    - "{{ _acme_private_key_dir }}"
+    - "{{ _acme_csr_dir }}"
+    - "{{ _acme_certificate_dir }}"
+
+# Ensure Certificate Private Key is Generated
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Private Key is Generated"
+  community.crypto.openssl_privatekey:
+    backup: "{{ acme_private_key_backup }}"
+    cipher: "{{ acme_private_key_cipher }}"
+    curve: "{{ acme_private_key_curve }}"
+    force: "{{ acme_private_key_force_regenerate }}"
+    format: "{{ acme_private_key_format }}"
+    format_mismatch: "{{ acme_private_key_format_mismatch }}"
+    mode: "{{ acme_cert_permissions }}"
+    owner: "{{ acme_cert_owner }}"
+    group: "{{ acme_cert_group }}"
+    passphrase: "{{ acme_private_key_passphrase }}"
+    path: "{{ _acme_private_key_file }}"
+    regenerate: "{{ acme_private_key_regenerate }}"
+    return_content: "{{ acme_private_key_return_content }}"
+    select_crypto_backend: "{{ acme_private_key_crypto_backend }}"
+    selevel: "{{ acme_selevel }}"
+    serole: "{{ acme_serole }}"
+    setype: "{{ acme_setype }}"
+    seuser: "{{ acme_seuser }}"
+    size: "{{ acme_private_key_size }}"
+    type: "{{ acme_private_key_type }}"
+    state: present
+
+# Ensure Certificate CSR is Generated
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Certificate CSR is Generated"
+  community.crypto.openssl_csr:
+    backup: "{{ acme_csr_backup }}"
+    common_name: "{{ _acme_cert_common_name }}"
+    subject_alt_name: "{{ _acme_san}}"
+    country_name: "{{ acme_csr_country_name }}"
+    locality_name: "{{ acme_csr_locality_name }}"
+    organization_name: "{{ acme_csr_organization_name }}"
+    organizational_unit_name: "{{ acme_csr_organizational_unit_name }}"
+    email_address: "{{ acme_csr_email_address }}"
+    key_usage: "{{ acme_csr_key_usage }}"
+    key_usage_critical: "{{ acme_csr_key_usage_critical }}"
+    extended_key_usage: "{{ acme_csr_extended_key_usage }}"
+    extended_key_usage_critical: "{{ acme_csr_extended_key_usage_critical }}"
+    create_subject_key_identifier: "{{ acme_csr_create_subject_key_identifier }}"
+    digest: "{{ acme_csr_digest }}"
+    privatekey_path: "{{ _acme_private_key_file }}"
+    privatekey_passphrase: "{{ acme_private_key_passphrase }}"
+    force: "{{ acme_csr_force_regenerate }}"
+    mode: "{{ acme_cert_permissions }}"
+    owner: "{{ acme_cert_owner }}"
+    group: "{{ acme_cert_group }}"
+    path: "{{ _acme_csr_file }}"
+    state: present
+
+# Ensure DNS Challenge Initialized from Content
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - (CONTENT) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
+  community.crypto.acme_certificate:
+    account_key_content: "{{ acme_account_key_content }}"
+    account_email: "{{ acme_account_email }}"
+    csr: "{{ _acme_csr_file }}"
+    cert: "{{ _acme_cert_file }}"
+    fullchain: "{{ _acme_fullchain_cert_file }}"
+    challenge: "{{ _acme_challenge }}"
+    acme_directory: "{{ acme_directory }}"
+    remaining_days: "{{ acme_certificate_remaining_days }}"
+    acme_version: "{{ acme_version }}"
+  register: acme_dns_challenge_content
+  when:
+    - acme_account_key_content | length > 0
+
+# Ensure DNS Challenge Initialized from Path
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - (PATH) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
+  community.crypto.acme_certificate:
+    account_key_src: "{{ acme_account_key_src }}"
+    account_email: "{{ acme_account_email }}"
+    csr: "{{ _acme_csr_file }}"
+    cert: "{{ _acme_cert_file }}"
+    fullchain: "{{ _acme_fullchain_cert_file }}"
+    challenge: "{{ _acme_challenge }}"
+    acme_directory: "{{ acme_directory }}"
+    remaining_days: "{{ acme_certificate_remaining_days }}"
+    acme_version: "{{ acme_version }}"
+  register: acme_dns_challenge_path
+  when:
+    - acme_account_key_content | length == 0
+    - acme_account_key_src | length > 0
+
+# Define Fact to Get ACME DNS Challenge
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
+  ansible.builtin.set_fact:
+    acme_dns_challenge: "{{ acme_dns_challenge_content if acme_account_key_content | length > 0 else acme_dns_challenge_path }}"
+
+# Define Fact to Get Cert Days
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
+  ansible.builtin.set_fact:
+    acme_dns_challenge_cert_days: "{{ acme_dns_challenge.cert_days | default(-1) }}"
+
+# Define Fact to check if Challenge can continue
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
+  ansible.builtin.set_fact:
+    acme_dns_challenge_enabled:  >-
+      {{
+        acme_dns_challenge_cert_days <= acme_certificate_remaining_days and
+        acme_dns_challenge.changed | default(false) and
+        (acme_dns_challenge.challenge_data | default({}) | length > 0) and
+        (acme_dns_challenge.challenge_data[_acme_cert_common_name] | default({}) | length > 0) and
+        (acme_dns_challenge.challenge_data[_acme_cert_common_name][_acme_challenge] | default({}) | length > 0)
+      }}
+
+- block:
+
+  # Ensure Already Generated Files are Cleaned
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Already Generated Files are Cleaned"
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+      - "{{ _acme_fullchain_cert_key_file }}"
+      - "{{ _acme_fullchain_cert_file }}"
+      - "{{ _acme_cert_file }}"
+      - "{{ _acme_intermediatechain_cert_file }}"
+    ignore_errors: true
+
+  # Ensure DNS Challenge Data Published on OVH
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure DNS Challenge Data Published on OVH"
+    kube_cloud.general.ovh.dns_record:
+      endpoint: "{{ ovh_endpoint }}"
+      application_key: "{{ ovh_application_key }}"
+      application_secret: "{{ ovh_application_secret }}"
+      consumer_key: "{{ ovh_consumer_key }}"
+      domain: "{{ root_domain }}"
+      record_name: "{{ acme_dns_challenge.challenge_data[_acme_cert_common_name][_acme_challenge].record | regex_replace('.' + root_domain + '$', '') }}"
+      record_type: "TXT"
+      target: "{{ acme_dns_challenge.challenge_data[_acme_cert_common_name][_acme_challenge].resource_value }}"
+      state: 'present'
+
+  # Ensure DNS Challenge Validated and Certificates Created
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - [CONTENT] - Ensure DNS Challenge Validated and Certificates Created"
+    community.crypto.acme_certificate:
+      account_key_content: "{{ acme_account_key_content }}"
+      account_email: "{{ acme_account_email }}"
+      csr: "{{ _acme_csr_file }}"
+      cert: "{{ _acme_cert_file }}"
+      fullchain: "{{ _acme_fullchain_cert_file }}"
+      chain: "{{ _acme_intermediatechain_cert_file }}"
+      challenge: "{{ _acme_challenge }}"
+      acme_directory: "{{ acme_directory }}"
+      remaining_days: "{{ acme_certificate_remaining_days }}"
+      acme_version: "{{ acme_version }}"
+      data: "{{ acme_dns_challenge }}"
+    register: domain_challenge_validated_content
+    when:
+      - acme_account_key_content | length > 0
+
+  # Ensure DNS Challenge Validated and Certificates Created
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - [PATH] - Ensure DNS Challenge Validated and Certificates Created"
+    community.crypto.acme_certificate:
+      account_key_src: "{{ acme_account_key_src }}"
+      account_email: "{{ acme_account_email }}"
+      csr: "{{ _acme_csr_file }}"
+      cert: "{{ _acme_cert_file }}"
+      fullchain: "{{ _acme_fullchain_cert_file }}"
+      chain: "{{ _acme_intermediatechain_cert_file }}"
+      challenge: "{{ _acme_challenge }}"
+      acme_directory: "{{ acme_directory }}"
+      remaining_days: "{{ acme_certificate_remaining_days }}"
+      acme_version: "{{ acme_version }}"
+      data: "{{ acme_dns_challenge }}"
+    register: domain_challenge_validated_path
+    when:
+        - acme_account_key_content | length == 0
+        - acme_account_key_src | length > 0
+
+  # Define Fact to Get ACME DNS Challenge
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
+    ansible.builtin.set_fact:
+      domain_challenge_validated: "{{ domain_challenge_validated_content if acme_account_key_content | length > 0 else domain_challenge_validated_path }}"
+
+  # Ensure DNS Challenge Data Removed from OVH
+  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure DNS Challenge Data Removed from OVH"
+    kube_cloud.general.ovh.dns_record:
+      endpoint: "{{ ovh_endpoint }}"
+      application_key: "{{ ovh_application_key }}"
+      application_secret: "{{ ovh_application_secret }}"
+      consumer_key: "{{ ovh_consumer_key }}"
+      domain: "{{ root_domain }}"
+      record_name: "{{ acme_dns_challenge.challenge_data[_acme_cert_common_name][_acme_challenge].record | regex_replace('.' + root_domain + '$', '') }}"
+      record_type: "TXT"
+      target: "__NO_NEED_TARGET__"
+      state: absent
+    ignore_errors: true
+    changed_when: false
+  
+  when: acme_dns_challenge_enabled
+
+# Ensure Fullchain Certificate and Private Key are Readed
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Readed"
+  ansible.builtin.command: >
+    cat {{ _acme_fullchain_cert_file }} {{ _acme_private_key_file }}
+  register: _acme_fullchain_cert_key_content
+
+# Ensure Fullchain Certificate and Private Key are Stored
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Combined"
+  ansible.builtin.copy:
+    content: "{{ _acme_fullchain_cert_key_content.stdout }}"
+    dest: "{{ _acme_fullchain_cert_key_file }}"
+  changed_when: false
+
+# Ensure All Output Variables are Defined
+- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure All Output Facts are Defined"
+  ansible.builtin.set_fact:
+    "{{ item.name }}": "{{ item.value }}"
+  loop:
+    - { name: "{{ acme_cert_file_path_var }}", value: "{{ _acme_cert_file }}" }
+    - { name: "{{ acme_fullchain_cert_file_path_var }}", value: "{{ _acme_fullchain_cert_file }}" }
+    - { name: "{{ acme_fullchain_cert_and_key_file_path_var }}", value: "{{ _acme_fullchain_cert_key_file }}" }
+    - { name: "{{ acme_intermediate_cert_file_path_var }}", value: "{{ _acme_intermediatechain_cert_file }}" }
+    - { name: "{{ acme_csr_file_path_var }}", value: "{{ _acme_csr_file }}" }
+    - { name: "{{ acme_private_key_file_path_var }}", value: "{{ _acme_private_key_file }}" }
+    - { name: "acme_validated_challenge", value: "{{ domain_challenge_validated | default({}) }}" }

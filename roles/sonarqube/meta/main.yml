@@ -1,0 +1,27 @@
+galaxy_info:
+  author: jetune
+  role_name: sonarqube
+  description: Ansible Role for Sonarqube Installation [Fork From IRK]
+  company: "Kube Cloud"
+  issue_tracker_url: https://github.com/kube-cloud/ansible-collection-sonarqube/issues
+  license: "license (Apache 2.0)"
+  min_ansible_version: 2.10
+  github_branch: develop
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - Bionic
+        - Xenial
+    - name: Debian
+      versions:
+        - Stretch
+
+  galaxy_tags:
+    - 'centos'
+    - 'development'
+    - 'monitoring'
+    - 'sonarqube'

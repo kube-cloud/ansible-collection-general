@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: ovh_dns_record
+module: dns_record
 version_added: "1.0.0"
 short_description: Manage DNS zone records
 description:
@@ -79,7 +79,7 @@ options:
 
 EXAMPLES = r'''
 - name: "Create TXT Entrty to OVH"
-  kube_cloud.general.ovh.dns.ovh_dns_record:
+  kube_cloud.general.ovh.dns_record:
     endpoint: "ovh-eu"
     application_key: "2566789999999999"
     application_secret: "me4567009132467nhst5"
@@ -92,7 +92,7 @@ EXAMPLES = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.kube_cloud.general.plugins.module_utils.ovh import ovh_client
+from ...module_utils.ovh.client import ovh_client
 
 
 try:
@@ -228,7 +228,7 @@ def get_ovh_record(module, client, domain, record_id):
 
 
 # Find and Return OVH Record
-def create_ovh_record(module, client, domain, record_id, record_name, record_type, record_value, ttl):
+def create_ovh_record(module, client, domain, record_name, record_type, record_value, ttl):
 
     try:
 
@@ -245,7 +245,7 @@ def create_ovh_record(module, client, domain, record_id, record_name, record_typ
 
         # Set Module Error
         module.fail_json(
-            msg="[Create Record] - Failed to call OVH API (POST /domain/zone/{0}/record/{1}) : {2}".format(domain, record_id, api_error)
+            msg="[Create Record] - Failed to call OVH API (POST /domain/zone/{0}/record) : {1}".format(domain, api_error)
         )
 
 
@@ -338,7 +338,7 @@ def run_module(module, client):
     if state == 'present' and not existing_records:
 
         # Create Record
-        create_ovh_record(module, client, domain, record_id, record_name, record_type, target, ttl)
+        create_ovh_record(module, client, domain, record_name, record_type, target, ttl)
 
         # refresh Zone
         refresh_ovh_zone(module, client, domain)

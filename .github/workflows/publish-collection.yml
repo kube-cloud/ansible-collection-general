@@ -1,18 +1,16 @@
-name: Test Ansible Collection
+name: Publish Ansible Collection
 
 on:
   push:
+    branches:
+      - 'develop'
     paths:
       - 'plugins/**'
       - 'roles/**'
       - 'tests/**'
-      - '.github/workflows/sanity-checks-plugins.yml'
-  pull_request:
-    paths:
-      - 'plugins/**'
-      - 'roles/**'
-      - 'tests/**'
-      - '.github/workflows/sanity-checks-plugins.yml'
+      - 'meta/**'
+      - 'galaxy.yml'
+      - '.github/workflows/publish-collection.yml'
 
 jobs:
   sanity:
@@ -22,14 +20,19 @@ jobs:
           - stable-2.14
         os:
           - ubuntu-22.04
-
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Perform sanity testing
-        uses: ansible-community/ansible-test-gh-action@release/v1
+        uses: ansible-community/ansible-test-gh-action@release/v1.15
         with:
           ansible-core-version: ${{ matrix.ansible }}
+          target-python-version: ${{ matrix.python-version }}
           testing-type: sanity
           pull-request-change-detection: true
 
@@ -40,11 +43,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
 
       - name: Install dependencies
         run: |
@@ -63,6 +61,5 @@ jobs:
           MODULE_VERSION=$(yq e '.version' galaxy.yml)
           MODULE_NAMESPACE=$(yq e '.namespace' galaxy.yml)
           MODULE_NAME=$(yq e '.name' galaxy.yml)
-          echo "Version: $MODULE_VERSION"
+          echo "Module : [Namespace : $MODULE_NAMESPACE, Name : $MODULE_NAME, Version: $MODULE_VERSION]"
           ansible-galaxy collection publish $MODULE_NAMESPACE-$MODULE_NAME-$MODULE_VERSION.tar.gz --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY}}
-  

@@ -1,0 +1,59 @@
+---
+
+# Certificate Common Name
+_acme_cert_common_name: "{{ common_name_subdomain }}.{{ root_domain }}"
+
+# Private Keys Directory Path
+_acme_private_key_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/private"
+
+# CSRs Directory Path
+_acme_csr_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/csr"
+
+# Certificates Directory Path
+_acme_certificate_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/cert"
+
+# Private Key File Path
+_acme_private_key_file: "{{ _acme_private_key_dir }}/private.pem"
+
+# CSR File Path
+_acme_csr_file: "{{ _acme_csr_dir }}/certificate.csr"
+
+# Certificate File Path
+_acme_cert_file: "{{ _acme_certificate_dir }}/certificate.pem"
+
+# Fullchain Certificate File Path
+_acme_intermediatechain_cert_file: "{{ _acme_certificate_dir }}/certificate-intermediate.pem"
+
+# Fullchain Certificate File Path
+_acme_fullchain_cert_file: "{{ _acme_certificate_dir }}/certificate-fullchain.pem"
+
+# Fullchain Certificate +Key File Path
+_acme_fullchain_cert_key_file: "{{ _acme_certificate_dir }}/certificate-fullchain-and-key.pem"
+
+# CSR DNS SAN
+_acme_csr_dns_san: "{{ dns_san_subdomains | map('regex_replace', '^(?!DNS:)', 'DNS:') | map('regex_replace', '(?<!' ~ root_domain ~ ')$', root_domain) | list }}"
+
+# CSR EMAIL SAN
+_acme_csr_email_san: "{{ email_san_subdomains | map('regex_replace', '^(?!email:)', 'email:') | map('regex_replace', '(?<!' ~ root_domain ~ ')$', root_domain) | list }}"
+
+# CSR URI SAN
+_acme_csr_uri_san: "{{ uri_san_subdomains | map('regex_replace', '^(?!URI:)', 'URI:') | map('regex_replace', '(?<!' ~ root_domain ~ ')$', root_domain) | list }}"
+
+# CSR IP SAN
+_acme_csr_ip_san: "{{ ip_san_subdomains | map('regex_replace', '^(?!IP:)', 'IP:') | map('regex_replace', '(?<!' ~ root_domain ~ ')$', root_domain) | list }}"
+
+# CSR Custom SAN
+_acme_csr_prefixed_san: "{{ prefixed_san_subdomains | map('regex_replace', '(?<!' ~ root_domain ~ ')$', root_domain) | list }}"
+
+# CSR All SAN
+_acme_san: >-
+  {{
+    _acme_csr_dns_san +
+    _acme_csr_email_san +
+    _acme_csr_uri_san +
+    _acme_csr_ip_san +
+    _acme_csr_prefixed_san
+  }}
+
+# ACME Chanllenge
+_acme_challenge: dns-01

@@ -1,0 +1,31 @@
+---
+
+# Define SonarQube Download Base URL
+__sonarsource_url: "https://binaries.sonarsource.com"
+
+# Define SonarQube Market Place URL
+__sonar_marketplace_url: "https://update.sonarsource.org"
+
+# Define Sonarqube Distribution
+__sonar_distribution: "{{ 'CommercialDistribution' if sonar_commercial_distribution | bool else 'Distribution' }}"
+
+# Define Sonarqube Edition Name
+__sonar_edition_name: "sonarqube{{ '' if sonar_edition | trim == 'community' else '-' + (sonar_edition | trim) }}"
+
+# Define SonarQube Distribution URL
+__sonar_distribution_url: "{{ __sonarsource_url }}/{{ __sonar_distribution }}"
+
+# Define SonarQube Archive Name
+__sonar_archive: "{{ __sonar_edition_name }}-{{ sonar_version }}.zip"
+
+# Define SonarQube Download URL
+__sonar_download_url: "{{ __sonar_distribution_url }}/{{ __sonar_edition_name }}/{{ __sonar_archive }}"
+
+# Define SonarQube Plugin Home
+__sonar_plugin_home: "{{ sonar_base_dir }}/extensions/plugins"
+
+# Define SonarQube Plugin Base URL
+__sonar_plugin_baseurl: "{{ __sonar_distribution_url }}"
+
+# Define SonarQube Plugin Commercial Base URL
+__sonar_commercial_plugin_baseurl: "{{ __sonarsource_url }}/CommercialDistribution"

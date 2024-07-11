@@ -13,7 +13,7 @@ Ansible Role for HA Proxy Installation.
 Install Collection `ansible-galaxy collections install kube_cloud.general`
 
 ```yaml
-- name: "({{ ansible_distribution }}) HAPROXY::INSTALL - Ensure HA Proxy Installed and Configured"
+- name: "HAPROXY::INSTALL - Ensure HA Proxy Installed and Configured"
     ansible.builtin.import_role:
     name: haproxy
     vars:
@@ -121,4 +121,3 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
                     - app
                     - access
 ```
-* 
