@@ -16,13 +16,10 @@
   - name: "Expand SonarQube binaries"
     unarchive:
       src: "/tmp/{{ __sonar_archive }}"
-      dest: "{{ sonar_base_dir }}"
+      dest: "{{ sonar_install_directory }}"
       owner: "{{ sonar_user }}"
       group: "{{ sonar_group }}"
       copy: no
-      extra_opts:
-      - "--strip-components=1"
-      - "--show-stored-names"
 
   - name: "Remove SonarQube archive"
     file:
