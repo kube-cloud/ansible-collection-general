@@ -25,6 +25,7 @@
     file:
       path: "/tmp/{{ __sonar_archive }}"
       state: absent
+    when: sonar_clean_after_install | default(true)
 
   - name: "Collect the list of services to check if sonar.service exists"
     service_facts:

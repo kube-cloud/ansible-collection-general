@@ -302,3 +302,6 @@ sonar_web_dev_sources: ""
 # Elasticsearch HTTP connector, for example for KOPF:
 # http://lmenezes.com/elasticsearch-kopf/?location=http://localhost:9010
 sonar_search_http_port: -1
+
+# Clean After Install
+sonar_clean_after_install: true
