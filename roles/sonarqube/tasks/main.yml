@@ -21,12 +21,13 @@
     state: directory
     owner: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
-    mode: "u=rwx,g=rx,o="
+    mode: "u=rwx,g=rx,o=rx"
   with_items:
     - "{{ sonar_install_directory }}"
     - "{{ sonar_logs_dir }}"
     - "{{ sonar_data_dir }}"
     - "{{ sonar_temp_dir }}"
+    - "{{ sonar_base_dir }}"
 
 - name: "set max_map_count value (required by elasticsearch)"
   sysctl:
