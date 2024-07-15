@@ -278,6 +278,18 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 # default: undefined
 # sonar_ldap:
 
+# sonar_email:
+#  smtp_host: "smtp.mail.ovh.net"
+#  smtp_port: 465
+
+#  # Autorized : ssl, starttls
+#  smtp_secure_connection: "ssl" 
+#  smtp_from_address: "demo@server.com"
+#  smtp_from_name: "SonarQube"
+#  smtp_email_prefix: "[SonarQube] "
+#  smtp_username: "admin"
+#  smtp_password: "admin"
+
 #--------------------------------------------------------------------------------------------------
 # OTHERS
 

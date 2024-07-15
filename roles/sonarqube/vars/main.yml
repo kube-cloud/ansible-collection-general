@@ -29,3 +29,6 @@ __sonar_plugin_baseurl: "{{ __sonar_distribution_url }}"
 
 # Define SonarQube Plugin Commercial Base URL
 __sonar_commercial_plugin_baseurl: "{{ __sonarsource_url }}/CommercialDistribution"
+
+# Additional properties
+__sonar_additional_properties: "{{ sonar_additional_properties | combine(sonar_email | default({})) }}"
