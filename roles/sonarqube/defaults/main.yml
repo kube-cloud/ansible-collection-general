@@ -14,7 +14,7 @@ sonar_commercial_distribution: false
 sonar_install_directory: /opt/sonarqube
 
 # SonarQube base directory
-sonar_base_dir: "{{ sonar_install_directory }}/sonarqube-{{ sonar_edition }}-{{ sonar_version }}"
+sonar_base_dir: "{{ sonar_install_directory }}/sonarqube-{{ sonar_version }}"
 
 # SonarQube daemon directory
 sonar_daemon_dir: "{{ sonar_base_dir }}/bin/linux-x86-{{ ansible_userspace_bits }}"
