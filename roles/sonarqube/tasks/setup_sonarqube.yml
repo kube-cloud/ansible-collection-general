@@ -83,7 +83,7 @@
     dest: "{{ sonar_conf_dir }}/sonar.properties"
     owner: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
-    mode: "u=rw,g=,o="
-  no_log: true
+    mode: "u=rwx,g=rx,o=rx"
+  no_log: "{{ disable_log | default(true) | bool }}"
   notify:
       - "restart SonarQube service"

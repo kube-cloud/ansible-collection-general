@@ -305,3 +305,6 @@ sonar_search_http_port: -1
 
 # Clean After Install
 sonar_clean_after_install: true
+
+# Disable Log
+disable_log: true
