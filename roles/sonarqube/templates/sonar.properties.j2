@@ -151,8 +151,8 @@ sonar.path.temp={{ sonar_temp_dir | default('temp') }}
 {% if __sonar_email_properties is defined %}
 #--------------------------------------------------------------------------------------------------
 # EMAIL PROPERIES
-{%   for p in __sonar_email_properties | dict2items %}
-{{ p.key }} = {{ p.value }}
+{%   for p in sonar_email_properties | default({}) | dict2items %}
+{{ 'sonar.' + p.key }} = {{ p.value }}
 {%   endfor %}
 {% endif %}
 
