@@ -148,10 +148,66 @@ sonar.notifications.delay={{ sonar_notifications_delay | default('60') }}
 sonar.path.data={{ sonar_data_dir | default('data') }}
 sonar.path.temp={{ sonar_temp_dir | default('temp') }}
 
-{% if __sonar_additional_properties is defined %}
+{% if __sonar_email_properties is defined %}
+#--------------------------------------------------------------------------------------------------
+# EMAIL PROPERIES
+{%   for p in __sonar_email_properties | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+{% endif %}
+
+# JACOCO PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_jacoco | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# ANALYSIS SCOPE PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_analysis_scope | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# EXTERNAL ANALYZERS PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_external_analyzer | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# HOUSE KEEPING PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_house_keeping | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# LANGUAGES PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_languages | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# SECURITY PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_security | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# TECHNICAL DEBT PROPERIES
+#--------------------------------------------------------------------------------------------------
+{%   for p in sonar_technical_debt | dict2items %}
+{{ p.key }} = {{ p.value }}
+{%   endfor %}
+
+# Server Base URL
+sonar.core.serverBaseURL = {{ sonar_server_base_url }}
+
+# Default Assignee Login
+sonar.issues.defaultAssigneeLogin = {{ sonar_default_assignee_login }}
+
+{% if sonar_additional_properties is defined %}
 #--------------------------------------------------------------------------------------------------
 # ADDITIONAL PROPERIES
-{%   for p in __sonar_additional_properties | dict2items %}
+{%   for p in sonar_additional_properties | dict2items %}
 {{ p.key }} = {{ p.value }}
 {%   endfor %}
 {% endif %}

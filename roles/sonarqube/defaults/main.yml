@@ -290,6 +290,34 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 #  smtp_username: "admin"
 #  smtp_password: "admin"
 
+# SonarQube Jacoco
+sonar_jacoco:
+  "coverage.jacoco.xmlReportPaths": ""
+
+# SonarQube Jacoco
+sonar_analysis_scope: {}
+
+# SonarQube External Analyzers
+sonar_external_analyzer: {}
+
+# SonarQube HouseKeeping
+sonar_house_keeping: {}
+
+# SonarQube Langages
+sonar_languages: {}
+
+# SonarQube Security
+sonar_security: {}
+
+# SonarQube Technical Debt
+sonar_technical_debt: {}
+
+# Server Base URL
+sonar_server_base_url: ""
+
+# Default Assignee Login
+sonar_default_assignee_login: "admin"
+
 #--------------------------------------------------------------------------------------------------
 # OTHERS
 
