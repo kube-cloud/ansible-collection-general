@@ -2,8 +2,8 @@
     "docs": "https://docs.ansible.com/ansible-core/2.15/dev_guide/testing/sanity/pep8.html", 
     "results": [
         {
-            "message": "The test `ansible-test sanity --test pep8` [[explain](https://docs.ansible.com/ansible-core/2.15/dev_guide/testing/sanity/pep8.html)] failed with 1 error:", 
-            "output": "plugins/lookup/haproxy/cert_lookup.py:48:161: E501: line too long (166 > 160 characters)"
+            "message": "The test `ansible-test sanity --test pep8` [[explain](https://docs.ansible.com/ansible-core/2.15/dev_guide/testing/sanity/pep8.html)] failed with 2 errors:", 
+            "output": "plugins/module_utils/sonarqube/client_settings.py:199:19: E271: multiple spaces after keyword\nplugins/module_utils/sonarqube/models.py:37:1: W391: blank line at end of file"
         }
     ], 
     "verified": false
