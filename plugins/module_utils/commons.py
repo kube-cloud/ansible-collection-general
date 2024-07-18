@@ -3,6 +3,8 @@ __metaclass__ = type
 
 from dataclasses import asdict
 from typing import Dict, Any
+import os
+import base64
 
 
 # Build and Return Payload from Dict Object
@@ -27,4 +29,18 @@ def filter_none(instance: Any) -> Dict[str, Any]:
 # Check if Http Status Code is OK
 def is_2xx(status_code: int):
 
+    # Build and Return Result Status
     return (200 <= status_code < 300)
+
+
+# Generate Random String
+def generate_random_string(length):
+
+    # Generate Random Bytes
+    random_bytes = os.urandom(length)
+
+    # Encode byte to String
+    random_string = base64.urlsafe_b64encode(random_bytes).decode('utf-8')
+
+    # Truncate string to the desired length and return result
+    return random_string[:length]

@@ -37,6 +37,12 @@ sonar_group: sonar
 # SonarQube system user
 sonar_user: sonar
 
+# SonarQube Default Admin Username
+sonar_default_admin_username: 'admin'
+
+# SonarQube Default Admin Password
+sonar_default_admin_password: 'admin'
+
 # SonarQube service LimitNOFILE parameter
 sonar_limitnofile: 65536
 
