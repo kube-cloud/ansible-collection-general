@@ -97,5 +97,7 @@ class LookupModule(LookupBase):
             "salt": salt_encoded,
             "password_single_line": password_single_line,
             "password_crypted": password_single_line.split('$')[2] + '$' + password_encoded,
-            "rounds": password_single_line.split('$')[2]
+            "rounds": password_single_line.split('$')[2],
+            "hash_derivation": "PBKDF2",
+            "hash_algoritm": "SHA512"
         }
