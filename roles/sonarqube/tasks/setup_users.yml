@@ -1,2 +1,46 @@
 ---
 
+# Generate Administrator Password Hash
+- name: "Generate Administrator Password Hash"
+  ansible.builtin.set_fact:
+    admin_password_hash: "{{ sonar_admin_password | pbkdf2_hash }}"
+
+# Ensure Admin Password is Updated
+- name: "Ensure Admin Password is Updated"
+  community.postgresql.postgresql_query:
+    login_host: "{{ sonar_db_host }}"
+    login_port: "{{ sonar_db_port }}"
+    login_user: "{{ sonar_db_user }}"
+    login_password: "{{ sonar_db_pass }}"
+    db: "{{ sonar_db_name }}"
+    autocommit: true
+    ca_cert: "{{ sonar_db_ca_cert | default(omit) }}"
+    connect_params: "{{ sonar_db_connect_params }}"
+    encoding: "{{ sonar_db_encoding | default(omit) }}"
+    ssl_cert: "{{ sonar_db_ssl_cert | default(omit) }}"
+    ssl_key: "{{ sonar_db_ssl_key | default(omit) }}"
+    ssl_mode: "{{ sonar_db_ssl_mode | default('prefer') }}"
+    trust_input: "{{ sonar_db_trust_input | default(true) }}"
+    query: >
+      update users set
+        crypted_password='{{ admin_password_hash['password_crypted'] }}',
+        salt='{{ admin_password_hash['salt'] }}',
+        hash_method='{{ admin_password_hash['hash_method'] }}',
+        reset_password='false',
+        user_local='true',
+      where login='{{ __sonar_admin_username }}'
+
+# Ensure Local Users are Presents
+- name: "Ensure Local Users are Presents"
+  kube_cloud.general.sonarqube.user:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    user_login: "{{ item.login }}"
+    user_password: "{{ item.password | default(omit) }}"
+    user_email: "{{ item.email | default(omit) }}"
+    user_local: "{{ item.local | default(true) }}"
+    user_name: "{{ item.name }}"
+    user_scm_accounts: "{{ item.scm_accounts | default([]) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ sonar_local_users }}"

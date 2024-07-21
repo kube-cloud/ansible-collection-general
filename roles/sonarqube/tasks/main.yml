@@ -75,3 +75,13 @@
   changed_when: sonar_version | string not in api_check_version.content
   notify: fail if expected sonar version not confirmed
   ignore_errors: "{{ ansible_check_mode }}"
+
+# Initialize Settings
+- include_tasks: setup_properties.yml
+
+# Initialize Users
+- include_tasks: setup_users.yml
+
+# Trigger Handler Execution
+- name: "flush handlers"
+  meta: flush_handlers

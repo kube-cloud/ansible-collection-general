@@ -1,0 +1,143 @@
+---
+
+# Ensure Email Properties are defined
+- name: "Ensure Email Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: "present"
+  loop: "{{ sonar_email | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure JACOCO Properties are defined
+- name: "Ensure JACOCO Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_jacoco | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Analysis Scope Properties are defined
+- name: "Ensure Analysis Scope Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_analysis_scope | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure External Analyzers Properties are defined
+- name: "Ensure External Analyzers Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_external_analyzer | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure House Keeping Properties are defined
+- name: "Ensure House Keeping Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_house_keeping | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Languages Properties are defined
+- name: "Ensure Languages Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_languages | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Security Properties are defined
+- name: "Ensure Security Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_security | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Technical Debt Properties are defined
+- name: "Ensure Technical Debt Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value.single_value | default(omit) }}"
+    values: "{{ item.value.multiple_value | default(omit) }}"
+    component: "{{ item.value.component | default(omit) }}"
+    state: "present"
+  loop: "{{ sonar_technical_debt | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Server Base URL Property is defined
+- name: "Ensure Server Base URL Property is defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "sonar.core.serverBaseURL"
+    value: "{{ sonar_server_base_url }}"
+    state: "present"
+  notify:
+    - "restart SonarQube service"
+
+# Ensure Default Assignee Property is defined
+- name: "Ensure Default Assignee Property is defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "sonar.issues.defaultAssigneeLogin"
+    value: "{{ sonar_default_assignee_login }}"
+    state: "present"
+  notify:
+    - "restart SonarQube service"

@@ -1,0 +1,45 @@
+DOCUMENTATION:
+  name: pbkdf2_hash
+  version_added: "1.0.0"
+  short_description: Generate PBKDF2 Hash
+  description:
+    - Used to Generate PBKDF2 Hash
+  requirements:
+    - requests
+  author: Jean-Jacques ETUNE NGI (@jetune) <jetune@kube-cloud.com>
+  options:
+    password:
+      description:
+        - The Source Password to Derive
+      required: true
+      type: str
+    salt:
+      description:
+        - The Salt Value
+      required: false
+      type: str
+      default: ''
+    rounds:
+      description:
+        - The Derivation Ieration Rounds
+      required: false
+      type: int
+      default: 100000
+
+
+EXAMPLES: |
+
+  # In Fact
+  - name: "Get Password Hash"
+    ansible.builtin.set_fact:
+      hash_pw: "{{ my_pass | pbkdf2_hash }}"
+
+  # In Vars
+  vars:
+    hash_pw: "{{ my_pass | pbkdf2_hash }}"
+
+
+RETURN:
+  _value:
+    description: Hash Password Structure
+    type: dict

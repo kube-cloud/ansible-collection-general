@@ -29,3 +29,9 @@ __sonar_plugin_baseurl: "{{ __sonar_distribution_url }}"
 
 # Define SonarQube Plugin Commercial Base URL
 __sonar_commercial_plugin_baseurl: "{{ __sonarsource_url }}/CommercialDistribution"
+
+# Define Admin Username
+__sonar_admin_username: "admin"
+
+# Sonarqube Base URL
+__sonarqube_base_url: "{{ sonarqube_scheme | default('http') }}://{{ sonarqube_hostname }}:{{ sonar_web_port }}"

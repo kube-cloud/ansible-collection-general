@@ -37,11 +37,18 @@ sonar_group: sonar
 # SonarQube system user
 sonar_user: sonar
 
-# SonarQube Default Admin Username
-sonar_default_admin_username: 'admin'
-
 # SonarQube Default Admin Password
-sonar_default_admin_password: 'admin'
+sonar_admin_password: 'admin'
+
+# Sonarqube Local users
+sonar_local_users: []
+#  - login: "user1"
+#    password: "pass1"
+#    email: "user1@localhost.com"
+#    name: "Jean-Jacques ETUNE NGI"
+#    scm_accounts:
+#      - "user1"
+#    state: "present"
 
 # SonarQube service LimitNOFILE parameter
 sonar_limitnofile: 65536
@@ -88,6 +95,10 @@ sonar_db_pass: ""
 # Set the sonar.jdbc.username and sonar.jdbc.password appropriately.
 #sonar_jdbc_url=jdbc:sqlserver://localhost;databaseName=sonar
 
+sonar_db_host: "localhost"
+sonar_db_port: 5432
+sonar_db_name: "sonarqube"
+sonar_db_connect_params: {}
 sonar_jdbc_url: ""
 
 # SonarQube JDBC maximum number of active connection
@@ -287,7 +298,6 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 # sonar_email:
 #  smtp_host: "smtp.mail.ovh.net"
 #  smtp_port: 465
-
 #  # Autorized : ssl, starttls
 #  smtp_secure_connection: "ssl" 
 #  smtp_from_address: "demo@server.com"
@@ -297,26 +307,61 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 #  smtp_password: "admin"
 
 # SonarQube Jacoco
-sonar_jacoco:
-  "coverage.jacoco.xmlReportPaths": ""
+sonar_jacoco: {}
+#  coverage.jacoco.xmlReportPaths:
+#    multi_value:
+#      - "/path/to/report/1"
+#      - "/path/to/report/2"
+#    component: "my_java_project"
 
-# SonarQube Jacoco
+
+# SonarQube Analysis Scrope
 sonar_analysis_scope: {}
+#  sonar.global.exclusions:
+#    multi_value:
+#      - "*.tfstate"
+#      - "target/**"
 
 # SonarQube External Analyzers
 sonar_external_analyzer: {}
+#  sonar.androidLint.reportPaths:
+#    multi_value:
+#      - "/path/to/report/1"
+#      - "/path/to/report/2"
+#  sonar.cs.roslyn.ignoreIssues:
+#    single_value: false
+#    component: "my_cs_project"
+
 
 # SonarQube HouseKeeping
 sonar_house_keeping: {}
+#  sonar.dbcleaner.branchesToKeepWhenInactive:
+#    multi_value:
+#      - "main"
+#      - "develop"
+#      - "master"
+#  sonar.dbcleaner.daysBeforeDeletingInactiveBranchesAndPRs:
+#    single_value: 30
 
 # SonarQube Langages
 sonar_languages: {}
+#  sonar.java.file.suffixes:
+#    multi_value:
+#      - ".java"
+#  sonar.java.enablePreview:
+#    single_value: true
 
 # SonarQube Security
 sonar_security: {}
+#  sonar.validateWebhooks:
+#    single_value: true
+#  sonar.allowPermissionManagementForProjectAdmins:
+#    single_value: true
 
 # SonarQube Technical Debt
 sonar_technical_debt: {}
+#  sonar.technicalDebt.ratingGrid:
+#    single_value: "0.05,0.1,0.2,0.5"
 
 # Server Base URL
 sonar_server_base_url: ""
@@ -354,3 +399,6 @@ sonar_clean_after_install: true
 
 # Disable Log
 disable_log: true
+
+# Sonarqube Hostname
+sonarqube_hostname: "{{ ansible_host }}"

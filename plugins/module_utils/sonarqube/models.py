@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from typing import List, Optional
+from typing import List, Optional, Type
 from dataclasses import dataclass, field
 
 
@@ -25,12 +25,96 @@ class Setting:
 
     def __post_init__(self):
 
-        # Check Algorithm
-        if not self.algorithm:
-            raise ValueError("The 'algorithm' field is required.")
+        # Check key
+        if not self.key:
+            raise ValueError("The 'key' field is required.")
 
     def __str__(self):
         """
         Returns a dictionary representation of the Balance object.
         """
         return str(self.__dict__)
+
+
+# User Definition
+@dataclass
+class User:
+    """
+    Represents SonarQube User.
+    Refer at : `https://next.sonarqube.com/sonarqube/web_api_v2#/users-management/users--post`
+
+    Attributes:
+        user_login (str): The SonarQube User login.
+        user_password (str): The SonarQube User password.
+        user_email (str): The SonarQube User Email.
+        user_name (str): The SonarQube User Name (Last and First Names).
+        user_local (bool) : The SonarQube User Local or External Status
+        user_scm_accounts (list): The SonarQube User SCM Accounts.
+    """
+    user_login: str
+    user_name: str
+    user_id: Optional[str] = None
+    user_email: Optional[str] = None
+    user_password: Optional[str] = None
+    user_local: Optional[bool] = None
+    user_scm_accounts: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+
+        # Check user_login
+        if not self.user_login:
+            raise ValueError("The 'user_login' field is required.")
+
+        # Check user_name
+        if not self.user_name:
+            raise ValueError("The 'user_name' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the Balance object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create User API Model.
+        """
+        return {
+            "email": self.user_email,
+            "local": self.user_local,
+            "login": self.user_login,
+            "name": self.user_name,
+            "password": self.user_password,
+            "scmAccounts": self.user_scm_accounts
+        }
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of User
+        if not isinstance(other, User):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "user_login", None) == getattr(other, "user_login", None) and
+            getattr(self, "user_name", None) == getattr(other, "user_name", None) and
+            getattr(self, "user_email", None) == getattr(other, "user_email", None) and
+            getattr(self, "user_password", None) == getattr(other, "user_password", None) and
+            set(getattr(self, "user_scm_accounts", [])) == set(getattr(other, "user_scm_accounts", []))
+        )
+
+    @classmethod
+    def from_api_response(cls: Type['User'], response: dict) -> 'User':
+        """
+        Returns a dictionary representation Compliant with Create User API Model.
+        """
+        return User(
+            user_id=response['id'],
+            user_login=response['login'],
+            user_name=response['name'],
+            user_email=response['email'],
+            user_local=response['local'],
+            user_scm_accounts=response['scmAccounts']
+        )

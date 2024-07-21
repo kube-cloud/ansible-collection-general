@@ -4,6 +4,9 @@
 # Tests Outputs
 **tests/output**
 
+# usage
+usage/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

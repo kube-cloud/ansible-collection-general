@@ -24,18 +24,18 @@ class SettingsClient:
     CONTENT_TYPE_JSON = "application/json"
 
     # Get Setting URI
-    GET_SETTING_URI = "/api/settings/values/?keys={key}"
+    GET_SETTING_URI = "api/settings/values?keys={key}"
 
     # Create Setting URI
-    CREATE_SETTING_URI = "/api/settings/set/?key={key}"
+    CREATE_SETTING_URI = "api/settings/set?key={key}"
 
     # Delete Setting URI
-    DELETE_SETTING_URI = "/api/settings/reset/?keys={key}"
+    DELETE_SETTING_URI = "api/settings/reset?keys={key}"
 
     # URL Format
     URL_TEMPLATE = "{base_url}/{uri}"
 
-    def __init__(self, base_url: str, api_version: str, auth):
+    def __init__(self, base_url: str, auth):
         """
         Initializes the SonarQube API Client with the given base URL and credentials.
 
@@ -79,11 +79,17 @@ class SettingsClient:
             requests.exceptions.HTTPError: If the API request fails.
         """
 
+        # If user login is None
+        if not key or len(key.strip()) == 0:
+
+            # Raise Value Exception
+            raise ValueError("[SettingClient] - Setting Retrieve : 'key' is required")
+
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.GET_SETTING_URI.format(
-                parent_type=key
+                key=key.strip()
             )
         )
 
@@ -91,9 +97,9 @@ class SettingsClient:
         if component and component.strip():
 
             # Add Component Parameter
-            url = "{url}&component={component}".format(
+            url = "{url}&component={cpnt}".format(
                 url=url,
-                component=component
+                cpnt=component
             )
 
         # Execute Request
@@ -103,10 +109,13 @@ class SettingsClient:
         if is_2xx(response.status_code):
 
             # Extract Settings
-            settings = response.json().settings
+            settings = response.json()['settings']
+
+            # Extract Secured Settings
+            secured_settings = response.json()['setSecuredSettings']
 
             # If Settings is empty
-            if len(settings) == 0:
+            if len(settings) == 0 and len(secured_settings) == 0:
 
                 # Raise Exception
                 raise HTTPError(
@@ -116,8 +125,23 @@ class SettingsClient:
                     )
                 )
 
+            # Result
+            result = {}
+
+            # If Settings is Not Empty
+            if len(settings) > 0:
+
+                # Initialize result with first Setting
+                result = result | settings[0]
+
+            # If secured_settings is Not Empty
+            if len(secured_settings) > 0:
+
+                # Initialize result with first Setting
+                result = result | {"secured_settings": True}
+
             # Return JSON
-            return settings[0]
+            return result
 
         else:
 
@@ -146,6 +170,16 @@ class SettingsClient:
 
             # Initialize to Empty
             values = []
+
+        # If Single and Multiple Values are specified
+        if len(value.strip()) > 0 and len(values) > 0:
+
+            # Raise Value Exception
+            raise ValueError("Both Single ({0}) and Multiple Values ({1}) are provided for the Key [{2}]".format(
+                value,
+                ", ".join(values),
+                key
+            ))
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
@@ -259,7 +293,7 @@ class SettingsClient:
             )
 
         # Execute Request
-        response = requests.delete(url, auth=self.auth)
+        response = requests.post(url, auth=self.auth)
 
         # If Object Exists
         if not is_2xx(response.status_code):

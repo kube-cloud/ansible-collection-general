@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from .client_settings import SettingsClient
+from .client_user import UserClient
 
 try:
     from requests.auth import HTTPBasicAuth     # type: ignore
@@ -55,8 +56,14 @@ class Client:
         # Initialize Basic Authentication
         self.auth = HTTPBasicAuth(username, password)
 
-        # Initialize Backend Client
+        # Initialize Settings Client
         self.settings = SettingsClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize User Client
+        self.user = UserClient(
             base_url=base_url,
             auth=self.auth
         )

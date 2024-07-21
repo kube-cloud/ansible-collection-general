@@ -10,12 +10,12 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: settings
+module: user
 version_added: "1.0.0"
-short_description: Manage Settings
+short_description: Manage Users
 description:
-  - Used toManage Sonarqube Settings
-  - Create, Update and Delete Sonarqube Settings
+  - Used to Manage Sonarqube Users
+  - Create, Update and Delete Sonarqube Users
 requirements:
   - requests
 author: Jean-Jacques ETUNE NGI (@jetune) <jetune@kube-cloud.com>
@@ -35,26 +35,35 @@ options:
       - The Sonarqube API Password
     required: true
     type: str
-  key:
+  user_login:
     description:
-      - The SonarQube Setting Key
+      - The SonarQube User Login
     required: true
     type: str
-  component:
+  user_password:
     description:
-      - The SonarQube Setting Component Key
+      - The SonarQube User Password
     required: false
-    default: ''
     type: str
-  value:
+  user_email:
     description:
-      - The SonarQube Setting Value
+      - The SonarQube User Email
     required: false
-    default: ''
     type: str
-  values:
+  user_name:
     description:
-      - The SonarQube Setting Values (For Multi-Value Field)
+      - The SonarQube User Name
+    required: false
+    type: str
+  user_local:
+    description:
+      - The SonarQube User Local Status
+    required: false
+    default: true
+    type: bool
+  user_scm_accounts:
+    description:
+      - The SonarQube User SCM Accounts
     required: false
     type: list
     elements: str
@@ -69,20 +78,23 @@ options:
 '''
 
 EXAMPLES = r'''
-- name: "Create SonarQube Setting"
-  kube_cloud.general.sonarqube.settings:
+- name: "Create SonarQube User"
+  kube_cloud.general.sonarqube.user:
     base_url: "http://localhost:9000"
     username: "admin"
     password: "admin"
-    component: "my_project"
-    key: "sonar.core.serverBaseURL"
-    value: 'https://sonarqube.yoursite.com'
+    user_login: "my_mogin"
+    user_password: "my_password"
+    user_email: "my_email@localhost.com"
+    user_name: "Lastname Firstname"
+    user_local: true
+    user_scm_accounts: ['github_account', 'gitlab_account']
     state: 'present'
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ...module_utils.sonarqube.client import SettingsClient, sonarqube_client
-from ...module_utils.sonarqube.models import Setting
+from ...module_utils.sonarqube.client import UserClient, sonarqube_client
+from ...module_utils.sonarqube.models import User
 from ...module_utils.commons import filter_none
 
 try:
@@ -92,13 +104,13 @@ except ImportError:
     IMPORTS_OK = False
 
 
-# Find and Return Settings
-def get_setting(client: SettingsClient, key: str, component: str):
+# Find and Return Users
+def get_user(client: UserClient, login: str) -> User:
 
     try:
 
         # Call Client
-        return client.get_setting(key=key, component=component)
+        return client.get_user(login=login)
 
     except HTTPError:
 
@@ -106,76 +118,60 @@ def get_setting(client: SettingsClient, key: str, component: str):
         return None
 
 
-# Update Setting
-def update_setting(module: AnsibleModule, client: SettingsClient, key: str, component: str, value: str, values: list):
+# Update User
+def update_user(module: AnsibleModule, client: UserClient, user: User) -> User:
 
     try:
 
         # Call Client
-        return client.update_setting(
-            key=key,
-            component=component,
-            value=value,
-            values=values
-        )
+        return client.update_user(user=user)
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Update Setting] - Failed Update SonarQube Setting (Key : {0}/{1} : [{2}]): {3}".format(
-                key,
-                component,
-                value,
+            msg="[Update User] - Failed Update SonarQube User [{0}]: {1}".format(
+                user,
                 api_error
             )
         )
 
 
-# Create Setting
-def create_setting(module: AnsibleModule, client: SettingsClient, key: str, component: str, value: str, values: list):
+# Create User
+def create_user(module: AnsibleModule, client: UserClient, user: User):
 
     try:
 
         # Call Client
-        return client.create_setting(
-            key=key,
-            component=component,
-            value=value,
-            values=values
-        )
+        return client.create_user(user=user)
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Create Setting] - Failed Create SonarQube Setting (Key : {0}/{1} : [{2}]): {3}".format(
-                key,
-                component,
-                value,
+            msg="[Create User] - Failed Create SonarQube User [{0}]: {1}".format(
+                user,
                 api_error
             )
         )
 
 
-# Delete Setting
-def delete_setting(module: AnsibleModule, client: SettingsClient, key: str, component: str):
+# Delete User
+def delete_user(module: AnsibleModule, client: UserClient, login: str):
 
     try:
 
         # Call Client
-        return client.delete_setting(
-            key=key,
-            component=component
+        return client.delete_user(
+            login=login
         )
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Delete Setting] - Failed Delete SonarQube Setting (Key : {0}/{1}): {2}".format(
-                key,
-                component,
+            msg="[Delete User] - Failed Delete SonarQube User (Login : {0}): {1}".format(
+                login,
                 api_error
             )
         )
@@ -189,10 +185,12 @@ def build_ansible_module():
         base_url=dict(type='str', required=True),
         username=dict(type='str', required=True, no_log=True),
         password=dict(type='str', required=True, no_log=True),
-        key=dict(type='str', required=True, no_log=True),
-        component=dict(type='str', required=False, default=''),
-        value=dict(type='str', required=False, default=''),
-        values=dict(type='list', elements='str', required=False, default=[]),
+        user_login=dict(type='str', required=True, no_log=True),
+        user_password=dict(type='str', required=False, default=None, no_log=True),
+        user_email=dict(type='str', required=False, default=None),
+        user_name=dict(type='str', required=False, default=None),
+        user_local=dict(type='bool', required=False, default=True),
+        user_scm_accounts=dict(type='list', elements='str', required=False, default=[]),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 
@@ -219,109 +217,92 @@ def build_client(module: AnsibleModule):
         )
 
 
-# Build Requested Setting from Configuration
-def build_requested_setting(params: dict) -> Setting:
+# Build Requested User from Configuration
+def build_requested_user(params: dict) -> User:
 
     # Base Parameters Name
     base_param_names = [
-        "key", "component", "value", "values"
+        "user_login", "user_password", "user_email",
+        "user_name", "user_local", "user_scm_accounts"
     ]
 
     # Build Requested Instance
-    setting = Setting(
+    return User(
         **{k: v for k, v in params.items() if v is not None and k in base_param_names}
     )
 
-    # Return Setting
-    return setting
-
 
 # Porcess Module Execution
-def run_module(module: AnsibleModule, client: SettingsClient):
+def run_module(module: AnsibleModule, client: UserClient):
 
     # Extract State
     state = module.params['state']
 
     # Build Requested Instance
-    setting = build_requested_setting(module.params)
+    user = build_requested_user(module.params)
 
     # Find Existing Instance
-    existing_setting = get_setting(
+    existing_user = get_user(
         client=client,
-        key=setting.key,
-        component=setting.component
+        login=user.user_login
     )
 
     # If Requested State is 'present' and Instance Already exists
-    if existing_setting and state == 'present':
-
-        # Compare
-        is_same = (
-            existing_setting.get('value', '') == getattr(setting, "value", '') and
-            existing_setting.get('component', '') == getattr(setting, "component", '') and
-            set(existing_setting.get('values', [])) == set(getattr(setting, "values", []))
-        )
+    if existing_user and state == 'present':
 
         # If Existing Instance match requested Instance
-        if is_same:
+        if existing_user == user:
 
             # Initialize response (No Change)
             module.exit_json(
-                msg="Setting [{0}] Not Changed".format(setting.key),
+                msg="User [{0}] Not Changed".format(user.user_login),
                 changed=False
             )
 
         # Update Existing Instance
-        update_setting(
+        update_user(
             module=module,
             client=client,
-            key=setting.key,
-            component=setting.component,
-            value=setting.value,
-            values=setting.values
+            user=user
         )
 
         # Module Response : Changed
         module.exit_json(
             changed=True,
-            instance=filter_none(setting),
-            msg="Setting [{0}] Has Been Updated".format(setting.key)
+            instance=filter_none(user),
+            msg="User [{0}] Has Been Updated".format(user)
         )
 
     # If Requested State is 'present' and Instance don't exists
-    if not existing_setting and state == 'present':
+    if not existing_user and state == 'present':
 
         # Create Instance
-        create_setting(
+        create_user(
             module=module,
             client=client,
-            key=setting.key,
-            component=setting.component,
-            value=setting.value,
-            values=setting.values
+            user=user
         )
 
         # Initialize Module Response : Changed
         module.exit_json(
             changed=True,
-            instance=filter_none(setting),
-            msg="[{0}] Has been Created".format(setting.key)
+            instance=filter_none(user),
+            msg="[{0}] Has been Created".format(user)
         )
 
     # If Requested State is 'absent' and Instance exists
-    if existing_setting and state == 'absent':
+    if existing_user and state == 'absent':
 
         # Delete Instance
-        delete_setting(
+        delete_user(
             module=module,
             client=client,
-            key=setting.key,
-            component=setting.component
+            login=user.user_login
         )
 
         # Exit Module
         module.exit_json(
-            msg="[{0}] Has been Deleted".format(setting.key),
+            msg="[{0}] Has been Deleted".format(user.user_login),
             changed=True
         )
 
@@ -330,7 +311,7 @@ def run_module(module: AnsibleModule, client: SettingsClient):
 
         # Initialize Response : No Change
         module.exit_json(
-            msg="[{0}] Not Found".format(setting.key),
+            msg="[{0}] Not Found".format(user.user_login),
             changed=False
         )
 
@@ -342,7 +323,7 @@ def main():
     module = build_ansible_module()
 
     # Build Client from Module
-    client = build_client(module).settings
+    client = build_client(module).user
 
     # Execute Module
     run_module(module, client)

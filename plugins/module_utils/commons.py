@@ -34,7 +34,7 @@ def is_2xx(status_code: int):
 
 
 # Generate Random String
-def generate_random_string(length):
+def generate_random_string(length: int = 16):
 
     # Generate Random Bytes
     random_bytes = os.urandom(length)
