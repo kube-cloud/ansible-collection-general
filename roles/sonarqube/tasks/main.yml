@@ -76,11 +76,11 @@
   notify: fail if expected sonar version not confirmed
   ignore_errors: "{{ ansible_check_mode }}"
 
-# Initialize Settings
-- include_tasks: setup_properties.yml
-
 # Initialize Users
 - include_tasks: setup_users.yml
+
+# Initialize Settings
+- include_tasks: setup_properties.yml
 
 # Trigger Handler Execution
 - name: "flush handlers"
