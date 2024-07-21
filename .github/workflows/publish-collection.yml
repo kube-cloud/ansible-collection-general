@@ -35,6 +35,7 @@ jobs:
           target-python-version: ${{ matrix.python-version }}
           testing-type: sanity
           pull-request-change-detection: true
+          pre-test-cmd: pip install passlib
 
   publish:
     needs: sanity
@@ -50,7 +51,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y jq yq
           python -m pip install --upgrade pip
-          pip install ansible
+          pip install ansible passlib
 
       - name: Create Collection Archive
         run: |

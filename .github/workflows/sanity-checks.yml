@@ -39,3 +39,4 @@ jobs:
           target-python-version: ${{ matrix.python-version }}
           testing-type: sanity
           pull-request-change-detection: true
+          pre-test-cmd: pip install passlib
