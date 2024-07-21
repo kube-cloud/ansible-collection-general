@@ -64,7 +64,7 @@
 
 - name: "Ensure target version matches"
   uri:
-    url: "http://{{ sonar_web_host }}:{{ sonar_web_port }}{{ sonar_web_context }}/api/server/version"
+    url: "http://{{ ansible_host }}:{{ sonar_web_port }}{{ sonar_web_context }}/api/server/version"
     method: GET
     return_content: yes
   register: api_check_version
