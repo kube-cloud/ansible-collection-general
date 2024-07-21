@@ -3,7 +3,7 @@
 # Generate Administrator Password Hash
 - name: "Generate Administrator Password Hash"
   ansible.builtin.set_fact:
-    admin_password_hash: "{{ sonar_admin_password | pbkdf2_hash }}"
+    admin_password_hash: "{{ sonar_admin_password | kube_cloud.general.pbkdf2_hash }}"
 
 # Ensure Admin Password is Updated
 - name: "Ensure Admin Password is Updated"

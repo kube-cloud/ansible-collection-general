@@ -17,7 +17,7 @@ except ImportError:
 
 
 # Define Hash Function
-def pbkdf2_hash(password: str, salt: str = None, rounds: int = 100000):
+def pbkdf2_hash(password: str, salt: str = '', rounds: int = 100000):
 
     # Check Passord Key
     if not password or password.strip() == '':

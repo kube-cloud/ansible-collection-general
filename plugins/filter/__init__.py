@@ -1,3 +1,3 @@
-from .pbkdf2_hash import FilterModule
+from .hash import FilterModule
 
-__all__ = ['pbkdf2_hash']
+__all__ = ['hash']
