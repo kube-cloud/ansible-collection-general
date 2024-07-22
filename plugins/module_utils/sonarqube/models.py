@@ -29,6 +29,20 @@ class Setting:
         if not self.key:
             raise ValueError("The 'key' field is required.")
 
+        # Compute Invalid Value
+        invalid_setting = (
+            self.value is None or
+            len(self.value.strip()) == 0 or
+            self.values is None or
+            len(self.values) == 0
+        )
+
+        # If Value and Values are Not Provided or Empty
+        if invalid_setting:
+            raise ValueError("No Value Provided for the Key [{0}]".format(
+                self.key
+            ))
+
     def __str__(self):
         """
         Returns a dictionary representation of the Balance object.
