@@ -25,6 +25,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_jacoco | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -40,6 +44,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_analysis_scope | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -55,6 +63,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_external_analyzer | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -70,6 +82,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_house_keeping | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -85,6 +101,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_languages | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -100,6 +120,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_security | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -115,6 +139,10 @@
     component: "{{ item.value.component | default(omit) }}"
     state: "present"
   loop: "{{ sonar_technical_debt | default({}) | dict2items }}"
+  when:
+    - item.key | default('') | trim | length > 0
+    - item.value.single_value | default('') | trim | length > 0
+    - item.value.multi_value | default([]) | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -127,6 +155,8 @@
     key: "sonar.core.serverBaseURL"
     value: "{{ sonar_server_base_url }}"
     state: "present"
+  when:
+    - sonar_server_base_url | default('') | trim | length > 0
   notify:
     - "restart SonarQube service"
 
@@ -139,5 +169,7 @@
     key: "sonar.issues.defaultAssigneeLogin"
     value: "{{ sonar_default_assignee_login }}"
     state: "present"
+  when:
+    - sonar_default_assignee_login | default('') | trim | length > 0
   notify:
     - "restart SonarQube service"
