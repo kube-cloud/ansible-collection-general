@@ -27,7 +27,7 @@
         salt='{{ admin_password_hash['salt'] }}',
         hash_method='{{ admin_password_hash['hash_method'] }}',
         reset_password='false',
-        user_local='true',
+        user_local='true'
       where login='{{ __sonar_admin_username }}'
 
 # Ensure Local Users are Presents
