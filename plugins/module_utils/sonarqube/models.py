@@ -31,10 +31,8 @@ class Setting:
 
         # Compute Invalid Value
         invalid_setting = (
-            self.value is None or
-            len(self.value.strip()) == 0 or
-            self.values is None or
-            len(self.values) == 0
+            (self.value is None or len(self.value.strip()) == 0) and
+            (self.values is None or len(self.values) == 0)
         )
 
         # If Value and Values are Not Provided or Empty
