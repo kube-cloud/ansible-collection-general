@@ -3,6 +3,9 @@ __metaclass__ = type
 
 from .client_settings import SettingsClient
 from .client_user import UserClient
+from .client_group import GroupClient
+from .client_group_global_permissions import GroupGlobalPermissionClient
+from .client_group_membership import GroupMembershipClient
 
 try:
     from requests.auth import HTTPBasicAuth     # type: ignore
@@ -64,6 +67,24 @@ class Client:
 
         # Initialize User Client
         self.user = UserClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize Group Client
+        self.group = GroupClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize Group Membership Client
+        self.membership = GroupMembershipClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize Group Membership Client
+        self.group_global_permission = GroupGlobalPermissionClient(
             base_url=base_url,
             auth=self.auth
         )

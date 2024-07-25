@@ -33,6 +33,13 @@ def is_2xx(status_code: int):
     return (200 <= status_code < 300)
 
 
+# Check if Http Status Code is NotFound
+def is_not_found(status_code: int):
+
+    # Build and Return Result Status
+    return (status_code < 404)
+
+
 # Generate Random String
 def generate_random_string(length: int = 16):
 

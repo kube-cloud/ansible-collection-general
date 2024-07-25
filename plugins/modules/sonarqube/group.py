@@ -10,12 +10,12 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: user
+module: group
 version_added: "1.0.0"
-short_description: Manage Users
+short_description: Manage Groups
 description:
-  - Used to Manage Sonarqube Users
-  - Create, Update and Delete Sonarqube Users
+  - Used to Manage Sonarqube Groups
+  - Create, Update and Delete Sonarqube Groups
 requirements:
   - requests
 author: Jean-Jacques ETUNE NGI (@jetune) <jetune@kube-cloud.com>
@@ -35,45 +35,27 @@ options:
       - The Sonarqube API Password
     required: true
     type: str
-  user_login:
+  group_name:
     description:
-      - The SonarQube User Login
+      - The SonarQube Group Name
     required: true
     type: str
-  user_password:
+  group_description:
     description:
-      - The SonarQube User Password
+      - The SonarQube Group Description
     required: false
     type: str
-  user_email:
+    default: ''
+  global_permissions:
     description:
-      - The SonarQube User Email
-    required: false
-    type: str
-  user_name:
-    description:
-      - The SonarQube User Name
-    required: false
-    type: str
-  user_local:
-    description:
-      - The SonarQube User Local Status
-    required: false
-    default: true
-    type: bool
-  user_scm_accounts:
-    description:
-      - The SonarQube User SCM Accounts
+      - The SonarQube Group Global Permissions
     required: false
     type: list
     elements: str
-    default: []
-  user_groups:
-    description:
-      - The SonarQube User Groups
-    required: false
-    type: list
-    elements: str
+    choices: [
+        'admin', 'gateadmin', 'profileadmin', 'provisioning',
+        'scan', 'applicationcreator'
+    ]
     default: []
   state:
     description:
@@ -85,24 +67,19 @@ options:
 '''
 
 EXAMPLES = r'''
-- name: "Create SonarQube User"
-  kube_cloud.general.sonarqube.user:
+- name: "Create SonarQube Group"
+  kube_cloud.general.sonarqube.group:
     base_url: "http://localhost:9000"
     username: "admin"
     password: "admin"
-    user_login: "my_mogin"
-    user_password: "my_password"
-    user_email: "my_email@localhost.com"
-    user_name: "Lastname Firstname"
-    user_local: true
-    user_scm_accounts: ['github_account', 'gitlab_account']
-    user_groups: ['admin']
+    group_name: "developers"
+    group_description: "KubeCloud Developer"
     state: 'present'
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ...module_utils.sonarqube.client import UserClient, GroupMembershipClient, sonarqube_client
-from ...module_utils.sonarqube.models import User
+from ...module_utils.sonarqube.client import GroupClient, sonarqube_client
+from ...module_utils.sonarqube.models import Group, GroupGlobalPermission
 from ...module_utils.commons import filter_none
 
 try:
@@ -112,13 +89,13 @@ except ImportError:
     IMPORTS_OK = False
 
 
-# Find and Return Users
-def get_user(client: UserClient, login: str) -> User:
+# Find and Return Groups
+def get_group(client: GroupClient, name: str) -> Group:
 
     try:
 
         # Call Client
-        return client.get_user(login=login)
+        return client.get_group(name=name)
 
     except HTTPError:
 
@@ -126,60 +103,60 @@ def get_user(client: UserClient, login: str) -> User:
         return None
 
 
-# Update User
-def update_user(module: AnsibleModule, client: UserClient, user: User) -> User:
+# Update Group
+def update_group(module: AnsibleModule, client: GroupClient, group: Group) -> Group:
 
     try:
 
         # Call Client
-        return client.update_user(user=user)
+        return client.update_group(group=group)
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Update User] - Failed Update SonarQube User [{0}]: {1}".format(
-                user,
+            msg="[Update Group] - Failed Update SonarQube Group [{0}]: {1}".format(
+                group,
                 api_error
             )
         )
 
 
-# Create User
-def create_user(module: AnsibleModule, client: UserClient, user: User):
+# Create Group
+def create_group(module: AnsibleModule, client: GroupClient, group: Group):
 
     try:
 
         # Call Client
-        return client.create_user(user=user)
+        return client.create_group(group=group)
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Create User] - Failed Create SonarQube User [{0}]: {1}".format(
-                user,
+            msg="[Create Group] - Failed Create SonarQube Group [{0}]: {1}".format(
+                group,
                 api_error
             )
         )
 
 
-# Delete User
-def delete_user(module: AnsibleModule, client: UserClient, login: str):
+# Delete Group
+def delete_group(module: AnsibleModule, client: GroupClient, name: str):
 
     try:
 
         # Call Client
-        return client.delete_user(
-            login=login
+        return client.delete_group(
+            name=name
         )
 
     except HTTPError as api_error:
 
         # Set Module Error
         module.fail_json(
-            msg="[Delete User] - Failed Delete SonarQube User (Login : {0}): {1}".format(
-                login,
+            msg="[Delete Group] - Failed Delete SonarQube Group (Name : {0}): {1}".format(
+                name,
                 api_error
             )
         )
@@ -193,13 +170,16 @@ def build_ansible_module():
         base_url=dict(type='str', required=True),
         username=dict(type='str', required=True, no_log=True),
         password=dict(type='str', required=True, no_log=True),
-        user_login=dict(type='str', required=True, no_log=True),
-        user_password=dict(type='str', required=False, default=None, no_log=True),
-        user_email=dict(type='str', required=False, default=None),
-        user_name=dict(type='str', required=False, default=None),
-        user_local=dict(type='bool', required=False, default=True),
-        user_scm_accounts=dict(type='list', elements='str', required=False, default=[]),
-        user_groups=dict(type='list', elements='str', required=False, default=[], no_log=False),
+        group_name=dict(type='str', required=True),
+        group_description=dict(type='str', required=False, default=''),
+        global_permissions=dict(
+            type='list',
+            elements='str',
+            required=False,
+            default=[],
+            no_log=False,
+            choices=GroupGlobalPermission.AVAILABLE_PERMISSIONS
+        ),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 
@@ -226,108 +206,91 @@ def build_client(module: AnsibleModule):
         )
 
 
-# Build Requested User from Configuration
-def build_requested_user(params: dict) -> User:
+# Build Requested Group from Configuration
+def build_requested_group(params: dict) -> Group:
 
     # Base Parameters Name
     base_param_names = [
-        "user_login", "user_password", "user_email",
-        "user_name", "user_local", "user_scm_accounts",
-        "user_groups"
+        "group_name", "group_description", "global_permissions"
     ]
 
     # Build Requested Instance
-    return User(
+    return Group(
         **{k: v for k, v in params.items() if v is not None and k in base_param_names}
     )
 
 
 # Porcess Module Execution
-def run_module(module: AnsibleModule, user_client: UserClient, membership_client: GroupMembershipClient):
+def run_module(module: AnsibleModule, client: GroupClient):
 
     # Extract State
     state = module.params['state']
 
     # Build Requested Instance
-    user = build_requested_user(module.params)
+    group = build_requested_group(module.params)
 
     # Find Existing Instance
-    existing_user = get_user(
-        client=user_client,
-        login=user.user_login
+    existing_group = get_group(
+        client=client,
+        name=group.group_name
     )
 
     # If Requested State is 'present' and Instance Already exists
-    if existing_user and state == 'present':
+    if existing_group and state == 'present':
 
         # If Existing Instance match requested Instance
-        if existing_user == user:
+        if existing_group == group:
 
             # Initialize response (No Change)
             module.exit_json(
-                msg="User [{0}] Not Changed".format(user.user_login),
+                msg="Group [{0}] Not Changed".format(group.group_name),
                 changed=False
             )
 
         # Update Existing Instance
-        update_user(
+        update_group(
             module=module,
-            client=user_client,
-            user=user
-        )
-
-        # Initialize Group Membership
-        membership_client.initialize_user_memberships(
-            user_login=user.user_login,
-            group_names=user.user_groups
+            client=client,
+            group=group
         )
 
         # Module Response : Changed
         module.exit_json(
             changed=True,
-            instance=filter_none(user),
-            msg="User [{0}] Has Been Updated".format(user)
+            instance=filter_none(group),
+            msg="Group [{0}] Has Been Updated".format(group)
         )
 
     # If Requested State is 'present' and Instance don't exists
-    if not existing_user and state == 'present':
+    if not existing_group and state == 'present':
 
         # Create Instance
-        create_user(
+        create_group(
             module=module,
-            client=user_client,
-            user=user
-        )
-
-        # Initialize Group Membership
-        membership_client.initialize_user_memberships(
-            user_login=user.user_login,
-            group_names=user.user_groups
+            client=client,
+            group=group
         )
 
         # Initialize Module Response : Changed
         module.exit_json(
             changed=True,
-            instance=filter_none(user),
-            msg="[{0}] Has been Created".format(user)
+            instance=filter_none(group),
+            msg="[{0}] Has been Created".format(group)
         )
 
     # If Requested State is 'absent' and Instance exists
-    if existing_user and state == 'absent':
-
-        # Initialize Group Membership
-        membership_client.delete_user_memberships(user_id=existing_user.user_id)
+    if existing_group and state == 'absent':
 
         # Delete Instance
-        delete_user(
+        delete_group(
             module=module,
-            client=user_client,
-            login=user.user_login
+            client=client,
+            name=group.group_name
         )
 
         # Exit Module
         module.exit_json(
-            msg="[{0}] Has been Deleted".format(user.user_login),
+            msg="[{0}] Has been Deleted".format(group.group_name),
             changed=True
         )
 
@@ -336,7 +299,7 @@ def run_module(module: AnsibleModule, user_client: UserClient, membership_client
 
         # Initialize Response : No Change
         module.exit_json(
-            msg="[{0}] Not Found".format(user.user_login),
+            msg="[{0}] Not Found".format(group.group_name),
             changed=False
         )
 
@@ -348,14 +311,10 @@ def main():
     module = build_ansible_module()
 
     # Build Client from Module
-    client = build_client(module)
+    client = build_client(module).group
 
     # Execute Module
-    run_module(
-        module=module,
-        user_client=client.user,
-        membership_client=client.membership
-    )
+    run_module(module, client)
 
 
 # If file is executed directly (pythos ovh_dns_record.py [not imported])

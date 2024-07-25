@@ -158,7 +158,7 @@ sonar_web_http_accept_count: 25
 # TCP port for incoming AJP connections. Disabled if value is -1. Disabled by default.
 sonar_ajp_port: -1
 
-#--------------------------------------------------------------------------------------------------
+
 # COMPUTE ENGINE
 # The Compute Engine is responsible for processing background tasks.
 # Compute Engine is executed in a dedicated Java process. Default heap size is 512Mb.
@@ -184,7 +184,7 @@ sonar_ce_java_additional_opts: ""
 #    Elasticsearch. The number of workers must suit your environment.
 sonar_ce_worker_count: 1
 
-#--------------------------------------------------------------------------------------------------
+
 # ELASTICSEARCH
 # Elasticsearch is used to facilitate fast and accurate information retrieval.
 # It is executed in a dedicated Java process. Default heap size is 1Gb.
@@ -196,7 +196,7 @@ sonar_ce_worker_count: 1
 #    is not enabled by default on your environment:
 #    http://docs.oracle.com/javase/8/docs/technotes/guides/vm/server-class.html
 #
-# sonar_search_java_opts: "-Xmx1G -Xms1G -Xss256k -Djava.net.preferIPv4Stack=true -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
+# "-Xmx1G -Xms1G -Xss256k -Djava.net.preferIPv4Stack=true -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
 sonar_search_java_opts: ""
 
 # Same as previous property, but allows to not repeat all other settings like -Xmx
@@ -211,8 +211,6 @@ sonar_search_port: 9001
 # As a security precaution, should NOT be set to a publicly available address.
 sonar_search_host: 127.0.0.1
 
-
-#--------------------------------------------------------------------------------------------------
 # UPDATE CENTER
 
 # Update Center requires an internet connection to request https://update.sonarsource.org
@@ -237,7 +235,6 @@ socks_proxy_port: ""
 http_proxy_user: ""
 http_proxy_password: ""
 
-#--------------------------------------------------------------------------------------------------
 # LOGGING
 
 # Level of logs. Supported values are INFO(default), DEBUG and TRACE (DEBUG + SQL + ES requests)
@@ -267,7 +264,7 @@ sonar_web_access_logs_enable: true
 # If SonarQube is behind a reverse proxy, then the following value allows to display the correct remote IP address:
 sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i{Referer}\" \"%i{User-Agent}\""
 
-#--------------------------------------------------------------------------------------------------
+
 # LDAP
 # Ldap configuration for ldap auth plugin
 # see https://docs.sonarqube.org/latest/instance-administration/delegated-auth/ for more details and description of properties
@@ -296,15 +293,15 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 # sonar_ldap:
 
 # sonar_email:
-#  smtp_host: "smtp.mail.ovh.net"
-#  smtp_port: 465
+#  email.smtp_host.secured: "smtp.mail.ovh.net"
+#  email.smtp_port.secured: 465
 #  # Autorized : ssl, starttls
-#  smtp_secure_connection: "ssl" 
-#  smtp_from_address: "demo@server.com"
-#  smtp_from_name: "SonarQube"
-#  smtp_email_prefix: "[SonarQube] "
-#  smtp_username: "admin"
-#  smtp_password: "admin"
+#  email.smtp_secure_connection.secured: "ssl" 
+#  email.from: "demo@server.com"
+#  email.fromName: "SonarQube"
+#  email.prefix: "[SonarQube] "
+#  email.smtp_username.secured: "admin"
+#  email.smtp_password.secured: "admin"
 
 # SonarQube Jacoco
 sonar_jacoco: {}
@@ -369,7 +366,7 @@ sonar_server_base_url: ""
 # Default Assignee Login
 sonar_default_assignee_login: "admin"
 
-#--------------------------------------------------------------------------------------------------
+
 # OTHERS
 
 # Delay in seconds between processing of notification queue. Default is 60 seconds.
@@ -378,7 +375,7 @@ sonar_notifications_delay: 60
 # Pass any custom Java properties to sonar.properties
 sonar_additional_properties: {}
 
-#--------------------------------------------------------------------------------------------------
+
 # DEVELOPMENT - only for developers
 # The following properties MUST NOT be used in production environments.
 
