@@ -13,6 +13,19 @@
   notify:
     - "restart SonarQube service"
 
+# Ensure SAML Properties are defined
+- name: "Ensure SAML Properties are defined"
+  kube_cloud.general.sonarqube.settings:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: "present"
+  loop: "{{ sonar_saml | default({}) | dict2items }}"
+  notify:
+    - "restart SonarQube service"
+
 # Ensure JACOCO Properties are defined
 - name: "Ensure JACOCO Properties are defined"
   kube_cloud.general.sonarqube.settings:
