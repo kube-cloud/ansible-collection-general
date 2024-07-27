@@ -292,6 +292,20 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 # default: undefined
 # sonar_ldap:
 
+# SonarQube SAML
+sonar_saml:
+#  sonar.auth.saml.enabled: true
+#  sonar.auth.saml.applicationId: SonarQube
+#  sonar.auth.saml.providerName: SAML PROVIDER
+#  sonar.auth.saml.providerId: http://www.okta.com/xxxxxxxxxxxxxxxxxxx
+#  sonar.auth.saml.loginUrl: https://organization.okta.com/app/organization_sonarqube/yyyyyyyyyyyy/sso/saml
+#  sonar.auth.saml.user.login: login
+#  sonar.auth.saml.user.name: full_name
+#  sonar.auth.saml.user.email: email
+#  sonar.auth.saml.group.name: groups
+
+
+# SonarQube Email Configuration
 # sonar_email:
 #  email.smtp_host.secured: "smtp.mail.ovh.net"
 #  email.smtp_port.secured: 465
