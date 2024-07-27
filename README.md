@@ -16,6 +16,15 @@ Name | Description
 [kube_cloud.general.haproxy.backend](https://github.com/kube-cloud/ansible-collection-general/blob/develop/docs/haproxy.backend_module.rst)| Install and Configure HA Proxy.
 [kube_cloud.general.haproxy.transaction](https://github.com/kube-cloud/ansible-collection-general/blob/develop/docs/haproxy.transaction_module.rst)| Validate and Cancel HA Proxy Dataplane API Transaction.
 
+## Build This Collection
+
+### Sanity Check
+
+```bash
+ansible-test sanity [--python X.Y]
+```
+
+
 ## Installing this collection
 
 ### Python Requirements

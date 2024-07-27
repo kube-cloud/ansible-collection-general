@@ -181,7 +181,7 @@ class GroupGlobalPermissionClient:
                 )
             )
 
-    def initialize_permissions(self, group_name: str = '', permission_names: list[str] = None) -> List[GroupGlobalPermission]:
+    def initialize_permissions(self, group_name: str = '', permission_names: List[str] = None) -> List[GroupGlobalPermission]:
         """
         Initialize Group Global Permissions from the Sonarqube API.
 

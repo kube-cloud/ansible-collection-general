@@ -248,7 +248,7 @@ class GroupMembershipClient:
                 id=membership.id
             )
 
-    def initialize_user_memberships(self, user_login: str = '', group_names: list[str] = None) -> List[GroupMembership]:
+    def initialize_user_memberships(self, user_login: str = '', group_names: List[str] = None) -> List[GroupMembership]:
         """
         Delete GroupMembership from the Sonarqube API.
 
