@@ -1,7 +1,7 @@
 ---
 
 # Ensure All Required Paths are Created
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure All Required Paths are Created"
+- name: "OVH::ROLE::ACME - Ensure All Required Paths are Created"
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -14,7 +14,7 @@
     - "{{ _acme_certificate_dir }}"
 
 # Ensure Certificate Private Key is Generated
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Private Key is Generated"
+- name: "OVH::ROLE::ACME - Ensure Private Key is Generated"
   community.crypto.openssl_privatekey:
     backup: "{{ acme_private_key_backup }}"
     cipher: "{{ acme_private_key_cipher }}"
@@ -39,11 +39,11 @@
     state: present
 
 # Ensure Certificate CSR is Generated
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Certificate CSR is Generated"
+- name: "OVH::ROLE::ACME - Ensure Certificate CSR is Generated"
   community.crypto.openssl_csr:
     backup: "{{ acme_csr_backup }}"
     common_name: "{{ _acme_cert_common_name }}"
-    subject_alt_name: "{{ _acme_san}}"
+    subject_alt_name: "{{ _acme_san }}"
     country_name: "{{ acme_csr_country_name }}"
     locality_name: "{{ acme_csr_locality_name }}"
     organization_name: "{{ acme_csr_organization_name }}"
@@ -65,7 +65,7 @@
     state: present
 
 # Ensure DNS Challenge Initialized from Content
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - (CONTENT) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
+- name: "OVH::ROLE::ACME - (CONTENT) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
   community.crypto.acme_certificate:
     account_key_content: "{{ acme_account_key_content }}"
     account_email: "{{ acme_account_email }}"
@@ -81,7 +81,7 @@
     - acme_account_key_content | length > 0
 
 # Ensure DNS Challenge Initialized from Path
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - (PATH) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
+- name: "OVH::ROLE::ACME - (PATH) Ensure DNS Challenge Initialized (CN : {{ _acme_cert_common_name }})"
   community.crypto.acme_certificate:
     account_key_src: "{{ acme_account_key_src }}"
     account_email: "{{ acme_account_email }}"
@@ -98,17 +98,17 @@
     - acme_account_key_src | length > 0
 
 # Define Fact to Get ACME DNS Challenge
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
+- name: "OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
   ansible.builtin.set_fact:
     acme_dns_challenge: "{{ acme_dns_challenge_content if acme_account_key_content | length > 0 else acme_dns_challenge_path }}"
 
 # Define Fact to Get Cert Days
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
+- name: "OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
   ansible.builtin.set_fact:
     acme_dns_challenge_cert_days: "{{ acme_dns_challenge.cert_days | default(-1) }}"
 
 # Define Fact to check if Challenge can continue
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
+- name: "OVH::ROLE::ACME - Define Fact to check if Challenge can continue"
   ansible.builtin.set_fact:
     acme_dns_challenge_enabled:  >-
       {{
@@ -119,10 +119,20 @@
         (acme_dns_challenge.challenge_data[_acme_cert_common_name][_acme_challenge] | default({}) | length > 0)
       }}
 
+# Print Some DNS Challenge Enabled Computed Vars
+- name: "OVH::ROLE::ACME - Print Some DNS Challenge Enabled Computed Vars"
+  ansible.builtin.debug:
+    msg: "{{ item.prefix_text }} : {{ item.value_text }}"
+  loop:
+    - { "prefix_text": "ACME DNS Challenge", "value_text": "{{ acme_dns_challenge }}" }
+    - { "prefix_text": "Existing Cert Days", "value_text": "{{ acme_dns_challenge_cert_days }}" }
+    - { "prefix_text": "Cert Remaining Days", "value_text": "{{ acme_certificate_remaining_days }}" }
+    - { "prefix_text": "Challenge Enabled", "value_text": "{{ acme_dns_challenge_enabled }}" }
+
 - block:
 
   # Ensure Already Generated Files are Cleaned
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Already Generated Files are Cleaned"
+  - name: "OVH::ROLE::ACME - Ensure Already Generated Files are Cleaned"
     ansible.builtin.file:
       path: "{{ item }}"
       state: absent
@@ -134,7 +144,7 @@
     ignore_errors: true
 
   # Ensure DNS Challenge Data Published on OVH
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure DNS Challenge Data Published on OVH"
+  - name: "OVH::ROLE::ACME - Ensure DNS Challenge Data Published on OVH"
     kube_cloud.general.ovh.dns_record:
       endpoint: "{{ ovh_endpoint }}"
       application_key: "{{ ovh_application_key }}"
@@ -147,7 +157,7 @@
       state: 'present'
 
   # Ensure DNS Challenge Validated and Certificates Created
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - [CONTENT] - Ensure DNS Challenge Validated and Certificates Created"
+  - name: "OVH::ROLE::ACME - [CONTENT] - Ensure DNS Challenge Validated and Certificates Created"
     community.crypto.acme_certificate:
       account_key_content: "{{ acme_account_key_content }}"
       account_email: "{{ acme_account_email }}"
@@ -165,7 +175,7 @@
       - acme_account_key_content | length > 0
 
   # Ensure DNS Challenge Validated and Certificates Created
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - [PATH] - Ensure DNS Challenge Validated and Certificates Created"
+  - name: "OVH::ROLE::ACME - [PATH] - Ensure DNS Challenge Validated and Certificates Created"
     community.crypto.acme_certificate:
       account_key_src: "{{ acme_account_key_src }}"
       account_email: "{{ acme_account_email }}"
@@ -184,12 +194,12 @@
         - acme_account_key_src | length > 0
 
   # Define Fact to Get ACME DNS Challenge
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
+  - name: "OVH::ROLE::ACME - Define Fact to Get ACME DNS Challenge"
     ansible.builtin.set_fact:
       domain_challenge_validated: "{{ domain_challenge_validated_content if acme_account_key_content | length > 0 else domain_challenge_validated_path }}"
 
   # Ensure DNS Challenge Data Removed from OVH
-  - name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure DNS Challenge Data Removed from OVH"
+  - name: "OVH::ROLE::ACME - Ensure DNS Challenge Data Removed from OVH"
     kube_cloud.general.ovh.dns_record:
       endpoint: "{{ ovh_endpoint }}"
       application_key: "{{ ovh_application_key }}"
@@ -206,20 +216,20 @@
   when: acme_dns_challenge_enabled
 
 # Ensure Fullchain Certificate and Private Key are Readed
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Readed"
+- name: "OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Readed"
   ansible.builtin.command: >
     cat {{ _acme_fullchain_cert_file }} {{ _acme_private_key_file }}
   register: _acme_fullchain_cert_key_content
 
 # Ensure Fullchain Certificate and Private Key are Stored
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Combined"
+- name: "OVH::ROLE::ACME - Ensure Fullchain Certificate and Private Key are Combined"
   ansible.builtin.copy:
     content: "{{ _acme_fullchain_cert_key_content.stdout }}"
     dest: "{{ _acme_fullchain_cert_key_file }}"
   changed_when: false
 
 # Ensure All Output Variables are Defined
-- name: "({{ ansible_distribution }}) OVH::ROLE::ACME - Ensure All Output Facts are Defined"
+- name: "OVH::ROLE::ACME - Ensure All Output Facts are Defined"
   ansible.builtin.set_fact:
     "{{ item.name }}": "{{ item.value }}"
   loop:
