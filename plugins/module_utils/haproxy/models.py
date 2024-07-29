@@ -499,6 +499,57 @@ class Backend:
             raise ValueError("[Backend] - The 'name' field is required.")
 
 
+# Stats Auth Configuration
+@dataclass
+class StatsAuth:
+    user: str
+    passwd: str
+
+    def __post_init__(self):
+
+        # Validate 'user' Field
+        if not self.user:
+            raise ValueError("[StatsAuth] - The 'user' field is required.")
+
+        # Validate 'passwd' Field
+        if not self.passwd:
+            raise ValueError("[StatsAuth] - The 'passwd' field is required.")
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of StatsAuth
+        if not isinstance(other, StatsAuth):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "user", '') == getattr(other, "user", '') and
+            getattr(self, "passwd", '') == getattr(other, "passwd", '')
+        )
+
+
+# Stats Options Configuration
+@dataclass
+class StatsOptions:
+    stats_admin: Optional[bool] = None
+    stats_admin_cond: Optional[ConditionType] = None
+    stats_admin_cond_test: Optional[str] = None
+    stats_auths: Optional[List[StatsAuth]] = field(default_factory=list)
+    stats_enable: Optional[bool] = None
+    stats_hide_version: Optional[bool] = None
+    stats_maxconn: Optional[int] = None
+    stats_realm: Optional[bool] = None
+    stats_realm_realm: Optional[str] = None
+    stats_refresh_delay: Optional[int] = None
+    stats_show_desc: Optional[str] = None
+    stats_show_legends: Optional[bool] = None
+    stats_show_modules: Optional[bool] = None
+    stats_show_node_name: Optional[str] = None
+    stats_uri_prefix: Optional[str] = None
+
+
 # Frontend Configuration
 @dataclass
 class Frontend:
@@ -525,6 +576,7 @@ class Frontend:
     error_files: Optional[List[ErrorFile]] = field(default_factory=list)
     compression: Optional[Compression] = None
     forwardfor: Optional[ForwardFor] = None
+    stats_options: Optional[StatsOptions] = None
 
     def __post_init__(self):
 
