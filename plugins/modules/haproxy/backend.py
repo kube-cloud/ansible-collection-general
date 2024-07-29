@@ -267,6 +267,11 @@ options:
       - The HA Proxy Backend Forwarded For
     required: false
     type: dict
+  stats_options:
+    description:
+      - The HA Proxy Backend Stats Options
+    required: false
+    type: dict
   transaction_id:
     description:
       - The Transaction ID (If need to execute action as part of API Transaction)
@@ -324,10 +329,10 @@ from ansible.module_utils.basic import AnsibleModule
 from ...module_utils.haproxy.client_backends import BackendClient
 from ...module_utils.haproxy.client import haproxy_client
 from ...module_utils.haproxy.models import Balance, Backend, HttpHealthCheck, HttpCheckParams
-from ...module_utils.haproxy.models import ForwardFor, PostgresSqlCheckParams
+from ...module_utils.haproxy.models import ForwardFor, PostgresSqlCheckParams, StatsOptions, StatsAuth
 from ...module_utils.haproxy.enums import ProxyProtocol, LoadBalancingAlgorithm, HealthCheckType
 from ...module_utils.haproxy.enums import MatchType, TimeoutStatus, ErrorStatus, OkStatus, HttpMethod
-from ...module_utils.haproxy.enums import AdvancedHealthCheckType, EnableDisableEnum
+from ...module_utils.haproxy.enums import AdvancedHealthCheckType, EnableDisableEnum, ConditionType
 from ...module_utils.haproxy.commons import filter_none
 
 try:
@@ -473,6 +478,7 @@ def build_ansible_module():
         srvtcpka_idle=dict(type='int', required=False),
         srvtcpka_intvl=dict(type='int', required=False),
         forwardfor=dict(type='dict', required=False, default=None),
+        stats_options=dict(type='dict', required=False, default=None),
         transaction_id=dict(type='str', required=False, default=''),
         force_reload=dict(type='bool', required=False, default=True),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
@@ -634,6 +640,60 @@ def build_requested_backend(params: dict) -> Backend:
             header=p_formwardfor.get('header', None),
             ifnone=p_formwardfor.get('ifnone', None)
         )
+
+    # Optional Initialization : stats_options
+    if params['stats_options']:
+
+        # Extract Stats Options
+        p_stats_options = params['stats_options']
+
+        # Base Parameters Name
+        stats_base_param_names = [
+            "stats_admin_cond",
+            "stats_admin_cond_test",
+            "stats_enable",
+            "stats_hide_version",
+            "stats_maxconn",
+            "stats_realm",
+            "stats_realm_realm",
+            "stats_refresh_delay",
+            "stats_show_desc",
+            "stats_show_legends",
+            "stats_show_modules",
+            "stats_show_node_name",
+            "stats_uri_prefix"
+        ]
+
+        # Build Requested Instance
+        backend.stats_options = StatsOptions(
+            **{k: v for k, v in p_stats_options.items() if v is not None and k in stats_base_param_names}
+        )
+
+        # Initialize Admin Condition
+        backend.stats_options.stats_admin_cond = ConditionType.create(
+            p_stats_options.get('stats_admin_cond', None)
+        )
+
+        # Optional Initialization : stats_auths
+        if p_stats_options['stats_auths']:
+
+            # Extract Stats Auth
+            p_stats_auths = p_stats_options['stats_auths']
+
+            # List if Stats Auths
+            stats_auths = []
+
+            # Iterate on List
+            for p_stats_auth in p_stats_auths:
+
+                # Append Auth
+                stats_auths.append(StatsAuth(
+                    user=p_stats_auth.get('user', None),
+                    passwd=p_stats_auth.get('passwd', None)
+                ))
+
+            # Add Auths to Frontend Stats Options
+            backend.stats_options.stats_auths = stats_auths
 
     # Return Backend
     return backend
