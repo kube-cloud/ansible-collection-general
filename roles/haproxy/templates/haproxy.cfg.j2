@@ -71,7 +71,7 @@ frontend {{ frontend.name | default('_EMPTY_NAME_') }}
 {% if frontend.mode != '' %}
     mode {{ frontend.mode }}
 {% endif %}
-{% if frontend.log_format != '' %}
+{% if frontend.log_format | default('') != '' %}
     log-format "{{ frontend.log_format }}"
 {% endif %}
 {% for capture in frontend.http_captures | default([]) %}
