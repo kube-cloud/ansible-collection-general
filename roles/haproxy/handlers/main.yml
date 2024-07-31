@@ -1,6 +1,6 @@
 ---
 # Ensure HA Proxy Enabled and Started
-- name: restart haproxy
-  service:
+- name: Restart haproxy
+  ansible.builtin.service:
     name: haproxy
     state: restarted

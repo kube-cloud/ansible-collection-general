@@ -45,7 +45,7 @@ defaults
     {{ global_error }}
 {% endfor %}
 
-{% if haproxy_stats.enabled | default(true) %}
+{% if haproxy_stats.enabled | default(false) %}
 # HA Proxy Statistics Front End
 frontend {{ haproxy_stats.name | default('stats') }}
     bind {{ haproxy_stats.bind | default('*:9000') }}
