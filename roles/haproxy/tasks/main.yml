@@ -71,6 +71,10 @@
     haproxy_version: "{{ _haproxy_version }}"
   notify: Restart haproxy
 
+# Ensure Handlers Flushed
+- name: "HAPROXY::INSTALL - Ensure Handlers Flushed"
+  ansible.builtin.meta: flush_handlers
+
 # Ensure HA Proxy Enabled and Started
 - name: "HAPROXY::INSTALL - Ensure HA Proxy Restarted"
   ansible.builtin.service:
