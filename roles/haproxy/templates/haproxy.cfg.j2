@@ -63,7 +63,6 @@ frontend {{ haproxy_stats.name | default('stats') }}
 {% endfor %}
 {% endif %}
 
-# Front End Configurations
 {% for frontend in haproxy_frontends | default([]) %}
 # {{ frontend.description | default('Frontend Configuration') }}
 frontend {{ frontend.name | default('_EMPTY_NAME_') }}
@@ -94,7 +93,6 @@ frontend {{ frontend.name | default('_EMPTY_NAME_') }}
 {% endfor %}
 {% endfor %}
 
-# Backends Configurations
 {% for backend in haproxy_backends | default([]) %}
 # {{ backend.description | default('Backend Configuration') }}
 backend {{ backend.name | default('_EMPTY_NAME_') }}
