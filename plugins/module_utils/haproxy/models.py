@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Type
 from dataclasses import dataclass, field
 from .enums import EnableDisableEnum, LoadBalancingAlgorithm, CookieType
 from .enums import WebSocketProtocol, HealthCheckType, TimeoutStatus
@@ -652,8 +652,59 @@ class Bind:
 class Acl:
     acl_name: str
     criterion: str
-    index: int
     value: str
+    index: Optional[int] = None
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of Acl
+        if not isinstance(other, Acl):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "acl_name", None) == getattr(other, "acl_name", None) and
+            getattr(self, "criterion", None) == getattr(other, "criterion", None) and
+            set(getattr(self, "value", None)) == set(getattr(other, "value", None))
+        )
+
+    @classmethod
+    def from_api_response(cls: Type['Acl'], response: dict) -> 'Acl':
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return Acl(
+            acl_name=response.get('acl_name', None),
+            criterion=response.get('criterion', None),
+            index=response.get('index', None),
+            value=response.get('value', None)
+        )
+
+    @classmethod
+    def from_api_responses(cls: Type['Acl'], responses: List[Dict[str, str]]) -> 'List[Acl]':
+        """
+        Returns a List of ACLs from API Responses.
+        """
+
+        # Initialize acls List
+        acls = []
+
+        # If No Responses Provided
+        if responses is None:
+
+            # Initialize Response
+            responses = []
+
+        # Iterate on Responses
+        for response in responses:
+
+            # Append ACL
+            acls.append(Acl.from_api_response(response=response))
+
+        # Return ACLs
+        return acls
 
 
 # Backend Switching Rule Configuration
@@ -661,5 +712,59 @@ class Acl:
 class BackendSwitchingRule:
     cond: ConditionType
     cond_test: str
-    index: int
     name: str
+    index: Optional[int] = None
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of BackendSwitchingRule
+        if not isinstance(other, BackendSwitchingRule):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "cond", None) == getattr(other, "cond", None) and
+            getattr(self, "cond_test", None) == getattr(other, "cond_test", None) and
+            set(getattr(self, "name", None)) == set(getattr(other, "name", None))
+        )
+
+    @classmethod
+    def from_api_response(cls: Type['BackendSwitchingRule'], response: dict) -> 'BackendSwitchingRule':
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return BackendSwitchingRule(
+            cond=response.get('cond', None),
+            cond_test=response.get('cond_test', None),
+            name=response.get('name', None),
+            index=response.get('index', None)
+        )
+
+    @classmethod
+    def from_api_responses(
+        cls: Type['BackendSwitchingRule'],
+        responses: List[Dict[str, str]]
+    ) -> 'List[BackendSwitchingRule]':
+        """
+        Returns a List of ACLs from API Responses.
+        """
+
+        # Initialize rules List
+        rules = []
+
+        # If No Responses Provided
+        if responses is None:
+
+            # Initialize Response
+            responses = []
+
+        # Iterate on Responses
+        for response in responses:
+
+            # Append ACL
+            rules.append(BackendSwitchingRule.from_api_response(response=response))
+
+        # Return rules
+        return rules

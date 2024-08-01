@@ -4,6 +4,7 @@ __metaclass__ = type
 from .commons import filter_none, is_2xx
 from .models import BackendSwitchingRule
 from .client_configurations import ConfigurationClient
+from typing import List
 
 try:
     import requests
@@ -82,7 +83,7 @@ class BackendSwitchingRuleClient:
             auth=auth
         )
 
-    def get_backend_switching_rules(self):
+    def get_backend_switching_rules(self, frontend_name: str) -> List[BackendSwitchingRule]:
         """
         Retrieves the list of BackendSwitchingRules from the HAProxy Data Plane API.
 
@@ -96,7 +97,10 @@ class BackendSwitchingRuleClient:
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
-            uri=self.BACKEND_SWITCHING_RULES_URI,
+            uri=self.GET_BACKEND_SWITCHING_RULE_URI_TEMPLATE.format(
+                besr_uri=self.BACKEND_SWITCHING_RULES_URI,
+                frontend_name=frontend_name
+            ),
             version=self.api_version
         )
 
@@ -107,7 +111,7 @@ class BackendSwitchingRuleClient:
         if is_2xx(response.status_code):
 
             # Return JSON
-            return response.json()
+            return BackendSwitchingRule.from_api_responses(response.json()['data'])
 
         else:
 

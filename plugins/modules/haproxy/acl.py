@@ -53,11 +53,6 @@ options:
         required: false
         default: true
         type: bool
-    acl_index:
-        description:
-        - The ACL Index
-        required: true
-        type: int
     acl_parent_name:
         description:
         - The ACL Parent Name
@@ -98,14 +93,13 @@ options:
 
 EXAMPLES = r'''
 - name: "Create HA Proxy ACL"
-  kube_cloud.haproxy.acl:
+  kube_cloud.general.haproxy.acl:
     base_url: "http://localhost:5555"
     username: "admin"
     password: "admin"
     api_version: "v2"
     transaction_id: "88a7601b-6960-4263-873f-b5e3040c80a2"
     force_reload: true
-    acl_index: 0
     acl_parent_name: "test_frontend"
     acl_parent_type: "frontend"
     acl_name: "is_example"
@@ -114,14 +108,13 @@ EXAMPLES = r'''
     state: 'present'
 
 - name: "Cancel HA Proxy Dataplane API Transaction"
-  kube_cloud.haproxy.acl:
+  kube_cloud.general.haproxy.acl:
     base_url: "http://localhost:5555"
     username: "admin"
     password: "admin"
     api_version: "v2"
     transaction_id: "88a7601b-6960-4263-873f-b5e3040c80a2"
     force_reload: true
-    acl_index: 0
     acl_parent_name: "test_frontend"
     acl_parent_type: "frontend"
     state: 'absent'
@@ -132,6 +125,7 @@ from ...module_utils.haproxy.client_acls import AclClient
 from ...module_utils.haproxy.models import Acl
 from ...module_utils.haproxy.client import haproxy_client
 from ...module_utils.haproxy.commons import filter_none
+from typing import List
 
 try:
     from requests import HTTPError  # type: ignore
@@ -156,6 +150,23 @@ def get_acl(client: AclClient, index: int, parent_name: str, parent_type: str):
 
         # Return None
         return None
+
+
+# Find and Return ACLs
+def get_acls(client: AclClient, parent_name: str, parent_type: str) -> List[Acl]:
+
+    try:
+
+        # Call Client
+        return client.get_acls(
+            parent_name=parent_name,
+            parent_type=parent_type
+        )
+
+    except HTTPError:
+
+        # Return None
+        return []
 
 
 # Update ACL
@@ -240,6 +251,33 @@ def delete_acl(module: AnsibleModule, client: AclClient, transaction_id: str, in
         )
 
 
+def find_acl_by_name(acls: List[Acl], name: str = ''):
+
+    # If List is Not Provided
+    if acls is None:
+
+        # Return None
+        return None
+
+    # Build name to compare
+    p_name = name.strip().lower()
+
+    # Iterate on ACLs List
+    for acl in acls:
+
+        # Build ACL Name
+        acl_name = acl.acl_name.strip().lower() if acl.acl_name else ''
+
+        # If Name are same
+        if acl_name == p_name:
+
+            # Return ACL
+            return acl
+
+    # Return None
+    return None
+
+
 # Instantiate Ansible Module
 def build_ansible_module():
 
@@ -251,7 +289,6 @@ def build_ansible_module():
         api_version=dict(type='str', required=False, default='v2'),
         transaction_id=dict(type='str', required=False, default=''),
         force_reload=dict(type='bool', required=False, default=True),
-        acl_index=dict(type='int', required=True),
         acl_parent_name=dict(type='str', required=True),
         acl_parent_type=dict(type='str', required=True, choices=['frontend', 'backend']),
         acl_name=dict(type='str', required=False, default=''),
@@ -290,7 +327,6 @@ def build_requested_acl(params: dict) -> Acl:
     return Acl(
         acl_name=params['acl_name'],
         criterion=params['acl_criterion'],
-        index=params['acl_index'],
         value=params['acl_value']
     )
 
@@ -316,13 +352,32 @@ def run_module(module: AnsibleModule, client: AclClient):
     # Build Requested Instance
     acl = build_requested_acl(module.params)
 
-    # Find Existing Instance
-    existing_instance = get_acl(
+    # Get Liste of ACLs
+    acls = get_acls(
         client=client,
-        index=acl.index,
         parent_name=acl_parent_name,
         parent_type=acl_parent_type
     )
+
+    # ACLs Size
+    acl_size = len(acls)
+
+    # Find Existing Instance
+    existing_instance = find_acl_by_name(
+        acls=acls,
+        name=acl.acl_name
+    )
+
+    # If Instance Exists
+    if existing_instance:
+
+        # Initialize Index
+        acl.index = existing_instance.index
+
+    else:
+
+        # Add Index
+        acl.index = (acl_size - 1) if acl_size > 0 else 0
 
     # If Requested State is 'present' and Instance Already exists
     if existing_instance and state == 'present':
@@ -338,6 +393,9 @@ def run_module(module: AnsibleModule, client: AclClient):
                     acl.acl_name,
                     acl.index
                 ),
+                instance=filter_none(acl),
+                acl_parent_name=acl_parent_name,
+                acl_parent_type=acl_parent_type,
                 changed=False
             )
 
@@ -419,7 +477,7 @@ def run_module(module: AnsibleModule, client: AclClient):
                 acl_parent_name,
                 acl_parent_type,
                 acl.acl_name,
-                acl.index
+                existing_instance.index
             )
         )
 
@@ -428,12 +486,14 @@ def run_module(module: AnsibleModule, client: AclClient):
 
         # Initialize Response : No Change
         module.exit_json(
-            msg="ACL Not Found [Parent : {0}/{1}, Name : {2}/{3}]".format(
+            msg="ACL Not Found [Parent : {0}/{1}, Name : {2}]".format(
                 acl_parent_name,
                 acl_parent_type,
-                acl.acl_name,
-                acl.index
+                acl.acl_name
             ),
+            instance=filter_none(acl),
+            acl_parent_name=acl_parent_name,
+            acl_parent_type=acl_parent_type,
             changed=False
         )
 

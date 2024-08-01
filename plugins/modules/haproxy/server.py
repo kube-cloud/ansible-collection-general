@@ -643,6 +643,9 @@ def run_module(module: AnsibleModule, client: ServerClient):
                     parent_type,
                     server.name
                 ),
+                instance=filter_none(server),
+                parent_name=parent_name,
+                parent_type=parent_type,
                 changed=False
             )
 
@@ -735,6 +738,9 @@ def run_module(module: AnsibleModule, client: ServerClient):
                 parent_type,
                 server.name
             ),
+            instance=filter_none(server),
+            parent_name=parent_name,
+            parent_type=parent_type,
             changed=False
         )
 

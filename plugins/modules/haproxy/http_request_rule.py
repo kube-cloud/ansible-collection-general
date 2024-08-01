@@ -623,7 +623,10 @@ def run_module(module: AnsibleModule, client: HttpRequestRuleClient):
                     parent_type,
                     rule.index
                 ),
-                changed=False
+                changed=False,
+                instance=filter_none(rule),
+                parent_name=parent_name,
+                parent_type=parent_type
             )
 
         # Update Existing Instance
@@ -715,7 +718,10 @@ def run_module(module: AnsibleModule, client: HttpRequestRuleClient):
                 parent_type,
                 rule.index
             ),
-            changed=False
+            changed=False,
+            instance=filter_none(rule),
+            parent_name=parent_name,
+            parent_type=parent_type
         )
 
 

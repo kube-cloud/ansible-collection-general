@@ -4,9 +4,11 @@ __metaclass__ = type
 from .commons import filter_none, is_2xx
 from .models import Acl
 from .client_configurations import ConfigurationClient
+from typing import List
 
 try:
     import requests
+    from requests.exceptions import HTTPError
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -26,6 +28,9 @@ class AclClient:
 
     # Acls URI
     ACLS_URI = "services/haproxy/configuration/acls"
+
+    # Get Acl By Name URI
+    GET_ACL_BY_NAME_URI = "{acl_uri}?parent_type={parent_type}&parent_name={parent_name}&acl_name={acl_name}"
 
     # Get Acl URI
     ACL_URI = "services/haproxy/configuration/acls/{index}"
@@ -82,7 +87,7 @@ class AclClient:
             auth=auth
         )
 
-    def get_acls(self):
+    def get_acls(self, parent_name: str, parent_type: str = 'backend') -> List[Acl]:
         """
         Retrieves the list of Acls from the HAProxy Data Plane API.
 
@@ -96,7 +101,11 @@ class AclClient:
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
-            uri=self.ACLS_URI,
+            uri=self.GET_ACL_URI_TEMPLATE.format(
+                acl_uri=self.ACLS_URI,
+                parent_type=parent_type,
+                parent_name=parent_name
+            ),
             version=self.api_version
         )
 
@@ -107,7 +116,65 @@ class AclClient:
         if is_2xx(response.status_code):
 
             # Return JSON
-            return response.json()
+            return Acl.from_api_responses(response.json()['data'])
+
+        else:
+
+            # Raise Exception
+            response.raise_for_status()
+
+    def get_acl_by_name(self, acl_name: str, parent_name: str, parent_type: str = 'backend') -> Acl:
+        """
+        Retrieves the details of given Acl (name) from the HAProxy Data Plane API.
+
+        Args:
+            name (str): The Name of the Acl to retrieve details for.
+            parent_name (str): The name of the Acl Parent
+            parent_type (str): The Type of the Acl Parent
+
+        Returns:
+            dict: Details of Acl in JSON format.
+
+        Raises:
+            requests.exceptions.HTTPError: If the API request fails.
+        """
+
+        # Build the Operation URL
+        url = self.URL_TEMPLATE.format(
+            base_url=self.base_url,
+            uri=self.GET_ACL_BY_NAME_URI.format(
+                acl_uri=self.ACLS_URI,
+                parent_type=parent_type,
+                parent_name=parent_name,
+                acl_name=acl_name
+            ),
+            version=self.api_version
+        )
+
+        # Execute Request
+        response = requests.get(url, auth=self.auth)
+
+        # If Object Exists
+        if is_2xx(response.status_code):
+
+            # Extract Datas
+            acls = response.json()['data']
+
+            # If List is empty
+            if len(acls) == 0:
+
+                # Raise Exception
+                raise HTTPError(
+                    "{code} - No ACL Found (Name : {acl_name}({parent_name}/{parent_type})".format(
+                        code="404",
+                        acl_name=acl_name,
+                        parent_name=parent_name,
+                        parent_type=parent_type
+                    )
+                )
+
+            # Return JSON
+            return Acl.from_api_response(acls[0])
 
         else:
 
@@ -317,7 +384,7 @@ class AclClient:
         if transaction_id and transaction_id.strip():
 
             # Initialize URI
-            create_acl_uri = self.ACL_URI_TEMPLATE_TX.format(
+            delete_acl_uri = self.ACL_URI_TEMPLATE_TX.format(
                 acl_uri=self.ACL_URI.format(index=index),
                 transaction_id=transaction_id,
                 parent_name=parent_name,
@@ -330,7 +397,7 @@ class AclClient:
             config_version = self.configuration.get_configuration_version()
 
             # Initialize URI
-            create_acl_uri = self.ACL_URI_TEMPLATE_VERSION.format(
+            delete_acl_uri = self.ACL_URI_TEMPLATE_VERSION.format(
                 acl_uri=self.ACL_URI.format(index=index),
                 config_version=config_version,
                 force_reload=force_reload,
@@ -341,7 +408,7 @@ class AclClient:
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
-            uri=create_acl_uri,
+            uri=delete_acl_uri,
             version=self.api_version
         )
 

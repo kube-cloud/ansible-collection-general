@@ -53,11 +53,6 @@ options:
         required: false
         default: true
         type: bool
-    rule_index:
-        description:
-        - The Backend Switching Rule Index
-        required: true
-        type: int
     rule_frontend:
         description:
         - The Backend Switching Rule Frontend
@@ -90,14 +85,13 @@ options:
 
 EXAMPLES = r'''
 - name: "Create HA Proxy Backend Switching Rule"
-  kube_cloud.haproxy.backend_switching_rule:
+  kube_cloud.general.haproxy.backend_switching_rule:
     base_url: "http://localhost:5555"
     username: "admin"
     password: "admin"
     api_version: "v2"
     transaction_id: "88a7601b-6960-4263-873f-b5e3040c80a2"
     force_reload: true
-    rule_index: 0
     rule_frontend: "test_frontend"
     rule_cond: "if"
     rule_cond_test: "is_exemple_acl"
@@ -105,14 +99,14 @@ EXAMPLES = r'''
     state: 'present'
 
 - name: "Delete HA Proxy Backend Switching Rule"
-  kube_cloud.haproxy.backend_switching_rule:
+  kube_cloud.general.haproxy.backend_switching_rule:
     base_url: "http://localhost:5555"
     username: "admin"
     password: "admin"
     api_version: "v2"
     transaction_id: "88a7601b-6960-4263-873f-b5e3040c80a2"
     force_reload: true
-    rule_index: 0
+    rule_name: 'test_rule'
     rule_frontend: "test_frontend"
     state: 'absent'
 '''
@@ -123,6 +117,7 @@ from ...module_utils.haproxy.models import BackendSwitchingRule
 from ...module_utils.haproxy.client import haproxy_client
 from ...module_utils.haproxy.enums import ConditionType
 from ...module_utils.haproxy.commons import filter_none
+from typing import List
 
 try:
     from requests import HTTPError  # type: ignore
@@ -146,6 +141,22 @@ def get_rule(client: BackendSwitchingRuleClient, index: int, frontend_name: str)
 
         # Return None
         return None
+
+
+# Find and Return BE Switching Rules
+def get_rules(client: BackendSwitchingRuleClient, frontend_name: str = '') -> List[BackendSwitchingRule]:
+
+    try:
+
+        # Call Client
+        return client.get_backend_switching_rules(
+            frontend_name=frontend_name.strip()
+        )
+
+    except HTTPError:
+
+        # Return None
+        return []
 
 
 # Update BE Switching Rule
@@ -226,6 +237,33 @@ def delete_rule(module: AnsibleModule, client: BackendSwitchingRuleClient, trans
         )
 
 
+def find_rule_by_name(rules: List[BackendSwitchingRule], name: str = '') -> BackendSwitchingRule:
+
+    # If List is Not Provided
+    if rules is None:
+
+        # Return None
+        return None
+
+    # Build name to compare
+    p_name = name.strip().lower()
+
+    # Iterate on rules List
+    for rule in rules:
+
+        # Build Rule Name
+        rule_name = rule.name.strip().lower() if rule.name else ''
+
+        # If Name are same
+        if rule_name == p_name:
+
+            # Return ACL
+            return rule
+
+    # Return None
+    return None
+
+
 # Instantiate Ansible Module
 def build_ansible_module():
 
@@ -237,7 +275,6 @@ def build_ansible_module():
         api_version=dict(type='str', required=False, default='v2'),
         transaction_id=dict(type='str', required=False, default=''),
         force_reload=dict(type='bool', required=False, default=True),
-        rule_index=dict(type='int', required=True),
         rule_frontend=dict(type='str', required=True),
         rule_cond=dict(type='str', required=False, choices=['if', 'unless']),
         rule_cond_test=dict(type='str', required=False),
@@ -275,7 +312,6 @@ def build_requested_rule(params: dict) -> BackendSwitchingRule:
     return BackendSwitchingRule(
         cond=ConditionType.create(params.get('rule_cond', None)),
         cond_test=params.get('rule_cond_test', None),
-        index=params.get('rule_index', 0),
         name=params.get('rule_name', None)
     )
 
@@ -298,12 +334,31 @@ def run_module(module: AnsibleModule, client: BackendSwitchingRuleClient):
     # Build Requested Instance
     rule = build_requested_rule(module.params)
 
-    # Find Existing Instance
-    existing_instance = get_rule(
+    # Get Liste of Rules
+    rules = get_rules(
         client=client,
-        index=rule.index,
         frontend_name=rule_frontend
     )
+
+    # Rules Size
+    rule_size = len(rules)
+
+    # Find Existing Instance
+    existing_instance = find_rule_by_name(
+        rules=rules,
+        name=rule.name
+    )
+
+    # If Instance Exists
+    if existing_instance:
+
+        # Initialize Index
+        rule.index = existing_instance.index
+
+    else:
+
+        # Add Index
+        rule.index = (rule_size - 1) if rule_size > 0 else 0
 
     # If Requested State is 'present' and Instance Already exists
     if existing_instance and state == 'present':
@@ -318,6 +373,8 @@ def run_module(module: AnsibleModule, client: BackendSwitchingRuleClient):
                     rule.name,
                     rule.index
                 ),
+                instance=filter_none(existing_instance),
+                frontend=rule_frontend,
                 changed=False
             )
 
@@ -404,6 +461,8 @@ def run_module(module: AnsibleModule, client: BackendSwitchingRuleClient):
                 rule.name,
                 rule.index
             ),
+            instance=filter_none(rule),
+            frontend=rule_frontend,
             changed=False
         )
 

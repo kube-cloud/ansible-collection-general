@@ -632,7 +632,10 @@ def run_module(module: AnsibleModule, client: BindClient):
             # Initialize response (No Change)
             module.exit_json(
                 msg="Bind [{0} - {1}/{2}] Not Changed".format(bind.name, parent_name, parent_type),
-                changed=False
+                changed=False,
+                parent_name=parent_name,
+                parent_type=parent_type,
+                instance=filter_none(bind)
             )
 
         # Update Existing Instance
@@ -696,7 +699,10 @@ def run_module(module: AnsibleModule, client: BindClient):
         # Exit Module
         module.exit_json(
             msg="Bind [{0} - {1}/{2}] Has Been Deleted".format(bind.name, parent_name, parent_type),
-            changed=True
+            changed=True,
+            parent_name=parent_name,
+            parent_type=parent_type,
+            instance=filter_none(bind)
         )
 
     # If Requested State is 'absent' and Instance don't exists
@@ -705,7 +711,10 @@ def run_module(module: AnsibleModule, client: BindClient):
         # Initialize Response : No Change
         module.exit_json(
             msg="Bind Not Found [{0} - {1}/{2}]".format(bind.name, parent_name, parent_type),
-            changed=False
+            changed=False,
+            parent_name=parent_name,
+            parent_type=parent_type,
+            instance=filter_none(bind)
         )
 
 

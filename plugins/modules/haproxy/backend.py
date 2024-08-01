@@ -729,6 +729,7 @@ def run_module(module: AnsibleModule, client: BackendClient):
             # Initialize response (No Change)
             module.exit_json(
                 msg="Backend [{0} - {1}] Not Changed".format(backend.name, backend.mode),
+                instance=filter_none(backend),
                 changed=False
             )
 
@@ -783,6 +784,7 @@ def run_module(module: AnsibleModule, client: BackendClient):
         # Exit Module
         module.exit_json(
             msg="[{0} - {1}] Has been Deleted".format(backend.name, backend.mode),
+            instance=filter_none(backend),
             changed=True
         )
 
@@ -792,6 +794,7 @@ def run_module(module: AnsibleModule, client: BackendClient):
         # Initialize Response : No Change
         module.exit_json(
             msg="[{0} - {1}] Not Found".format(backend.name, backend.mode),
+            instance=filter_none(backend),
             changed=False
         )
 

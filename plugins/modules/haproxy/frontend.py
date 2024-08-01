@@ -456,6 +456,7 @@ def run_module(module: AnsibleModule, client: FrontendClient):
             # Initialize response (No Change)
             module.exit_json(
                 msg="Frontend [{0} - {1}] Not Changed".format(frontend.name, frontend.mode),
+                instance=filter_none(frontend),
                 changed=False
             )
 
@@ -510,6 +511,7 @@ def run_module(module: AnsibleModule, client: FrontendClient):
         # Exit Module
         module.exit_json(
             msg="[{0} - {1}] Has been Deleted".format(frontend.name, frontend.mode),
+            instance=filter_none(frontend),
             changed=True
         )
 
@@ -519,6 +521,7 @@ def run_module(module: AnsibleModule, client: FrontendClient):
         # Initialize Response : No Change
         module.exit_json(
             msg="[{0} - {1}] Not Found".format(frontend.name, frontend.mode),
+            instance=filter_none(frontend),
             changed=False
         )
 
