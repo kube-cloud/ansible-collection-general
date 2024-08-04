@@ -289,12 +289,13 @@ sonar_web_access_logs_pattern: "%i{X-Forwarded-For} %l %u [%t] \"%r\" %s %b \"%i
 #     group_request: '(&(objectClass=groupOfNames)(member={dn}))'
 #     group_id_attribute: 'sAMAccountName'
 #
-# default: undefined
-# sonar_ldap:
+# Default: Disabled
+sonar_ldap:
+  enabled: false
 
 # SonarQube SAML
 sonar_saml:
-#  sonar.auth.saml.enabled: true
+  sonar.auth.saml.enabled: false
 #  sonar.auth.saml.applicationId: SonarQube
 #  sonar.auth.saml.providerName: SAML PROVIDER
 #  sonar.auth.saml.providerId: http://www.okta.com/xxxxxxxxxxxxxxxxxxx
