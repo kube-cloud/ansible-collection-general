@@ -2,7 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from .client_configurations import ConfigurationClient
-from .commons import is_2xx
+from ..commons import is_2xx
 
 try:
     import requests
