@@ -405,6 +405,7 @@ class AlmSettingsGithub:
     client_secret: str
     private_key: str
     webhook_secret: Optional[str] = None
+    new_key: Optional[str] = None
 
     def __post_init__(self):
 
@@ -449,7 +450,8 @@ class AlmSettingsGithub:
             "clientId": self.client_id,
             "clientSecret": self.client_secret,
             "privateKey": self.private_key,
-            "webhookSecret": self.webhook_secret
+            "webhookSecret": self.webhook_secret,
+            "newKey": self.new_key
         }
 
     @classmethod
