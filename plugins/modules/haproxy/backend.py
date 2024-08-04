@@ -333,7 +333,7 @@ from ...module_utils.haproxy.models import ForwardFor, PostgresSqlCheckParams, S
 from ...module_utils.haproxy.enums import ProxyProtocol, LoadBalancingAlgorithm, HealthCheckType
 from ...module_utils.haproxy.enums import MatchType, TimeoutStatus, ErrorStatus, OkStatus, HttpMethod
 from ...module_utils.haproxy.enums import AdvancedHealthCheckType, EnableDisableEnum, ConditionType
-from ...module_utils.haproxy.commons import filter_none
+from ...module_utils.commons import filter_none
 
 try:
     from requests import HTTPError  # type: ignore

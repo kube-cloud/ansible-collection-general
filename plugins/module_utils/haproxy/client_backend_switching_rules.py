@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from .commons import filter_none, is_2xx
+from ...module_utils.commons import filter_none, is_2xx
 from .models import BackendSwitchingRule
 from .client_configurations import ConfigurationClient
 from typing import List
