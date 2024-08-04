@@ -394,7 +394,7 @@ class IgnorePersist:
 # HTTP Request Rule Configuration
 @dataclass
 class HttpRequestRule:
-    index: int
+    index: Optional[int] = None
     type: Optional[HttpRequestRuleType] = None
     acl_file: Optional[str] = None
     acl_keyfmt: Optional[str] = None
@@ -438,6 +438,61 @@ class HttpRequestRule:
     return_content: Optional[str] = None
     return_content_type: Optional[str] = None
     return_status_code: Optional[int] = None
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of HttpRequestRule
+        if not isinstance(other, HttpRequestRule):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "type", None) == getattr(other, "type", None) and
+            getattr(self, "acl_file", None) == getattr(other, "acl_file", None) and
+            getattr(self, "acl_keyfmt", None) == getattr(other, "acl_keyfmt", None) and
+            getattr(self, "auth_realm", None) == getattr(other, "auth_realm", None) and
+            getattr(self, "bandwidth_limit_limit", None) == getattr(other, "bandwidth_limit_limit", None) and
+            getattr(self, "bandwidth_limit_name", None) == getattr(other, "bandwidth_limit_name", None) and
+            getattr(self, "bandwidth_limit_period", None) == getattr(other, "bandwidth_limit_period", None) and
+            getattr(self, "capture_id", None) == getattr(other, "capture_id", None) and
+            getattr(self, "capture_len", None) == getattr(other, "capture_len", None) and
+            getattr(self, "capture_sample", None) == getattr(other, "capture_sample", None) and
+            getattr(self, "cond", None) == getattr(other, "cond", None) and
+            getattr(self, "cond_test", None) == getattr(other, "cond_test", None) and
+            getattr(self, "deny_status", None) == getattr(other, "deny_status", None) and
+            getattr(self, "expr", None) == getattr(other, "expr", None) and
+            getattr(self, "hdr_format", None) == getattr(other, "hdr_format", None) and
+            getattr(self, "hdr_match", None) == getattr(other, "hdr_match", None) and
+            getattr(self, "hdr_method", None) == getattr(other, "hdr_method", None) and
+            getattr(self, "hdr_name", None) == getattr(other, "hdr_name", None) and
+            getattr(self, "hint_format", None) == getattr(other, "hint_format", None) and
+            getattr(self, "hint_name", None) == getattr(other, "hint_name", None) and
+            getattr(self, "log_level", None) == getattr(other, "log_level", None) and
+            getattr(self, "lua_action", None) == getattr(other, "lua_action", None) and
+            getattr(self, "lua_params", None) == getattr(other, "lua_params", None) and
+            getattr(self, "map_file", None) == getattr(other, "map_file", None) and
+            getattr(self, "map_keyfmt", None) == getattr(other, "map_keyfmt", None) and
+            getattr(self, "map_valuefmt", None) == getattr(other, "map_valuefmt", None) and
+            getattr(self, "mark_value", None) == getattr(other, "mark_value", None) and
+            getattr(self, "method_fmt", None) == getattr(other, "method_fmt", None) and
+            getattr(self, "nice_value", None) == getattr(other, "nice_value", None) and
+            getattr(self, "normalizer", None) == getattr(other, "normalizer", None) and
+            getattr(self, "normalizer_full", None) == getattr(other, "normalizer_full", None) and
+            getattr(self, "normalizer_strict", None) == getattr(other, "normalizer_strict", None) and
+            getattr(self, "path_fmt", None) == getattr(other, "path_fmt", None) and
+            getattr(self, "path_match", None) == getattr(other, "path_match", None) and
+            getattr(self, "protocol", None) == getattr(other, "protocol", None) and
+            getattr(self, "redir_code", None) == getattr(other, "redir_code", None) and
+            getattr(self, "redir_option", None) == getattr(other, "redir_option", None) and
+            getattr(self, "redir_type", None) == getattr(other, "redir_type", None) and
+            getattr(self, "redir_value", None) == getattr(other, "redir_value", None) and
+            getattr(self, "resolvers", None) == getattr(other, "resolvers", None) and
+            getattr(self, "return_content", None) == getattr(other, "return_content", None) and
+            getattr(self, "return_content_type", None) == getattr(other, "return_content_type", None) and
+            getattr(self, "return_status_code", None) == getattr(other, "return_status_code", None)
+        )
 
 
 # Stats Auth Configuration
@@ -667,7 +722,7 @@ class Acl:
         return (
             getattr(self, "acl_name", None) == getattr(other, "acl_name", None) and
             getattr(self, "criterion", None) == getattr(other, "criterion", None) and
-            set(getattr(self, "value", None)) == set(getattr(other, "value", None))
+            getattr(self, "value", None) == getattr(other, "value", None)
         )
 
     @classmethod
@@ -727,7 +782,7 @@ class BackendSwitchingRule:
         return (
             getattr(self, "cond", None) == getattr(other, "cond", None) and
             getattr(self, "cond_test", None) == getattr(other, "cond_test", None) and
-            set(getattr(self, "name", None)) == set(getattr(other, "name", None))
+            getattr(self, "name", None) == getattr(other, "name", None)
         )
 
     @classmethod
