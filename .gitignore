@@ -1,6 +1,8 @@
 # Any Generated Archive
 *.tar.gz
 
+.vscode*
+
 # Tests Outputs
 **tests/output**
 

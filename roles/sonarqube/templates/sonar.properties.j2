@@ -37,14 +37,14 @@ sonar.web.context={{ sonar_web_context }}
 sonar.web.port={{ sonar_web_port | default('9000') }}
 sonar.web.http.maxThreads={{ sonar_web_http_max_threads | default('50') }}
 sonar.web.http.minThreads={{ sonar_web_http_min_threads | default('5') }}
-sonar.web.http.acceptCount={{ sonar_web_http_accept_count | default('25') }}
+sonar.web.http.acceptCount={{ sonar_web_http_accept_count | default('25') }}
 sonar.ajp.port={{ sonar_ajp_port | default('-1') }}
 
 
-{%- if (sonar_ldap is defined) %}
+{%- if (sonar_ldap is defined and sonar_ldap.enabled | default(false) %}
 #--------------------------------------------------------------------------------------------------
 # LDAP AUTH
-sonar.security.realm=LDAP
+sonar.security.realm={{ sonar_ldap.realm | default('LDAP') }}
 sonar.authenticator.downcase={{ sonar_ldap.authenticator_downcase | default('false') }}
 ldap.url={{ sonar_ldap.url | mandatory }}
 {% if (sonar_ldap.bind_dn is defined) and (sonar_ldap.bind_dn | length > 0 ) %}
