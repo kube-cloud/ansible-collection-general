@@ -6,6 +6,7 @@ from ..commons import is_2xx
 try:
     import requests
     from requests.exceptions import HTTPError
+    from urllib.parse import quote
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -148,7 +149,14 @@ class SettingsClient:
             # Raise Exception
             response.raise_for_status()
 
-    def create_setting(self, key: str, component: str = '', value: str = '', values: list = None):
+    def create_setting(
+        self,
+        key: str,
+        component: str = '',
+        value: str = '',
+        values: list = None,
+        encode_parameters: bool = True
+    ):
         """
         Create a Setting on SonarQube API.
 
@@ -166,7 +174,7 @@ class SettingsClient:
         """
 
         # If Values is None
-        if values is None:
+        if values is None or len(values) == 0:
 
             # Initialize to Empty
             values = []
@@ -189,13 +197,22 @@ class SettingsClient:
             )
         )
 
+        # If Encode Parameter
+        if encode_parameters:
+
+            # Encode Value
+            value = quote(string=value.strip(), safe="")
+
+            # Encode Values
+            values = [quote(string=item, safe="") for item in values]
+
         # If Value is Provided
         if value and value.strip():
 
             # Add Component Parameter
             url = "{url}&value={value}".format(
                 url=url,
-                value=value.strip()
+                value=value
             )
 
         # If component is Provided
@@ -240,7 +257,14 @@ class SettingsClient:
             # Raise Exception
             response.raise_for_status()
 
-    def update_setting(self, key: str, component: str = '', value: str = '', values: list = None):
+    def update_setting(
+        self,
+        key: str,
+        component: str = '',
+        value: str = '',
+        values: list = None,
+        encode_parameters: bool = True
+    ):
         """
         Update a Setting on SonarQube API.
 
@@ -258,7 +282,13 @@ class SettingsClient:
         """
 
         # Call Create Setting
-        return self.create_setting(key=key, component=component, value=value, values=values)
+        return self.create_setting(
+            key=key,
+            component=component,
+            value=value,
+            values=values,
+            encode_parameters=encode_parameters
+        )
 
     def delete_setting(self, key: str, component: str = ''):
         """

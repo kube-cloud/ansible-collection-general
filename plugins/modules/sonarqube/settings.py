@@ -59,6 +59,12 @@ options:
     type: list
     elements: str
     default: []
+  encode_parameters:
+    description:
+      - The SonarQube Setting to indicate if Module encode Parameter
+    required: false
+    type: bool
+    default: true
   state:
     description:
       - The Transaction State
@@ -77,6 +83,7 @@ EXAMPLES = r'''
     component: "my_project"
     key: "sonar.core.serverBaseURL"
     value: 'https://sonarqube.yoursite.com'
+    encode_parameters: false
     state: 'present'
 '''
 
@@ -107,7 +114,15 @@ def get_setting(client: SettingsClient, key: str, component: str):
 
 
 # Update Setting
-def update_setting(module: AnsibleModule, client: SettingsClient, key: str, component: str, value: str, values: list):
+def update_setting(
+    module: AnsibleModule,
+    client: SettingsClient,
+    key: str,
+    component: str,
+    value: str,
+    values: list,
+    encode_parameters: bool
+):
 
     try:
 
@@ -116,7 +131,8 @@ def update_setting(module: AnsibleModule, client: SettingsClient, key: str, comp
             key=key,
             component=component,
             value=value,
-            values=values
+            values=values,
+            encode_parameters=encode_parameters
         )
 
     except HTTPError as api_error:
@@ -133,7 +149,15 @@ def update_setting(module: AnsibleModule, client: SettingsClient, key: str, comp
 
 
 # Create Setting
-def create_setting(module: AnsibleModule, client: SettingsClient, key: str, component: str, value: str, values: list):
+def create_setting(
+    module: AnsibleModule,
+    client: SettingsClient,
+    key: str,
+    component: str,
+    value: str,
+    values: list,
+    encode_parameters: bool
+):
 
     try:
 
@@ -142,7 +166,8 @@ def create_setting(module: AnsibleModule, client: SettingsClient, key: str, comp
             key=key,
             component=component,
             value=value,
-            values=values
+            values=values,
+            encode_parameters=encode_parameters
         )
 
     except HTTPError as api_error:
@@ -193,6 +218,7 @@ def build_ansible_module():
         component=dict(type='str', required=False, default=''),
         value=dict(type='str', required=False, default=''),
         values=dict(type='list', elements='str', required=False, default=[]),
+        encode_parameters=dict(type='bool', required=False, default=True, no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 
@@ -242,6 +268,9 @@ def run_module(module: AnsibleModule, client: SettingsClient):
     # Extract State
     state = module.params['state']
 
+    # Extract Encode Private Key
+    encode_parameters = module.params.get('encode_parameters', True)
+
     # Build Requested Instance
     setting = build_requested_setting(module.params)
 
@@ -278,7 +307,8 @@ def run_module(module: AnsibleModule, client: SettingsClient):
             key=setting.key,
             component=setting.component,
             value=setting.value,
-            values=setting.values
+            values=setting.values,
+            encode_parameters=encode_parameters
         )
 
         # Module Response : Changed
@@ -298,7 +328,8 @@ def run_module(module: AnsibleModule, client: SettingsClient):
             key=setting.key,
             component=setting.component,
             value=setting.value,
-            values=setting.values
+            values=setting.values,
+            encode_parameters=encode_parameters
         )
 
         # Initialize Module Response : Changed
