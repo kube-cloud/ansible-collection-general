@@ -124,7 +124,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ...module_utils.haproxy.client_acls import AclClient
 from ...module_utils.haproxy.models import Acl
 from ...module_utils.haproxy.client import haproxy_client
-from ...module_utils.haproxy.commons import filter_none
+from ...module_utils.commons import filter_none
 from typing import List
 
 try:

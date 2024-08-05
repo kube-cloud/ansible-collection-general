@@ -352,7 +352,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ...module_utils.haproxy.client_http_request_rules import HttpRequestRuleClient
 from ...module_utils.haproxy.models import HttpRequestRule
 from ...module_utils.haproxy.client import haproxy_client
-from ...module_utils.haproxy.commons import filter_none
+from ...module_utils.commons import filter_none
 from ...module_utils.haproxy.enums import HttpRequestRuleType, ConditionType, LogLevel
 from ...module_utils.haproxy.enums import HttpRequestRuleNormalizerType, IPProtocol, RedirectType
 

@@ -360,7 +360,7 @@ from ...module_utils.haproxy.client_binds import BindClient
 from ...module_utils.haproxy.client import haproxy_client
 from ...module_utils.haproxy.models import Bind
 from ...module_utils.haproxy.enums import Requirement, SSLVersion, FrontendLevel
-from ...module_utils.haproxy.commons import filter_none
+from ...module_utils.commons import filter_none
 
 try:
     from requests import HTTPError  # type: ignore

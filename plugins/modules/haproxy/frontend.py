@@ -177,7 +177,7 @@ from ...module_utils.haproxy.client_frontends import FrontendClient
 from ...module_utils.haproxy.client import haproxy_client
 from ...module_utils.haproxy.models import Frontend, ForwardFor, StatsOptions, StatsAuth
 from ...module_utils.haproxy.enums import ProxyProtocol, EnableDisableEnum, ConditionType
-from ...module_utils.haproxy.commons import filter_none
+from ...module_utils.commons import filter_none
 
 try:
     from requests import HTTPError  # type: ignore

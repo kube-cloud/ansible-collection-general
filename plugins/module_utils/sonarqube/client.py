@@ -6,6 +6,11 @@ from .client_user import UserClient
 from .client_group import GroupClient
 from .client_group_global_permissions import GroupGlobalPermissionClient
 from .client_group_membership import GroupMembershipClient
+from .client_alm_settings_github import AlmSettingsGithubClient
+from .client_alm_settings_gitlab import AlmSettingsGitlabClient
+from .client_alm_settings_azure import AlmSettingsAzureClient
+from .client_alm_settings_bitbucket import AlmSettingsBitbucketClient
+from .client_alm_settings_bitbucket_cloud import AlmSettingsBitbucketCloudClient
 
 try:
     from requests.auth import HTTPBasicAuth     # type: ignore
@@ -85,6 +90,36 @@ class Client:
 
         # Initialize Group Membership Client
         self.group_global_permission = GroupGlobalPermissionClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize ALM Settings Github Client
+        self.alm_settings_github = AlmSettingsGithubClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize ALM Settings Gitlab Client
+        self.alm_settings_gitlab = AlmSettingsGitlabClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize ALM Settings Azure Client
+        self.alm_settings_azure = AlmSettingsAzureClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize ALM Settings Bitbucket Client
+        self.alm_settings_bitbucket = AlmSettingsBitbucketClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize ALM Settings Bitbucket Cloud Client
+        self.alm_settings_bitbucket_cloud = AlmSettingsBitbucketCloudClient(
             base_url=base_url,
             auth=self.auth
         )

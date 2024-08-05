@@ -3,6 +3,7 @@ __metaclass__ = type
 
 from typing import List, Dict, Optional, Type
 from dataclasses import dataclass, field
+from .enums import DevOpsPlatform
 
 
 # Settings Configuration
@@ -27,7 +28,7 @@ class Setting:
 
         # Check key
         if not self.key:
-            raise ValueError("The 'key' field is required.")
+            raise ValueError("Setting : The 'key' field is required.")
 
         # Compute Invalid Value
         invalid_setting = (
@@ -372,4 +373,422 @@ class GroupGlobalPermission:
         return (
             getattr(self, "group_name", '') == getattr(other, "group_name", '') and
             getattr(self, "permission_name", '') == getattr(other, "permission_name", '')
+        )
+
+
+# ALM Github Settings
+@dataclass
+class AlmSettingsGithub:
+    """
+    Represents SonarQube ALM Settings for Github Integration.
+    Refer at : `http://next.sonarqube.com/sonarqube/web_api/api/alm_settings`
+
+    Attributes:
+        key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
+        url (str): The Github URL
+        app_id (str): The SonarQube ALM Setting Application ID.
+        client_id (str): The SonarQube ALM Setting Application Client ID.
+        client_secret (str): The SonarQube ALM Setting Application Client Secret.
+        private_key (str): The SonarQube ALM Setting Application Private Key.
+        app_id (str): The SonarQube ALM Setting Application ID.
+        webhook_secret (str): The SonarQube ALM Setting Webhook Secret
+    """
+
+    # Définir la constante pour application/json
+    DEVOPS_PLAFORM = DevOpsPlatform.GITHUB
+
+    # Fields
+    key: str
+    url: str
+    app_id: str
+    client_id: str
+    client_secret: str
+    private_key: str
+    webhook_secret: Optional[str] = None
+    new_key: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("AlmSettingsGithub : The 'key' field is required.")
+
+        # Check url
+        if not self.url:
+            raise ValueError("AlmSettingsGithub : The 'url' field is required.")
+
+        # Check app_id
+        if not self.app_id:
+            raise ValueError("AlmSettingsGithub : The 'app_id' field is required.")
+
+        # Check client_id
+        if not self.client_id:
+            raise ValueError("AlmSettingsGithub : The 'client_id' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return {
+            "key": self.key,
+            "url": self.url,
+            "appId": self.app_id,
+            "clientId": self.client_id,
+            "clientSecret": self.client_secret,
+            "privateKey": self.private_key,
+            "webhookSecret": self.webhook_secret,
+            "newKey": self.new_key
+        }
+
+    @classmethod
+    def from_api_response(cls: Type['AlmSettingsGithub'], response: dict) -> 'AlmSettingsGithub':
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return AlmSettingsGithub(
+            key=response.get('key', None),
+            url=response.get('url', None),
+            app_id=response.get('appId', None),
+            client_id=response.get('clientId', None),
+            client_secret=response.get('clientSecret', None),
+            private_key=response.get('privateKey', None),
+            webhook_secret=response.get('webhookSecret', None)
+        )
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of AlmSettingsGithub
+        if not isinstance(other, AlmSettingsGithub):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "key", '') == getattr(other, "key", '') and
+            getattr(self, "url", '') == getattr(other, "url", '') and
+            getattr(self, "app_id", '') == getattr(other, "app_id", '') and
+            getattr(self, "client_id", '') == getattr(other, "client_id", '') and
+            getattr(self, "client_secret", '') == getattr(other, "client_secret", '') and
+            getattr(self, "webhook_secret", '') == getattr(other, "webhook_secret", '')
+        )
+
+
+# ALM Gitlab Settings
+@dataclass
+class AlmSettingsGitlab:
+    """
+    Represents SonarQube ALM Settings for Gitlab Integration.
+    Refer at : `http://next.sonarqube.com/sonarqube/web_api/api/alm_settings`
+
+    Attributes:
+        key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
+        url (str): The Gitlab URL
+        personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
+    """
+
+    # Définir la constante pour application/json
+    DEVOPS_PLAFORM = DevOpsPlatform.GITLAB
+
+    # Fields
+    key: str
+    url: str
+    personal_access_token: str
+    new_key: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("AlmSettingsGitlab : The 'key' field is required.")
+
+        # Check url
+        if not self.url:
+            raise ValueError("AlmSettingsGitlab : The 'url' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return {
+            "key": self.key,
+            "url": self.url,
+            "personalAccessToken": self.personal_access_token
+        }
+
+    @classmethod
+    def from_api_response(cls: Type['AlmSettingsGitlab'], response: dict) -> 'AlmSettingsGitlab':
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return AlmSettingsGitlab(
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
+        )
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of AlmSettingsGitlab
+        if not isinstance(other, AlmSettingsGitlab):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "key", '') == getattr(other, "key", '') and
+            getattr(self, "url", '') == getattr(other, "url", '') and
+            getattr(self, "personal_access_token", '') == getattr(other, "personal_access_token", '')
+        )
+
+
+# ALM Azure Settings
+@dataclass
+class AlmSettingsAzure:
+    """
+    Represents SonarQube ALM Settings for Azure Integration.
+    Refer at : `http://next.sonarqube.com/sonarqube/web_api/api/alm_settings`
+
+    Attributes:
+        key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
+        url (str): The Azure URL
+        personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
+    """
+
+    # Définir la constante pour application/json
+    DEVOPS_PLAFORM = DevOpsPlatform.AZURE
+
+    # Fields
+    key: str
+    url: str
+    personal_access_token: str
+    new_key: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("AlmSettingsAzure : The 'key' field is required.")
+
+        # Check url
+        if not self.url:
+            raise ValueError("AlmSettingsAzure : The 'url' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return {
+            "key": self.key,
+            "url": self.url,
+            "personalAccessToken": self.personal_access_token
+        }
+
+    @classmethod
+    def from_api_response(cls: Type['AlmSettingsAzure'], response: dict) -> 'AlmSettingsAzure':
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return AlmSettingsAzure(
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
+        )
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of AlmSettingsAzure
+        if not isinstance(other, AlmSettingsAzure):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "key", '') == getattr(other, "key", '') and
+            getattr(self, "url", '') == getattr(other, "url", '') and
+            getattr(self, "personal_access_token", '') == getattr(other, "personal_access_token", '')
+        )
+
+
+# ALM Bitbucket Settings
+@dataclass
+class AlmSettingsBitbucket:
+    """
+    Represents SonarQube ALM Settings for Bitbucket Integration.
+    Refer at : `http://next.sonarqube.com/sonarqube/web_api/api/alm_settings`
+
+    Attributes:
+        key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
+        url (str): The Bitbucket URL
+        personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
+    """
+
+    # Définir la constante pour application/json
+    DEVOPS_PLAFORM = DevOpsPlatform.BITBUCKET
+
+    # Fields
+    key: str
+    url: str
+    personal_access_token: str
+    new_key: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("The 'key' field is required.")
+
+        # Check url
+        if not self.url:
+            raise ValueError("The 'url' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return {
+            "key": self.key,
+            "url": self.url,
+            "personalAccessToken": self.personal_access_token
+        }
+
+    @classmethod
+    def from_api_response(cls: Type['AlmSettingsBitbucket'], response: dict) -> 'AlmSettingsBitbucket':
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return AlmSettingsBitbucket(
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
+        )
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of AlmSettingsBitbucket
+        if not isinstance(other, AlmSettingsBitbucket):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "key", '') == getattr(other, "key", '') and
+            getattr(self, "url", '') == getattr(other, "url", '') and
+            getattr(self, "personal_access_token", '') == getattr(other, "personal_access_token", '')
+        )
+
+
+# ALM BitbucketCloud Settings
+@dataclass
+class AlmSettingsBitbucketCloud:
+    """
+    Represents SonarQube ALM Settings for BitbucketCloud Integration.
+    Refer at : `http://next.sonarqube.com/sonarqube/web_api/api/alm_settings`
+
+    Attributes:
+        key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
+        client_id (str): The SonarQube ALM Setting Application Client ID.
+        client_secret (str): The SonarQube ALM Setting Application Client Secret.
+        workspace (str): The SonarQube ALM Setting Application Workspace.
+    """
+
+    # Définir la constante pour application/json
+    DEVOPS_PLAFORM = DevOpsPlatform.BITBUCKET_CLOUD
+
+    # Fields
+    key: str
+    client_id: str
+    client_secret: str
+    workspace: str
+    new_key: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("The 'key' field is required.")
+
+        # Check client_id
+        if not self.client_id:
+            raise ValueError("The 'client_id' field is required.")
+
+        # Check workspace
+        if not self.workspace:
+            raise ValueError("The 'workspace' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    def to_api_json(self) -> dict:
+        """
+        Returns a dictionary representation Compliant with Create API Model.
+        """
+        return {
+            "key": self.key,
+            "clientId": self.client_id,
+            "clientSecret": self.client_secret,
+            "workspace": self.workspace
+        }
+
+    @classmethod
+    def from_api_response(cls: Type['AlmSettingsBitbucketCloud'], response: dict) -> 'AlmSettingsBitbucketCloud':
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return AlmSettingsBitbucketCloud(
+            key=response.get('key', None),
+            client_id=response.get('clientId', None),
+            client_secret=response.get('clientSecret', None),
+            workspace=response.get('workspace', None)
+        )
+
+    def __eq__(self, other):
+
+        # If Class is not Instance of AlmSettingsBitbucketCloud
+        if not isinstance(other, AlmSettingsBitbucketCloud):
+
+            # Return False
+            return False
+
+        # Return comparison
+        return (
+            getattr(self, "key", '') == getattr(other, "key", '') and
+            getattr(self, "client_id", '') == getattr(other, "client_id", '') and
+            getattr(self, "client_secret", '') == getattr(other, "client_secret", '') and
+            getattr(self, "workspace", '') == getattr(other, "workspace", '')
         )

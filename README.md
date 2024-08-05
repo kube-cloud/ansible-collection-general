@@ -21,7 +21,7 @@ Name | Description
 ### Sanity Check
 
 ```bash
-ansible-test sanity [--python X.Y]
+ansible-test sanity --python 3.8
 ```
 
 

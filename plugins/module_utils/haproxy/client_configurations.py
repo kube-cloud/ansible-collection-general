@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from .commons import is_2xx
+from ...module_utils.commons import is_2xx
 
 try:
     import requests
