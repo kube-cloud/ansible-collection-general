@@ -7,7 +7,7 @@ from ...module_utils.sonarqube.models import AlmSettingsBitbucketCloud
 try:
     import requests
     from requests.exceptions import HTTPError
-    from urllib.parse import urlencode
+    from urllib.parse import quote
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -29,10 +29,10 @@ class AlmSettingsBitbucketCloudClient:
     GET_ALL_SETTINGS_URI = "api/alm_settings/list_definitions"
 
     # Create Setting URI
-    CREATE_SETTING_URI = "api/alm_settings/create_gitlab?{parameters}"
+    CREATE_SETTING_URI = "api/alm_settings/create_bitbucketcloud?{parameters}"
 
     # Update Setting URI
-    UPDATE_SETTING_URI = "api/alm_settings/update_gitlab?{parameters}"
+    UPDATE_SETTING_URI = "api/alm_settings/update_bitbucketcloud?{parameters}"
 
     # Delete Setting URI
     DELETE_SETTING_URI = "api/alm_settings/delete?key={key}"
@@ -105,7 +105,7 @@ class AlmSettingsBitbucketCloudClient:
             settings = response.json().get(AlmSettingsBitbucketCloud.DEVOPS_PLAFORM.value, [])
 
             # Find Setting by Key
-            setting = next((setting for item in settings if item.get('key', '') == key.strip()), None)
+            setting = next((item for item in settings if item.get('key', '') == key.strip()), None)
 
             # If List is empty
             if setting is None:
@@ -126,7 +126,7 @@ class AlmSettingsBitbucketCloudClient:
             # Raise Exception
             response.raise_for_status()
 
-    def create_setting(self, setting: AlmSettingsBitbucketCloud = None) -> AlmSettingsBitbucketCloud:
+    def create_setting(self, setting: AlmSettingsBitbucketCloud = None, encode_parameters: bool = True) -> AlmSettingsBitbucketCloud:
         """
         Create a AlmSettingsBitbucketCloud on SonarQube API.
 
@@ -146,17 +146,19 @@ class AlmSettingsBitbucketCloudClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsBitbucketCloudClient] - creation : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
-
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # Build Parameter
+        parameter = "key={key}&clientId={client}&clientSecret={secret}&workspace={workspace}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            client=quote(string=setting.client_id, safe="") if encode_parameters else setting.client_id,
+            secret=quote(string=setting.client_secret, safe="") if encode_parameters else setting.client_secret,
+            workspace=quote(string=setting.workspace, safe="") if encode_parameters else setting.workspace
+        )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.CREATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 
@@ -177,7 +179,7 @@ class AlmSettingsBitbucketCloudClient:
             # Raise Exception
             response.raise_for_status()
 
-    def update_setting(self, setting: AlmSettingsBitbucketCloud = None) -> AlmSettingsBitbucketCloud:
+    def update_setting(self, setting: AlmSettingsBitbucketCloud = None, encode_parameters: bool = True) -> AlmSettingsBitbucketCloud:
         """
         Update a AlmSettingsBitbucketCloud on SonarQube API.
 
@@ -197,17 +199,28 @@ class AlmSettingsBitbucketCloudClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsBitbucketCloudClient] - Update : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
+        # Build Parameter
+        parameter = "key={key}&clientId={client}&clientSecret={secret}&workspace={workspace}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            client=quote(string=setting.client_id, safe="") if encode_parameters else setting.client_id,
+            secret=quote(string=setting.client_secret, safe="") if encode_parameters else setting.client_secret,
+            workspace=quote(string=setting.workspace, safe="") if encode_parameters else setting.workspace
+        )
 
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # If new_key is provided
+        if setting.new_key:
+
+            # Add New Key
+            parameter = "{parameter}&newKey={newKey}".format(
+                parameter=parameter,
+                newKey=quote(string=setting.new_key, safe="") if encode_parameters else setting.new_key
+            )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.UPDATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 

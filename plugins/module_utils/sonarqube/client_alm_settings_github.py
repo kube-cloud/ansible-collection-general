@@ -7,7 +7,7 @@ from .models import AlmSettingsGithub
 try:
     import requests
     from requests.exceptions import HTTPError
-    from urllib.parse import urlencode
+    from urllib.parse import quote
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -105,7 +105,7 @@ class AlmSettingsGithubClient:
             settings = response.json().get(AlmSettingsGithub.DEVOPS_PLAFORM.value, [])
 
             # Find Setting by Key
-            setting = next((setting for item in settings if item.get('key', '') == key.strip()), None)
+            setting = next((item for item in settings if item.get('key', '') == key.strip()), None)
 
             # If List is empty
             if setting is None:
@@ -126,7 +126,7 @@ class AlmSettingsGithubClient:
             # Raise Exception
             response.raise_for_status()
 
-    def create_setting(self, setting: AlmSettingsGithub = None) -> AlmSettingsGithub:
+    def create_setting(self, setting: AlmSettingsGithub = None, encode_parameters: bool = True) -> AlmSettingsGithub:
         """
         Create a AlmSettingsGithub on SonarQube API.
 
@@ -146,17 +146,30 @@ class AlmSettingsGithubClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsGithubClient] - creation : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
+        # Build Parameter
+        parameter = "key={key}&url={url}&appId={app}&clientId={cid}&clientSecret={secret}&privateKey={pkey}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            url=quote(string=setting.url, safe="") if encode_parameters else setting.url,
+            app=quote(string=setting.app_id, safe="") if encode_parameters else setting.app_id,
+            cid=quote(string=setting.client_id, safe="") if encode_parameters else setting.client_id,
+            secret=quote(string=setting.client_secret, safe="") if encode_parameters else setting.client_secret,
+            pkey=quote(string=setting.private_key, safe="") if encode_parameters else setting.private_key
+        )
 
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # If new_key is provided
+        if setting.new_key:
+
+            # Add New Key
+            parameter = "{parameter}&newKey={newKey}".format(
+                parameter=parameter,
+                newKey=quote(string=setting.new_key, safe="") if encode_parameters else setting.new_key
+            )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.CREATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 
@@ -177,7 +190,7 @@ class AlmSettingsGithubClient:
             # Raise Exception
             response.raise_for_status()
 
-    def update_setting(self, setting: AlmSettingsGithub = None) -> AlmSettingsGithub:
+    def update_setting(self, setting: AlmSettingsGithub = None, encode_parameters: bool = True) -> AlmSettingsGithub:
         """
         Update a AlmSettingsGithub on SonarQube API.
 
@@ -197,17 +210,30 @@ class AlmSettingsGithubClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsGithubClient] - Update : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
+        # Build Parameter
+        parameter = "key={key}&url={url}&appId={app}&clientId={cid}&clientSecret={secret}&privateKey={pkey}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            url=quote(string=setting.url, safe="") if encode_parameters else setting.url,
+            app=quote(string=setting.app_id, safe="") if encode_parameters else setting.app_id,
+            cid=quote(string=setting.client_id, safe="") if encode_parameters else setting.client_id,
+            secret=quote(string=setting.client_secret, safe="") if encode_parameters else setting.client_secret,
+            pkey=quote(string=setting.private_key, safe="") if encode_parameters else setting.private_key
+        )
 
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # If new_key is provided
+        if setting.new_key:
+
+            # Add New Key
+            parameter = "{parameter}&newKey={newKey}".format(
+                parameter=parameter,
+                newKey=quote(string=setting.new_key, safe="") if encode_parameters else setting.new_key
+            )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.UPDATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 

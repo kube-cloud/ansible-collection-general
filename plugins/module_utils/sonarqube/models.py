@@ -28,7 +28,7 @@ class Setting:
 
         # Check key
         if not self.key:
-            raise ValueError("The 'key' field is required.")
+            raise ValueError("Setting : The 'key' field is required.")
 
         # Compute Invalid Value
         invalid_setting = (
@@ -385,6 +385,7 @@ class AlmSettingsGithub:
 
     Attributes:
         key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
         url (str): The Github URL
         app_id (str): The SonarQube ALM Setting Application ID.
         client_id (str): The SonarQube ALM Setting Application Client ID.
@@ -425,14 +426,6 @@ class AlmSettingsGithub:
         if not self.client_id:
             raise ValueError("AlmSettingsGithub : The 'client_id' field is required.")
 
-        # Check client_secret
-        if not self.client_secret:
-            raise ValueError("AlmSettingsGithub : The 'client_secret' field is required.")
-
-        # Check private_key
-        if not self.private_key:
-            raise ValueError("AlmSettingsGithub : The 'private_key' field is required.")
-
     def __str__(self):
         """
         Returns a dictionary representation of the object.
@@ -460,13 +453,13 @@ class AlmSettingsGithub:
         Returns a dictionary representation Compliant with API Model.
         """
         return AlmSettingsGithub(
-            key=response['key'],
-            url=response['url'],
-            app_id=response['appId'],
-            client_id=response['clientId'],
-            client_secret=response['clientSecret'],
-            private_key=response['privateKey'],
-            webhook_secret=response['webhookSecret']
+            key=response.get('key', None),
+            url=response.get('url', None),
+            app_id=response.get('appId', None),
+            client_id=response.get('clientId', None),
+            client_secret=response.get('clientSecret', None),
+            private_key=response.get('privateKey', None),
+            webhook_secret=response.get('webhookSecret', None)
         )
 
     def __eq__(self, other):
@@ -497,6 +490,7 @@ class AlmSettingsGitlab:
 
     Attributes:
         key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
         url (str): The Gitlab URL
         personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
     """
@@ -508,20 +502,17 @@ class AlmSettingsGitlab:
     key: str
     url: str
     personal_access_token: str
+    new_key: Optional[str] = None
 
     def __post_init__(self):
 
         # Check key
         if not self.key:
-            raise ValueError("The 'key' field is required.")
+            raise ValueError("AlmSettingsGitlab : The 'key' field is required.")
 
         # Check url
         if not self.url:
-            raise ValueError("The 'url' field is required.")
-
-        # Check personal_access_token
-        if not self.personal_access_token:
-            raise ValueError("The 'personal_access_token' field is required.")
+            raise ValueError("AlmSettingsGitlab : The 'url' field is required.")
 
     def __str__(self):
         """
@@ -545,9 +536,9 @@ class AlmSettingsGitlab:
         Returns a dictionary representation Compliant with API Model.
         """
         return AlmSettingsGitlab(
-            key=response['key'],
-            url=response['url'],
-            personal_access_token=response['personalAccessToken']
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
         )
 
     def __eq__(self, other):
@@ -575,6 +566,7 @@ class AlmSettingsAzure:
 
     Attributes:
         key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
         url (str): The Azure URL
         personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
     """
@@ -586,20 +578,17 @@ class AlmSettingsAzure:
     key: str
     url: str
     personal_access_token: str
+    new_key: Optional[str] = None
 
     def __post_init__(self):
 
         # Check key
         if not self.key:
-            raise ValueError("The 'key' field is required.")
+            raise ValueError("AlmSettingsAzure : The 'key' field is required.")
 
         # Check url
         if not self.url:
-            raise ValueError("The 'url' field is required.")
-
-        # Check personal_access_token
-        if not self.personal_access_token:
-            raise ValueError("The 'personal_access_token' field is required.")
+            raise ValueError("AlmSettingsAzure : The 'url' field is required.")
 
     def __str__(self):
         """
@@ -623,9 +612,9 @@ class AlmSettingsAzure:
         Returns a dictionary representation Compliant with API Model.
         """
         return AlmSettingsAzure(
-            key=response['key'],
-            url=response['url'],
-            personal_access_token=response['personalAccessToken']
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
         )
 
     def __eq__(self, other):
@@ -653,6 +642,7 @@ class AlmSettingsBitbucket:
 
     Attributes:
         key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
         url (str): The Bitbucket URL
         personal_access_token (str): The SonarQube ALM Setting Personal Access Token.
     """
@@ -664,6 +654,7 @@ class AlmSettingsBitbucket:
     key: str
     url: str
     personal_access_token: str
+    new_key: Optional[str] = None
 
     def __post_init__(self):
 
@@ -674,10 +665,6 @@ class AlmSettingsBitbucket:
         # Check url
         if not self.url:
             raise ValueError("The 'url' field is required.")
-
-        # Check personal_access_token
-        if not self.personal_access_token:
-            raise ValueError("The 'personal_access_token' field is required.")
 
     def __str__(self):
         """
@@ -701,9 +688,9 @@ class AlmSettingsBitbucket:
         Returns a dictionary representation Compliant with API Model.
         """
         return AlmSettingsBitbucket(
-            key=response['key'],
-            url=response['url'],
-            personal_access_token=response['personalAccessToken']
+            key=response.get('key', None),
+            url=response.get('url', None),
+            personal_access_token=response.get('personalAccessToken', None)
         )
 
     def __eq__(self, other):
@@ -731,6 +718,7 @@ class AlmSettingsBitbucketCloud:
 
     Attributes:
         key (str): The SonarQube ALM Setting key.
+        new_key (str): The SonarQube ALM Setting New key.
         client_id (str): The SonarQube ALM Setting Application Client ID.
         client_secret (str): The SonarQube ALM Setting Application Client Secret.
         workspace (str): The SonarQube ALM Setting Application Workspace.
@@ -744,6 +732,7 @@ class AlmSettingsBitbucketCloud:
     client_id: str
     client_secret: str
     workspace: str
+    new_key: Optional[str] = None
 
     def __post_init__(self):
 
@@ -754,10 +743,6 @@ class AlmSettingsBitbucketCloud:
         # Check client_id
         if not self.client_id:
             raise ValueError("The 'client_id' field is required.")
-
-        # Check client_secret
-        if not self.client_secret:
-            raise ValueError("The 'client_secret' field is required.")
 
         # Check workspace
         if not self.workspace:
@@ -786,10 +771,10 @@ class AlmSettingsBitbucketCloud:
         Returns a dictionary representation Compliant with API Model.
         """
         return AlmSettingsBitbucketCloud(
-            key=response['key'],
-            client_id=response['clientId'],
-            client_secret=response['clientSecret'],
-            workspace=response['workspace']
+            key=response.get('key', None),
+            client_id=response.get('clientId', None),
+            client_secret=response.get('clientSecret', None),
+            workspace=response.get('workspace', None)
         )
 
     def __eq__(self, other):

@@ -7,7 +7,7 @@ from ...module_utils.sonarqube.models import AlmSettingsGitlab
 try:
     import requests
     from requests.exceptions import HTTPError
-    from urllib.parse import urlencode
+    from urllib.parse import quote
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -105,7 +105,7 @@ class AlmSettingsGitlabClient:
             settings = response.json().get(AlmSettingsGitlab.DEVOPS_PLAFORM.value, [])
 
             # Find Setting by Key
-            setting = next((setting for item in settings if item.get('key', '') == key.strip()), None)
+            setting = next((item for item in settings if item.get('key', '') == key.strip()), None)
 
             # If List is empty
             if setting is None:
@@ -126,7 +126,7 @@ class AlmSettingsGitlabClient:
             # Raise Exception
             response.raise_for_status()
 
-    def create_setting(self, setting: AlmSettingsGitlab = None) -> AlmSettingsGitlab:
+    def create_setting(self, setting: AlmSettingsGitlab = None, encode_parameters: bool = True) -> AlmSettingsGitlab:
         """
         Create a AlmSettingsGitlab on SonarQube API.
 
@@ -146,17 +146,18 @@ class AlmSettingsGitlabClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsGitlabClient] - creation : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
-
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # Build Parameter
+        parameter = "key={key}&url={url}&personalAccessToken={token}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            url=quote(string=setting.url, safe="") if encode_parameters else setting.url,
+            token=quote(string=setting.personal_access_token, safe="") if encode_parameters else setting.personal_access_token
+        )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.CREATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 
@@ -177,7 +178,7 @@ class AlmSettingsGitlabClient:
             # Raise Exception
             response.raise_for_status()
 
-    def update_setting(self, setting: AlmSettingsGitlab = None) -> AlmSettingsGitlab:
+    def update_setting(self, setting: AlmSettingsGitlab = None, encode_parameters: bool = True) -> AlmSettingsGitlab:
         """
         Update a AlmSettingsGitlab on SonarQube API.
 
@@ -197,17 +198,27 @@ class AlmSettingsGitlabClient:
             # Raise Value Exception
             raise ValueError("[AlmSettingsGitlabClient] - Update : 'setting' details are required")
 
-        # Filter Not Empty Parameter
-        filtered_params = {key: value for key, value in setting.to_api_json().items() if value}
+        # Build Parameter
+        parameter = "key={key}&url={url}&personalAccessToken={token}".format(
+            key=quote(string=setting.key, safe="") if encode_parameters else setting.key,
+            url=quote(string=setting.url, safe="") if encode_parameters else setting.url,
+            token=quote(string=setting.personal_access_token, safe="") if encode_parameters else setting.personal_access_token
+        )
 
-        # Build Query String
-        query_params = urlencode(filtered_params)
+        # If new_key is provided
+        if setting.new_key:
+
+            # Add New Key
+            parameter = "{parameter}&newKey={newKey}".format(
+                parameter=parameter,
+                newKey=quote(string=setting.new_key, safe="") if encode_parameters else setting.new_key
+            )
 
         # Build the Operation URL
         url = self.URL_TEMPLATE.format(
             base_url=self.base_url,
             uri=self.UPDATE_SETTING_URI.format(
-                parameters=query_params
+                parameters=parameter
             )
         )
 
