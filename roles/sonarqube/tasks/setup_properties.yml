@@ -20,7 +20,8 @@
     username: "{{ __sonar_admin_username }}"
     password: "{{ sonar_admin_password }}"
     key: "{{ item.key }}"
-    value: "{{ item.value }}"
+    value: "{{ item.value.single_value }}"
+    encode_parameters: "{{ item.value.encode_parameters | default(false) }}"
     state: "present"
   loop: "{{ sonar_saml | default({}) | dict2items }}"
   notify:

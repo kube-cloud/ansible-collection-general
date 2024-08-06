@@ -296,15 +296,15 @@ sonar_ldap:
 # SonarQube SAML
 sonar_saml:
   sonar.auth.saml.enabled: false
-#  sonar.auth.saml.applicationId: SonarQube
-#  sonar.auth.saml.providerName: SAML PROVIDER
-#  sonar.auth.saml.providerId: http://www.okta.com/xxxxxxxxxxxxxxxxxxx
-#  sonar.auth.saml.loginUrl: https://organization.okta.com/app/organization_sonarqube/yyyyyyyyyyyy/sso/saml
-#  sonar.auth.saml.user.login: login
-#  sonar.auth.saml.user.name: full_name
-#  sonar.auth.saml.user.email: email
-#  sonar.auth.saml.group.name: groups
-
+#  sonar.auth.saml.applicationId: { "single_value": "SonarQube" }
+#  sonar.auth.saml.providerName: { "single_value": "SAML PROVIDER" }
+#  sonar.auth.saml.providerId: { "single_value": "http://www.okta.com/xxxxxxxxxxxxxxxxxxx" }
+#  sonar.auth.saml.loginUrl: { "single_value": "https://organization.okta.com/app/organization_sonarqube/yyyyyyyyyyyy/sso/saml" }
+#  sonar.auth.saml.user.login: { "single_value": "login" }
+#  sonar.auth.saml.user.name: { "single_value": "full_name" }
+#  sonar.auth.saml.user.email: { "single_value": "email" }
+#  sonar.auth.saml.group.name: { "single_value": "groups" }
+# "sonar.auth.saml.certificate.secured": { "single_value": "certificate", "encode_parameters": true }
 
 # SonarQube Email Configuration
 # sonar_email:
