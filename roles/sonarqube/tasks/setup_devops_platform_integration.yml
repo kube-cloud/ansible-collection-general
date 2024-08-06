@@ -1,0 +1,53 @@
+---
+
+# Ensure Github Connector is Configured
+- name: "Ensure Github Connector is Configured"
+  kube_cloud.general.sonarqube.alm_settings_github:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ sonar_github_connector.key | default('github-connector') }}"
+    url: "{{ sonar_github_connector.url | default(omit) }}"
+    app_id: "{{ sonar_github_connector.app_id | default(omit) }}"
+    client_id: "{{ sonar_github_connector.client_id | default(omit) }}"
+    client_secret: "{{ sonar_github_connector.client_secret | default(omit) }}"
+    private_key: "{{ sonar_github_connector.private_key | default(omit) }}"
+    encode_parameters: "{{ sonar_github_connector.encode_parameters | default(true) }}"
+    state: "present"
+  when: sonar_github_connector.enabled | default(false)
+
+# Ensure Gitlab Connector is Configured
+- name: "Ensure Gitlab Connector is Configured"
+  kube_cloud.general.sonarqube.alm_settings_github:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ sonar_gitlab_connector.key | default('gitlab-connector') }}"
+    url: "{{ sonar_gitlab_connector.url | default(omit) }}"
+    personal_access_token: "{{ sonar_github_connector.personal_access_token | default(omit) }}"
+    state: "present"
+  when: sonar_gitlab_connector.enabled | default(false)
+
+# Ensure Azure Connector is Configured
+- name: "Ensure Azure Connector is Configured"
+  kube_cloud.general.sonarqube.alm_settings_github:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ sonar_azure_connector.key | default('azure-connector') }}"
+    url: "{{ sonar_azure_connector.url | default(omit) }}"
+    personal_access_token: "{{ sonar_azure_connector.personal_access_token | default(omit) }}"
+    state: "present"
+  when: sonar_azure_connector.enabled | default(false)
+
+# Ensure Bitbucket Connector is Configured
+- name: "Ensure Bitbucket Connector is Configured"
+  kube_cloud.general.sonarqube.alm_settings_github:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    key: "{{ sonar_bitbucket_connector.key | default('bitbucket-connector') }}"
+    url: "{{ sonar_bitbucket_connector.url | default(omit) }}"
+    personal_access_token: "{{ sonar_bitbucket_connector.personal_access_token | default(omit) }}"
+    state: "present"
+  when: sonar_bitbucket_connector.enabled | default(false)

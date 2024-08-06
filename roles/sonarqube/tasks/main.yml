@@ -2,21 +2,21 @@
 # tasks file for ansible-role-sonarqube/
 
 - name: "Create SonarQube system group"
-  group:
+  ansible.builtin.group:
     name: "{{ sonar_group }}"
     state: present
 
 - name: "Create SonarQube system user"
-  user:
+  ansible.builtin.user:
     name: "{{ sonar_user }}"
     group: "{{ sonar_group }}"
-    createhome: no
+    createhome: false
     shell: "/sbin/nologin"
     comment: "SonarQube System user"
     state: present
 
 - name: "Create SonarQube directories"
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ sonar_user }}"
@@ -29,59 +29,67 @@
     - "{{ sonar_temp_dir }}"
     - "{{ sonar_base_dir }}"
 
-- name: "set max_map_count value (required by elasticsearch)"
-  sysctl:
+- name: "Set max_map_count value (required by elasticsearch)"
+  ansible.builtin.sysctl:
     name: vm.max_map_count
     value: 262144
     state: present
 
 - name: "Ensure JAVA is installed"
-  command: "java -version"
+  ansible.builtin.command: "java -version"
   register: prereq_java
   changed_when: false
 
 - name: "Fail if JAVA is not available"
-  fail:
+  ansible.builtin.fail:
     msg: "JAVA is not installed or configured"
   when: not prereq_java.rc == 0
 
 - name: "Execute Debian specific tasks"
-  include_tasks: setup_debian.yml
+  ansible.builtin.include_tasks: setup_debian.yml
   when: ansible_os_family == 'Debian'
 
-- include_tasks: setup_prepare.yml
+- name: "Prepare Install"
+  ansible.builtin.include_tasks: setup_prepare.yml
 
-- include_tasks: setup_sonarqube.yml
+- name: "Setup Sonarqube"
+  ansible.builtin.include_tasks: setup_sonarqube.yml
 
-- name: "install plugins"
-  include_tasks: setup_plugin.yml
+- name: "Install plugins"
+  ansible.builtin.include_tasks: setup_plugin.yml
   with_items: "{{ sonar_plugins }}"
   loop_control:
     loop_var: "sonar_cplugin"
 
-- name: "flush handlers"
-  meta: flush_handlers
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers
 
 - name: "Ensure target version matches"
-  uri:
+  ansible.builtin.uri:
     url: "http://{{ ansible_host }}:{{ sonar_web_port }}{{ sonar_web_context }}/api/server/version"
     method: GET
-    return_content: yes
+    return_content: true
   register: api_check_version
   until: api_check_version.status == 200
   retries: 60
   delay: 5
-  check_mode: no # uri module not support check mode (at least in Ansible 2.10)
+  check_mode: false # uri module not support check mode (at least in Ansible 2.10)
   changed_when: sonar_version | string not in api_check_version.content
   notify: fail if expected sonar version not confirmed
   ignore_errors: "{{ ansible_check_mode }}"
 
 # Initialize Users
-- include_tasks: setup_users.yml
+- name: "Initialize Users"
+  ansible.builtin.include_tasks: setup_users.yml
 
 # Initialize Settings
-- include_tasks: setup_properties.yml
+- iname: "Initialize Settings"
+  ansible.builtin.nclude_tasks: setup_properties.yml
 
-# Trigger Handler Execution
-- name: "flush handlers"
-  meta: flush_handlers
+# Initialize DevOps Platform Integration
+- name: "Initialize DevOps Platform Integration"
+  ansible.builtin.include_tasks: setup_devops_platform_integration.yml
+
+# Trigger Handler Execution.
+- name: "Flush handlers"
+  ansible.builtin.meta: flush_handlers

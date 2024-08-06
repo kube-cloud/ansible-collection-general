@@ -414,3 +414,35 @@ disable_log: true
 
 # Sonarqube Hostname
 sonarqube_hostname: "{{ ansible_host }}"
+
+# Github Connector
+sonar_github_connector:
+  enabled: false
+  key: "sonarqube-github-connector-name"
+  url: "https://api.github.com"
+  app_id: "9872001"
+  client_id: "Zs67IoqGrt234ghlO"
+  client_secret: "63abf51ec6640c34d10532df1a729fd2b93b"
+  private_key: "-----BEGIN RSA PRIVATE KEY-----...-----END RSA PRIVATE KEY-----"
+  encode_parameters: true
+
+# Gitlab Connector
+sonar_gitlab_connector:
+  enabled: false
+  key: "sonarqube-gitlab-connector-name"
+  url: "https://gitlab.com/api/v4"
+  personal_access_token: "glpaqdngQ3L2CVxRXAER56"
+
+# Azure Connector
+sonar_azure_connector:
+  enabled: false
+  key: "sonarqube-azure-connector-name"
+  url: "https://dev.azure.com/kube-cloud"
+  personal_access_token: "mty33wzkf2g4yrwo3ajvhhwr4ls7a"
+
+# Bitbucket Connector
+sonar_bitbucket_connector:
+  enabled: false
+  key: "sonatqube-bitbucket-connector-name"
+  url: "https://yourbitbucket.yourdomain.com"
+  personal_access_token: "mty33wzkf2g4yrwo3ajvhhwr4ls7a"
