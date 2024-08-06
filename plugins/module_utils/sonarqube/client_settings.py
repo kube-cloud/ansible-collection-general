@@ -155,7 +155,7 @@ class SettingsClient:
         component: str = '',
         value: str = '',
         values: list = None,
-        encode_parameters: bool = True
+        encode_parameters: bool = False
     ):
         """
         Create a Setting on SonarQube API.
@@ -263,7 +263,7 @@ class SettingsClient:
         component: str = '',
         value: str = '',
         values: list = None,
-        encode_parameters: bool = True
+        encode_parameters: bool = False
     ):
         """
         Update a Setting on SonarQube API.

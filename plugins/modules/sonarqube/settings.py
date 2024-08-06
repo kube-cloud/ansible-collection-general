@@ -64,7 +64,7 @@ options:
       - The SonarQube Setting to indicate if Module encode Parameter
     required: false
     type: bool
-    default: true
+    default: false
   state:
     description:
       - The Transaction State
@@ -218,7 +218,7 @@ def build_ansible_module():
         component=dict(type='str', required=False, default=''),
         value=dict(type='str', required=False, default=''),
         values=dict(type='list', elements='str', required=False, default=[]),
-        encode_parameters=dict(type='bool', required=False, default=True, no_log=False),
+        encode_parameters=dict(type='bool', required=False, default=False, no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 
