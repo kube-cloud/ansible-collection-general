@@ -83,7 +83,7 @@
   ansible.builtin.include_tasks: setup_users.yml
 
 # Initialize Settings
-- iname: "Initialize Settings"
+- name: "Initialize Settings"
   ansible.builtin.include_tasks: setup_properties.yml
 
 # Initialize DevOps Platform Integration

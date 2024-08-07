@@ -1,13 +1,13 @@
 ---
-- name: "install plugin from binaries.sonarsource.com"
+- name: "Install plugin from binaries.sonarsource.com"
   include: setup_plugin_binaries.yml
   when: not sonar_cplugin.get('marketplace', false)|bool
 
-- name: "install plugin from updates.sonarsource.com"
+- name: "Install plugin from updates.sonarsource.com"
   include: setup_plugin_marketplace.yml
   when: sonar_cplugin.get('marketplace', false)|bool
 
-- name: "{{ sonar_cplugin.name }} | Download current plugin"
+- name: "Download current plugin [{{ sonar_cplugin.name }}]"
   get_url:
     url: "{{ cplugin_url }}"
     dest: "{{ __sonar_plugin_home }}"
