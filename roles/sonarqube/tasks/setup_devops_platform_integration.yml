@@ -18,19 +18,19 @@
 
 # Ensure Gitlab Connector is Configured
 - name: "Ensure Gitlab Connector is Configured"
-  kube_cloud.general.sonarqube.alm_settings_github:
+  kube_cloud.general.sonarqube.alm_settings_gitlab:
     base_url: "{{ __sonarqube_base_url }}"
     username: "{{ __sonar_admin_username }}"
     password: "{{ sonar_admin_password }}"
     key: "{{ sonar_gitlab_connector.key | default('gitlab-connector') }}"
     url: "{{ sonar_gitlab_connector.url | default(omit) }}"
-    personal_access_token: "{{ sonar_github_connector.personal_access_token | default(omit) }}"
+    personal_access_token: "{{ sonar_gitlab_connector.personal_access_token | default(omit) }}"
     state: "present"
   when: sonar_gitlab_connector.enabled | default(false)
 
 # Ensure Azure Connector is Configured
 - name: "Ensure Azure Connector is Configured"
-  kube_cloud.general.sonarqube.alm_settings_github:
+  kube_cloud.general.sonarqube.alm_settings_azure:
     base_url: "{{ __sonarqube_base_url }}"
     username: "{{ __sonar_admin_username }}"
     password: "{{ sonar_admin_password }}"
@@ -42,7 +42,7 @@
 
 # Ensure Bitbucket Connector is Configured
 - name: "Ensure Bitbucket Connector is Configured"
-  kube_cloud.general.sonarqube.alm_settings_github:
+  kube_cloud.general.sonarqube.alm_settings_bitbucket:
     base_url: "{{ __sonarqube_base_url }}"
     username: "{{ __sonar_admin_username }}"
     password: "{{ sonar_admin_password }}"
