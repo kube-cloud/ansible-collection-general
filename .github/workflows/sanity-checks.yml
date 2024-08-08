@@ -20,7 +20,7 @@ jobs:
   sanity:
     runs-on:
       group: Default
-      labels: [self-hosted, Linux, X64, on-premise]
+      labels: [self-hosted, Linux, on-premise]
     strategy:
       matrix:
         ansible:
