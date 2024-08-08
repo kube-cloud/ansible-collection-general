@@ -19,7 +19,7 @@ on:
 jobs:
   sanity:
     runs-on:
-      group: ubuntu-runners
+      group: Default
       labels: self-hosted
     strategy:
       matrix:
