@@ -18,9 +18,7 @@ on:
 
 jobs:
   sanity:
-    runs-on:
-      group: Default
-      labels: 'on-premise'
+    runs-on: [self-hosted, Linux, X64, on-premise]
     strategy:
       matrix:
         ansible:
