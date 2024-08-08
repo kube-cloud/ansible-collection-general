@@ -18,6 +18,7 @@ on:
 
 jobs:
   sanity:
+    runs-on: [self-hosted, Linux, on-premise]
     strategy:
       matrix:
         ansible:
