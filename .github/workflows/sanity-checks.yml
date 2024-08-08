@@ -18,7 +18,9 @@ on:
 
 jobs:
   sanity:
-    runs-on: ['self-hosted']
+    runs-on:
+      group: ubuntu-runners
+      labels: self-hosted
     strategy:
       matrix:
         ansible:
