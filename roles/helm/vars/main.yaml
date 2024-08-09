@@ -7,4 +7,4 @@ helm_archive_url: "https://get.helm.sh/helm-{{ helm_version }}-{{ ansible_system
 helm_extraction_root_dir: "/tmp/helm"
 
 # Unarchived Directory
-helm_unarchive_dir: "{{ helm_extraction_root_dir }}/{{ ansible_system | lower }}-{{ helm_os_architecture }}"
+helm_unarchive_dir: "{{ helm_extraction_root_dir }}/{{ ansible_system | lower }}-{{ helm_os_architecture | trim }}"
