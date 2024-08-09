@@ -53,5 +53,5 @@
     # Install Helm
     - name: "HELM::INSTALL - Install HELM [({{ ansible_distribution }})]"
       ansible.builtin.command:
-        cmd: "mv {{ helm_unarchive_dir }}/helm /usr/local/bin/helm"
+        cmd: "mv {{ helm_unarchive_dir }}/helm /usr/local/bin/"
         creates: /usr/local/bin/helm
