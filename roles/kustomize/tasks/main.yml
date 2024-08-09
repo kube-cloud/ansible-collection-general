@@ -36,7 +36,7 @@
 # Download and install KUSTOMIZE if not yet installed
 - name: "KUSTOMIZE::INSTALL - Install Block [{{ ansible_distribution }}]"
   when:
-    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<') or (not is_semver = False)
+    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<') or (not is_semver)
   block:
 
     # Download and Unarchive Kustomize
