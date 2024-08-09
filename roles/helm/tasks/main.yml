@@ -1,0 +1,57 @@
+---
+
+# Find installed HELM Version
+- name: "HELM::INSTALL - Get Helm version if installed"
+  ansible.builtin.command: helm version --short
+  register: helm_version_output
+  changed_when: false
+  ignore_errors: true
+
+# Define Helm Version as Variable if Installed
+- name: "HELM::INSTALL - Define HELM Version as Variable if Installed"
+  ansible.builtin.set_fact:
+    installed_helm_version: "{{ helm_version_output.stdout | regex_replace('^v([0-9.]+).+', '\\1') | regex_replace('^v', '') }}"
+    helm_semantic_version: "{{ helm_version.split('+')[0] | regex_replace('^v', '') }}"
+  when: helm_version_output.rc == 0
+
+# Print Vars
+- name: "HELM::INSTALL - Show Installed Version Result [({{ ansible_distribution }})]"
+  ansible.builtin.debug:
+    var: helm_version_output
+
+# Print Vars
+- name: "HELM::INSTALL - Show Facts [({{ ansible_distribution }})]"
+  ansible.builtin.debug:
+    msg:
+      - "HELM Installed Version : {{ installed_helm_version | default('') }}"
+      - "HELM Required  Version : {{ helm_semantic_version | default('') }}"
+      - "HELM Original Version  : {{ helm_version }}"
+
+# Download and install HELM if not yet installed
+- name: "HELM::INSTALL - Installation Block [({{ ansible_distribution }})]"
+  when:
+    - helm_version_output.rc != 0 or installed_helm_version is version(helm_semantic_version, '<')
+  block:
+
+    # Create Required Directories
+    - name: "HELM::INSTALL - Ensure HELM directories are created [({{ ansible_distribution }})]"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('u+rwx,g+rwx,o+x') }}"
+        recurse: true
+      loop:
+        - { path: "{{ helm_extraction_root_dir }}", mode: "u+rwx,g+rwx,o+rwx" }
+
+    # Download and Unarchive Helm
+    - name: "HELM::INSTALL - Download and Unarchive HELM [({{ ansible_distribution }})]"
+      ansible.builtin.unarchive:
+        src: "{{ helm_archive_url }}"
+        dest: "{{ helm_extraction_root_dir }}"
+        remote_src: true
+
+    # Install Helm
+    - name: "HELM::INSTALL - Install HELM [({{ ansible_distribution }})]"
+      ansible.builtin.command:
+        cmd: "mv {{ helm_unarchive_dir }}/helm /usr/local/bin/helm"
+        creates: /usr/local/bin/helm

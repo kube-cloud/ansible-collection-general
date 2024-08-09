@@ -1,0 +1,10 @@
+---
+
+# K3S Version
+k3s_version: "v1.29.3+k3s1"
+
+# Installed Option
+k3s_install_options: "--debug"
+
+# Data Dir
+k3s_data_dir: "/etc/k3s/var/lib/rancher/k3s/data"

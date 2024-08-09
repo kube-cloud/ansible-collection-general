@@ -1,0 +1,59 @@
+---
+
+# Find installed K3S Version
+- name: "K3S::INSTALL - Get k3s version if installed [{{ ansible_distribution }}]"
+  ansible.builtin.command: k3s --version
+  register: k3s_version_output
+  changed_when: false
+  ignore_errors: true
+
+# Define K3S Version as Variable if Installed
+- name: "K3S::INSTALL - Define K3S Version as Variable if Installed [{{ ansible_distribution }}]"
+  ansible.builtin.set_fact:
+    installed_k3s_version: "{{ k3s_version_output.stdout_lines[0].split(' ')[2] }}"
+  when: k3s_version_output.rc == 0
+
+# Download and install K3S if not yet installed
+- name: "K3S::INSTALL - Install K3S Block"
+  when:
+    - k3s_version_output.rc != 0 or installed_k3s_version is version(k3s_version, '<')
+  block:
+
+    # Create Required Directories
+    - name: "K3S::INSTALL - Ensure K3S directories are created [{{ ansible_distribution }}]"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('u+rwx,g+rwx,o+x') }}"
+        recurse: true
+        owner: "{{ item.owner | default('root') }}"
+        group: "{{ item.group | default('root') }}"
+      loop:
+        - path: "{{ k3s_data_dir }}"
+
+    # Download K3s install script
+    - name: "K3S::INSTALL - Download K3s install script [{{ ansible_distribution }}]"
+      ansible.builtin.get_url:
+        url: "{{ k3s_install_script_url }}"
+        timeout: 120
+        dest: "{{ k3s_install_script }}"
+        owner: root
+        group: root
+        mode: '0755'
+
+    # Install K3S (Without Start)
+    - name: "K3S::INSTALL - Install K3S (Without Start) [{{ ansible_distribution }}]"
+      ansible.builtin.command:
+        cmd: "{{ k3s_install_script }}"
+      environment:
+        INSTALL_K3S_SKIP_START: "true"
+        INSTALL_K3S_VERSION: "{{ k3s_version }}"
+        INSTALL_K3S_EXEC: " --data-dir {{ k3s_data_dir }} {{ k3s_install_options }}"
+      changed_when: true
+
+# Ensure K3S is Started
+- name: "K3S::INSTALL - Ensure K3S is Started [{{ ansible_distribution }}]"
+  ansible.builtin.service:
+    name: k3s
+    state: started
+    sleep: 5
