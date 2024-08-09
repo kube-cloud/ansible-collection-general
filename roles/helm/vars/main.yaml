@@ -1,7 +1,7 @@
 ---
 
 # Archive URL
-helm_archive_url: "https://get.helm.sh/helm-{{ helm_version }}-{{ ansible_system | lower }}-{{ helm_os_architecture }}.tar.gz"
+helm_archive_url: "https://get.helm.sh/helm-{{ helm_version }}-{{ ansible_system | lower }}-{{ helm_os_architecture | trim }}.tar.gz"
 
 # Extraction Directory
 helm_extraction_root_dir: "/tmp/helm"
