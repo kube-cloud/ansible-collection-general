@@ -10,7 +10,15 @@
 # Define Kustomize Version as Variable if Installed
 - name: "KUSTOMIZE::INSTALL - Define KUSTOMOZE Version as Variable if Installed [{{ ansible_distribution }}]"
   ansible.builtin.set_fact:
-    installed_kustomize_version: "{{ kustomize_version_output.stdout.split('+')[0] | regex_replace('^v', '') }}"
+    raw_kustomize_version: "{{ kustomize_version_output.stdout.split('+')[0] | regex_replace('^v', '') }}"
+    is_semver: "{{ kustomize_version_output.stdout.split('+')[0] | regex_replace('^v', '') | regex_search('^[0-9]+\\.[0-9]+\\.[0-9]+$') }}"
+  when: kustomize_version_output.rc == 0
+
+# Define Kustomize Version as Variable if Installed
+- name: "KUSTOMIZE::INSTALL - Define KUSTOMOZE Version as Variable if Installed [{{ ansible_distribution }}]"
+  ansible.builtin.set_fact:
+    installed_kustomize_version: "{{ raw_kustomize_version if is_semver else '0.0.0' }}"
+    is_semver: "{{ kustomize_version_output.stdout.split('+')[0] | regex_replace('^v', '') | regex_search('^[0-9]+\\.[0-9]+\\.[0-9]+$') }}"
   when: kustomize_version_output.rc == 0
 
 # Print Vars
@@ -22,13 +30,13 @@
 - name: "KUSTOMIZE::INSTALL - Show Facts [{{ ansible_distribution }}]"
   ansible.builtin.debug:
     msg:
-      - "KUSTOMIZE Installed Version : {{ installed_kustomize_version | default('') }}"
+      - "KUSTOMIZE Installed Version : {{ installed_kustomize_version | default('') }} [Is Semver : {{ is_semver }}]"
       - "KUSTOMIZE Original Version  : {{ kustomize_version }}"
 
 # Download and install KUSTOMIZE if not yet installed
 - name: "KUSTOMIZE::INSTALL - Install Block [{{ ansible_distribution }}]"
   when:
-    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<')
+    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<') or (not is_semver = False)
   block:
 
     # Download and Unarchive Kustomize
