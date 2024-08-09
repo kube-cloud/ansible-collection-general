@@ -1,0 +1,39 @@
+---
+
+# Find installed KUSTOMIZE Version
+- name: "KUSTOMIZE::INSTALL - Get Kustomize version if installed [{{ ansible_distribution }}]"
+  ansible.builtin.command: kustomize version
+  register: kustomize_version_output
+  changed_when: false
+  ignore_errors: true
+
+# Define Kustomize Version as Variable if Installed
+- name: "KUSTOMIZE::INSTALL - Define KUSTOMOZE Version as Variable if Installed [{{ ansible_distribution }}]"
+  ansible.builtin.set_fact:
+    installed_kustomize_version: "{{ kustomize_version_output.stdout.split('+')[0] | regex_replace('^v', '') }}"
+  when: kustomize_version_output.rc == 0
+
+# Print Vars
+- name: "KUSTOMIZE::INSTALL - Show Installed Version Result [{{ ansible_distribution }}]"
+  ansible.builtin.debug:
+    var: kustomize_version_output
+
+# Print Vars
+- name: "KUSTOMIZE::INSTALL - Show Facts [{{ ansible_distribution }}]"
+  ansible.builtin.debug:
+    msg:
+      - "KUSTOMIZE Installed Version : {{ installed_kustomize_version | default('') }}"
+      - "KUSTOMIZE Original Version  : {{ kustomize_version }}"
+
+# Download and install KUSTOMIZE if not yet installed
+- name: "KUSTOMIZE::INSTALL - Install Block [{{ ansible_distribution }}]"
+  when:
+    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<')
+  block:
+
+    # Download and Unarchive Kustomize
+    - name: "KUSTOMIZE::INSTALL - Download and Unarchive KUSTOMIZE [{{ ansible_distribution }}]"
+      ansible.builtin.unarchive:
+        src: "{{ kustomize_archive_url }}"
+        dest: "/usr/local/bin"
+        remote_src: true

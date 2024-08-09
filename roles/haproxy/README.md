@@ -15,7 +15,7 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
 ```yaml
 - name: "HAPROXY::INSTALL - Ensure HA Proxy Installed and Configured"
     ansible.builtin.import_role:
-    name: haproxy
+        name: kube_cloud.general.haproxy
     vars:
         haproxy_socket_path: "/var/lib/haproxy/stats"
         haproxy_chroot_path: "/var/lib/haproxy"

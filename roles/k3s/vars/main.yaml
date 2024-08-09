@@ -1,0 +1,5 @@
+---
+
+# Archive URL
+k3s_install_script_url: "https://get.k3s.io/"
+k3s_install_script: "/usr/local/bin/k3s-install.sh"

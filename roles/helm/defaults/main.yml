@@ -1,0 +1,24 @@
+---
+
+# HELM Version
+helm_version: "v3.14.3"
+
+# OS Architecture
+helm_os_architecture: >-
+  {% if ansible_architecture == 'x86_64' %}
+    amd64
+  {% elif ansible_architecture == 'i386' %}
+    386
+  {% elif ansible_architecture == 'armv7l' %}
+    arm
+  {% elif ansible_architecture == 'aarch64' %}
+    arm64
+  {% elif ansible_architecture == 'ppc64le' %}
+    ppc64le
+  {% elif ansible_architecture == 's390x' %}
+    s390x
+  {% elif ansible_architecture == 'sparc64' %}
+    sparc64
+  {% else %}
+    other
+  {% endif %}
