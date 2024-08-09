@@ -1,7 +1,7 @@
 ---
 
 # Kustomize Archive File Name
-kustomize_archive_file_name: "kustomize_v{{ kustomize_version }}_{{ ansible_system | lower }}_{{ kustomize_os_architecture }}.tar.gz"
+kustomize_archive_file_name: "kustomize_v{{ kustomize_version }}_{{ ansible_system | lower }}_{{ kustomize_os_architecture | trim }}.tar.gz"
 
 # Archive URL
 kustomize_archive_url: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v{{ kustomize_version }}/{{ kustomize_archive_file_name }}
