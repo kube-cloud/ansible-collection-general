@@ -30,13 +30,13 @@
 - name: "KUSTOMIZE::INSTALL - Show Facts [{{ ansible_distribution }}]"
   ansible.builtin.debug:
     msg:
-      - "KUSTOMIZE Installed Version : {{ installed_kustomize_version | default('') }} [Is Semver : {{ is_semver }}]"
+      - "KUSTOMIZE Installed Version : {{ installed_kustomize_version | default('') }} [Is Semver : {{ is_semver | default(false) }}]"
       - "KUSTOMIZE Original Version  : {{ kustomize_version }}"
 
 # Download and install KUSTOMIZE if not yet installed
 - name: "KUSTOMIZE::INSTALL - Install Block [{{ ansible_distribution }}]"
   when:
-    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<') or (not is_semver)
+    - kustomize_version_output.rc != 0 or installed_kustomize_version is version(kustomize_version, '<') or (not is_semver | default(false))
   block:
 
     # Download and Unarchive Kustomize
