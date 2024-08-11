@@ -23,7 +23,7 @@ jobs:
         python-version:
           - "3.9"
     #runs-on: ${{ matrix.os }}
-    runs-on: [ubuntu-20-04-hosted-k8s]
+    runs-on: [ubuntu-20-04-hosted]
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -45,7 +45,7 @@ jobs:
   publish:
     needs: sanity
     #runs-on: ubuntu-latest
-    runs-on: [ubuntu-20-04-hosted-k8s]
+    runs-on: [ubuntu-20-04-hosted]
     if: github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
