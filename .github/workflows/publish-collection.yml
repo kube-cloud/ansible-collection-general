@@ -43,7 +43,7 @@ jobs:
           testing-type: sanity
           pull-request-change-detection: true
           pre-test-cmd: pip install passlib
-          image: quay.io/ansible/default-test-container:10.3.0
+          docker-image: quay.io/ansible/default-test-container:10.3.0
 
   publish:
     needs: sanity
