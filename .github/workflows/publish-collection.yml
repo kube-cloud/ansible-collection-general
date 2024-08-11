@@ -23,7 +23,7 @@ jobs:
         python-version:
           - "3.9"
     #runs-on: ${{ matrix.os }}
-    runs-on: [ubuntu-20-04-hosted]
+    runs-on: [ubuntu-20-04-hosted-k8s]
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
