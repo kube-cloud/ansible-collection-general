@@ -25,6 +25,8 @@ jobs:
     #runs-on: ${{ matrix.os }}
     runs-on: [ubuntu-20-04-hosted]
     steps:
+      - name: Install OpenSSH
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -57,7 +59,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y jq yq
           python -m pip install --upgrade pip
-          pip install ansible passlib
+          pip install ansible passlib openssh-client
 
       - name: Create Collection Archive
         run: |
