@@ -1,8 +1,8 @@
 ---
 galaxy_info:
     author: jetune
-    role_name: haproxy
-    description: Ansible Role for HA Proxy Installation
+    role_name: k3s
+    description: Ansible Role for K3S Installation
     company: "Kube Cloud"
     issue_tracker_url: https://github.com/kube-cloud/ansible-collection-general/issues
     license: "license (Apache 2.0)"
@@ -23,7 +23,7 @@ galaxy_info:
               - xenial
               - bionic
     galaxy_tags:
-        - proxy
-        - lb
-        - linux
+        - kubernetes
+        - single_node
+        - orchestration
 dependencies: []

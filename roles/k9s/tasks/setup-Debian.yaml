@@ -1,0 +1,7 @@
+---
+
+# Ensure Package is Downloaded
+- name: "K9S::INSTALL - Ensure Package is Installed [{{ ansible_os_family }}]"
+  ansible.builtin.apt:
+    deb: "{{ _k9s_package_file_url }}"
+    state: present

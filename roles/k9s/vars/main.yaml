@@ -1,0 +1,17 @@
+---
+
+# OS System
+_k9s_package_file_name: >-
+  {% if ansible_system == 'Linux' and ansible_os_family == 'Debian' %}
+    k9s_linux_{{ k9s_os_architecture | trim }}.deb
+  {% elif ansible_system == 'Linux' and ansible_os_family == 'RedHat' %}
+    k9s_linux_{{  k9s_os_architecture | trim }}.rpm
+  {% else %}
+    __NOT_SUPPORTED__
+  {% endif %}
+
+# K9S Is Supported
+_k9s_os_supported: "{{ true if _k9s_package_file_name | trim != '__NOT_SUPPORTED__' else false }}"
+
+# Archive URL
+_k9s_package_file_url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/{{ _k9s_package_file_name | trim }}"
