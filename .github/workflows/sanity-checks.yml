@@ -30,10 +30,9 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-    #runs-on: ${{ matrix.os }}
-    runs-on: [ubuntu-20-04-hosted-k8s]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Set up Python.
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '${{ matrix.python-version }}'
