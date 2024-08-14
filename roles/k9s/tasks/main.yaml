@@ -8,4 +8,4 @@
 
     # Import Task
     - name: "K9S::INSTALL - Import Setup Tasks for [{{ ansible_os_family }}]"
-      ansible.builtin.import_tasks: "{{ _k9s_setup_file }}"
+      ansible.builtin.include_tasks: "setup-{{ ansible_os_family }}.yaml"
