@@ -1,4 +1,4 @@
 ---
 
 # Archive URL
-_yq_file_url: "https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_{{ ansible_system | lower }}_{{ k9s_os_architecture | trim }}"
+_yq_file_url: "https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_{{ ansible_system | lower }}_{{ yq_os_architecture | trim }}"
