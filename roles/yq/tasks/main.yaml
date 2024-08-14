@@ -1,0 +1,8 @@
+---
+
+# Ensure YQ is Downloaded & Installed
+- name: "YQ::INSTALL - Ensure YQ is Downloaded & Installed [{{ ansible_os_family }}]"
+  ansible.builtin.get_url:
+    url: "{{ _yq_file_url }}"
+    dest: "/usr/local/bin/yq"
+    mode: "0755"
