@@ -17,4 +17,4 @@ _k9s_os_supported: "{{ true if _k9s_package_file_name | trim != '__NOT_SUPPORTED
 _k9s_package_file_url: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/{{ _k9s_package_file_name | trim }}"
 
 # Setup File
-_setup_file: "setup-{{ ansible_os_family }}.taml"
+_k9s_setup_file: "setup-{{ ansible_os_family }}.taml"
