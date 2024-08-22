@@ -1,0 +1,10 @@
+---
+
+# Ensure Terraform is Downloaded & Installed
+- name: "TERRAFORM::INSTALL - Ensure Terraform is Downloaded & Installed [{{ ansible_os_family }}]"
+  ansible.builtin.unarchive:
+    src: "{{ _terraform_file_url }}"
+    dest: "/usr/local/bin"
+    exclude: ["LICENSE.txt"]
+    mode: "0755"
+    remote_src: true
