@@ -1,0 +1,8 @@
+---
+
+# Ensure Kubectl is Downloaded & Installed
+- name: "KUBECTL::INSTALL - Ensure Kubectl is Downloaded & Installed [{{ ansible_os_family }}]"
+  ansible.builtin.get_url:
+    url: "{{ _kubectl_file_url }}"
+    dest: "/usr/local/bin"
+    mode: "0755"
