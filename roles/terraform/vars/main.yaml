@@ -4,7 +4,7 @@
 _terraform_base_url: "https://releases.hashicorp.com/terraform"
 
 # Terraform directory name
-_terraform_dir_name: "terraform_{{ terraform_version }}_{{ ansible_system | lower }}_{{ terraform_os_architecture }}"
+_terraform_dir_name: "terraform_{{ terraform_version }}_{{ ansible_system | lower }}_{{ terraform_os_architecture | trim }}"
 
 # Terraform Download URL Path
 _terraform_dl_path: "{{ terraform_version }}/{{ _terraform_dir_name }}.zip"

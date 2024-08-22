@@ -1,0 +1,8 @@
+---
+
+# Ensure Kind is Downloaded & Installed
+- name: "KUBECTL::INSTALL - Ensure Kind is Downloaded & Installed [{{ ansible_os_family }}]"
+  ansible.builtin.get_url:
+    url: "{{ _kind_file_url }}"
+    dest: "/usr/local/bin/kind"
+    mode: "0755"

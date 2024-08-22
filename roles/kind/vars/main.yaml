@@ -1,0 +1,10 @@
+---
+
+# kind Download Base URL
+_kind_base_url: "https://kind.sigs.k8s.io"
+
+# kind Download URL Path
+_kind_dl_path: "dl/{{ kind_version }}/kind-{{ ansible_system | lower }}-{{ kind_os_architecture | trim }}"
+
+# Archive URL
+_kind_file_url: "{{ _kind_base_url }}/{{ _kind_dl_path }}"
