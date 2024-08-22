@@ -3,7 +3,7 @@
 # Kind Version
 ## https://kind.sigs.k8s.io/docs/user/quick-start/#installing-from-release-binaries
 ## https://github.com/kubernetes-sigs/kind/releases
-kind_version: "v1.31.0"
+kind_version: "v0.24.0"
 
 # OS Architecture
 kind_os_architecture: >-
