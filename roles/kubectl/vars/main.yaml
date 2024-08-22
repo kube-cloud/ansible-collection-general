@@ -4,7 +4,7 @@
 _kubectl_base_url: "https://dl.k8s.io"
 
 # kubectl Download URL Path
-_kubectl_dl_path: "release/{{ kubectl_version }}/bin/{{ ansible_system | lower }}/{{ kubectl_os_architecture }}/kubectl"
+_kubectl_dl_path: "release/{{ kubectl_version }}/bin/{{ ansible_system | lower }}/{{ kubectl_os_architecture | trim }}/kubectl"
 
 # Archive URL
 _kubectl_file_url: "{{ _kubectl_base_url }}/{{ _kubectl_dl_path }}"
