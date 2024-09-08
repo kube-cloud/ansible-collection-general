@@ -11,6 +11,7 @@ from .client_alm_settings_gitlab import AlmSettingsGitlabClient
 from .client_alm_settings_azure import AlmSettingsAzureClient
 from .client_alm_settings_bitbucket import AlmSettingsBitbucketClient
 from .client_alm_settings_bitbucket_cloud import AlmSettingsBitbucketCloudClient
+from .client_alm_access_token import AlmAccessTokenClient
 
 try:
     from requests.auth import HTTPBasicAuth     # type: ignore
@@ -120,6 +121,12 @@ class Client:
 
         # Initialize ALM Settings Bitbucket Cloud Client
         self.alm_settings_bitbucket_cloud = AlmSettingsBitbucketCloudClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize Access Token ALM Client
+        self.alm_access_token = AlmAccessTokenClient(
             base_url=base_url,
             auth=self.auth
         )
