@@ -6,6 +6,39 @@ from dataclasses import dataclass, field
 from .enums import DevOpsPlatform
 
 
+# ALM Access Token Details
+@dataclass
+class AlmToken:
+    """
+    Represents SonarQube Global ALM Access Token.
+    Refer at : `https://next.sonarqube.com/sonarqube/web_api/api/alm_integrations/set_pat`
+
+    Attributes:
+        alm_name (str): The SonarQube ALM Name.
+        access_token (str): The SonarQube ALM Token.
+        username (str): The SonarQube ALM Token Username.
+    """
+    alm_name: str
+    access_token: str
+    token_username: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check alm_name
+        if not self.alm_name:
+            raise ValueError("Setting : The 'alm_name' field is required.")
+
+        # Check access_token
+        if not self.access_token:
+            raise ValueError("Setting : The 'access_token' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+
 # Settings Configuration
 @dataclass
 class Setting:
