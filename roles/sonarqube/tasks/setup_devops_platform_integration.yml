@@ -16,6 +16,19 @@
     state: "present"
   when: sonar_github_connector.enabled | default(false)
 
+# Ensure Github Connector Access Token Initialized
+- name: "Ensure Github Connector Access Token Initialized"
+  kube_cloud.general.sonarqube.alm_access_token:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    alm_name: "{{ sonar_github_connector.key | default('github-connector') }}"
+    access_token: "{{ sonar_github_connector.personal_access_token | trim }}"
+    state: "present"
+  when:
+    - sonar_github_connector.enabled | default(false)
+    - sonar_github_connector.personal_access_token | default('') | trim | length > 0
+
 # Ensure Gitlab Connector is Configured
 - name: "Ensure Gitlab Connector is Configured"
   kube_cloud.general.sonarqube.alm_settings_gitlab:

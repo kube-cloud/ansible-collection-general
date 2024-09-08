@@ -425,6 +425,7 @@ sonar_github_connector:
   client_secret: "63abf51ec6640c34d10532df1a729fd2b93b"
   private_key: "-----BEGIN RSA PRIVATE KEY-----...-----END RSA PRIVATE KEY-----"
   encode_parameters: true
+  personal_access_token: ""
 
 # Gitlab Connector
 sonar_gitlab_connector:
