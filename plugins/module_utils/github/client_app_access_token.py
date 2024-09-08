@@ -51,7 +51,8 @@ class AppAccessTokenClient:
         api_version: str = '2022-11-28',
         private_key_format: PrivateKeyFormat = PrivateKeyFormat.PEM_PKCS_8,
         app_private_key_password: str = None,
-        jwt_key_duration: int = 600,
+        jwt_key_duration: int = 30,
+        jwt_exp_clock_drift: int = 60,
         jwt_algorithm: str = 'RS256'
     ):
         """
@@ -104,7 +105,7 @@ class AppAccessTokenClient:
         self.jwt_algorithm = jwt_algorithm
 
         # IAT
-        jwt_iat = int(time.time())
+        jwt_iat = int(time.time()) - jwt_exp_clock_drift
 
         # Initialize Private Key
         compliant_private_key = app_private_key

@@ -55,6 +55,12 @@ options:
         required: false
         type: int
         default: 30
+    jwt_exp_clock_drift:
+        description:
+        - The Github JWT Clock Drift
+        required: false
+        type: int
+        default: 60
     jwt_algorithm:
         description:
         - The Github JWT Algorithm
@@ -119,6 +125,9 @@ class LookupModule(LookupBase):
         # Get Github App JWT Duration
         jwt_key_duration = kwargs.get('jwt_key_duration', 30)
 
+        # Get Github App JWT Clock Drift
+        jwt_exp_clock_drift = kwargs.get('jwt_exp_clock_drift', 60)
+
         # Get Github App JWT Algorithm
         jwt_algorithm = kwargs.get('jwt_algorithm', 'RS256')
 
@@ -150,6 +159,7 @@ class LookupModule(LookupBase):
             app_private_key_password=private_key_password,
             private_key_format=private_key_format,
             jwt_key_duration=jwt_key_duration,
+            jwt_exp_clock_drift=jwt_exp_clock_drift,
             jwt_algorithm=jwt_algorithm
         )
 
