@@ -7,6 +7,7 @@ from typing import List
 
 try:
     import requests
+    from requests.exceptions import HTTPError
     IMPORTS_OK = True
 except ImportError:
     IMPORTS_OK = False
@@ -153,7 +154,7 @@ class GroupGlobalPermissionClient:
             # Raise Exception
             response.raise_for_status()
 
-    def delete_all_permissions(self, group_name: str = ''):
+    def delete_all_permissions(self, group_name: str = '', ignore_error: bool = True):
         """
         Delete all Group Global Permission on SonarQube API.
 
@@ -173,13 +174,23 @@ class GroupGlobalPermissionClient:
         # Iterate on Available Permission List
         for permission_name in GroupGlobalPermission.AVAILABLE_PERMISSIONS:
 
-            # Delete Permission
-            self.delete_permission(
-                permission=GroupGlobalPermission(
-                    group_name=group_name.strip(),
-                    permission_name=permission_name
+            try:
+
+                # Delete Permission
+                self.delete_permission(
+                    permission=GroupGlobalPermission(
+                        group_name=group_name.strip(),
+                        permission_name=permission_name
+                    )
                 )
-            )
+
+            except HTTPError as e:
+
+                # If Status code is not 404
+                if e.response.status_code != 404 and not ignore_error:
+
+                    # Rethrow
+                    raise e
 
     def initialize_permissions(self, group_name: str = '', permission_names: List[str] = None) -> List[GroupGlobalPermission]:
         """
@@ -201,7 +212,8 @@ class GroupGlobalPermissionClient:
 
         # Clean Group Permissions
         self.delete_all_permissions(
-            group_name=group_name
+            group_name=group_name,
+            ignore_error=True
         )
 
         # Created Permissions

@@ -55,7 +55,7 @@ sonar_local_users: []
 #    name: "Jean-Jacques ETUNE NGI"
 #    scm_accounts:
 #      - "user1"
-#    sonar_local_users:
+#    sonar_groups:
 #      - cicd-tools
 #    state: "present"
 
