@@ -90,6 +90,10 @@
 - name: "Initialize DevOps Platform Integration"
   ansible.builtin.include_tasks: setup_devops_platform_integration.yml
 
+# Initialize DevOps Platform Projects
+- name: "Initialize DevOps Platform Integration"
+  ansible.builtin.include_tasks: setup_devops_platform_projects.yml
+ 
 # Trigger Handler Execution.
 - name: "Flush handlers"
   ansible.builtin.meta: flush_handlers
