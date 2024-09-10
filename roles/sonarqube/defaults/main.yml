@@ -67,21 +67,21 @@ sonar_db_pass: ""
 
 # SonarQube JDBC URL
 # examples (from default sonar.properties file):
-#----- MySQL 5.6 or greater
+# MySQL 5.6 or greater
 # Only InnoDB storage engine is supported (not myISAM).
 # Only the bundled driver is supported. It can not be changed.
-#sonar_jdbc_url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance
-#----- Oracle 11g/12c
+# sonar_jdbc_url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance
+# Oracle 11g/12c
 # - Only thin client is supported
 # - Only versions 11.2.x and 12.x of Oracle JDBC driver are supported
 # - The JDBC driver must be copied into the directory extensions/jdbc-driver/oracle/
 # - If you need to set the schema, please refer to http://jira.sonarsource.com/browse/SONAR-5000
-#sonar_jdbc_url=jdbc:oracle:thin:@localhost:1521/XE
-#----- PostgreSQL 8.x/9.x
+# sonar_jdbc_url=jdbc:oracle:thin:@localhost:1521/XE
+# PostgreSQL 8.x/9.x
 # If you don't use the schema named "public", please refer to http://jira.sonarsource.com/browse/SONAR-5000
-#sonar_jdbc_url=jdbc:postgresql://localhost/sonar
+# sonar_jdbc_url=jdbc:postgresql://localhost/sonar
 
-#----- Microsoft SQLServer 2008/2012/2014 and SQL Azure
+# Microsoft SQLServer 2008/2012/2014 and SQL Azure
 # A database named sonar must exist and its collation must be case-sensitive (CS) and accent-sensitive (AS)
 # Use the following connection string if you want to use integrated security with Microsoft Sql Server
 # Do not set sonar.jdbc.username or sonar.jdbc.password property if you are using Integrated Security
@@ -90,10 +90,10 @@ sonar_db_pass: ""
 # and copy sqljdbc_auth.dll to your path. You have to copy the 32 bit or 64 bit version of the dll
 # depending upon the architecture of your server machine.
 # This version of SonarQube has been tested with Microsoft SQL JDBC version 4.1
-#sonar_jdbc_url=jdbc:sqlserver://localhost;databaseName=sonar;integratedSecurity=true
+# sonar_jdbc_url=jdbc:sqlserver://localhost;databaseName=sonar;integratedSecurity=true
 # Use the following connection string if you want to use SQL Auth while connecting to MS Sql Server.
 # Set the sonar.jdbc.username and sonar.jdbc.password appropriately.
-#sonar_jdbc_url=jdbc:sqlserver://localhost;databaseName=sonar
+# sonar_jdbc_url=jdbc:sqlserver://localhost;databaseName=sonar
 
 sonar_db_host: "localhost"
 sonar_db_port: 5432
@@ -196,7 +196,7 @@ sonar_ce_worker_count: 1
 #    is not enabled by default on your environment:
 #    http://docs.oracle.com/javase/8/docs/technotes/guides/vm/server-class.html
 #
-# "-Xmx1G -Xms1G -Xss256k -Djava.net.preferIPv4Stack=true -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
+# "-Xmx1G -Xms1G -Djava.net.preferIPv4Stack=true -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
 sonar_search_java_opts: ""
 
 # Same as previous property, but allows to not repeat all other settings like -Xmx
@@ -310,8 +310,7 @@ sonar_saml:
 # sonar_email:
 #  email.smtp_host.secured: "smtp.mail.ovh.net"
 #  email.smtp_port.secured: 465
-#  # Autorized : ssl, starttls
-#  email.smtp_secure_connection.secured: "ssl" 
+#  email.smtp_secure_connection.secured: "ssl"
 #  email.from: "demo@server.com"
 #  email.fromName: "SonarQube"
 #  email.prefix: "[SonarQube] "

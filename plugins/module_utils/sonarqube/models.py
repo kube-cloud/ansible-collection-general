@@ -4,6 +4,7 @@ __metaclass__ = type
 from typing import List, Dict, Optional, Type
 from dataclasses import dataclass, field
 from .enums import DevOpsPlatform
+from .enums import ProjectVisibility
 
 
 # ALM Access Token Details
@@ -825,3 +826,141 @@ class AlmSettingsBitbucketCloud:
             getattr(self, "client_secret", '') == getattr(other, "client_secret", '') and
             getattr(self, "workspace", '') == getattr(other, "workspace", '')
         )
+
+
+# DOP Informations
+@dataclass
+class DevOpsPlatform:
+    """
+    Represents SonarQube Project.
+    Refer at : `https://next.sonarqube.com/sonarqube/web_api_v2#/dop-translation/dop-settings--get`
+
+    Attributes:
+        id (str): The SonarQube DOP ID.
+        type (str): The SonarQube DOP type.
+        key (str): The SonarQube DOP Key.
+        url (str): The SonarQube DOP URL.
+        app_id (str): The SonarQube DOP AppId.
+    """
+    id: Optional[str] = ''
+    type: Optional[str] = ''
+    key: Optional[str] = ''
+    url: Optional[str] = ''
+    app_id: Optional[str] = ''
+
+    @classmethod
+    def from_api_response(cls: Type['DevOpsPlatform'], response: dict) -> 'DevOpsPlatform':
+        """
+        Build and Returns a Instance representation from with API Response.
+        """
+        return DevOpsPlatform(
+            id=response.get('id', None),
+            type=response.get('type', None),
+            key=response.get('key', None),
+            url=response.get('url', None),
+            app_id=response.get('appId', None)
+        )
+
+
+# Project Informations
+@dataclass
+class Project:
+    """
+    Represents SonarQube Project.
+    Refer at : `https://next.sonarqube.com/sonarqube/web_api/api/projects`
+
+    Attributes:
+        key (str): The SonarQube Project Key.
+        name (str): The SonarQube Project Name.
+        qualifier (str): The SonarQube Project Qualifier.
+        visibility (str): The SonarQube Project Visibility
+        revision (str): The SonarQube Project Revision
+        managed (bool): The SonarQube Project Management Status
+    """
+    key: str
+    name: Optional[str] = None
+    qualifier: Optional[str] = None
+    visibility: Optional[ProjectVisibility] = ProjectVisibility.PUBLIC
+    revision: Optional[str] = None
+    managed: Optional[bool] = None
+
+    def __post_init__(self):
+
+        # Check key
+        if not self.key:
+            raise ValueError("Setting : The 'key' field is required.")
+
+    def __str__(self):
+        """
+        Returns a dictionary representation of the object.
+        """
+        return str(self.__dict__)
+
+    @classmethod
+    def from_api_response(cls: Type['Project'], response: dict) -> 'Project':
+        """
+        Returns a dictionary representation Compliant with Create User API Model.
+        """
+        return Project(
+            key=response.get('key'),
+            name=response.get('name', None),
+            qualifier=response.get('qualifier', None),
+            visibility=ProjectVisibility.create(response.get('visibility', None)),
+            managed=response.get('managed', None)
+        )
+
+
+# Import DevOps Platform Project Specification
+@dataclass
+class ImportDopProjectSpec:
+    """
+    Represents SonarQube Search Project Parameters.
+    Refer at : `https://next.sonarqube.com/sonarqube/web_api_v2#/dop-translation/bound-projects--post`
+
+    Attributes:
+        project_key (str): The SonarQube Project Key.
+        project_name (str): The SonarQube Project Name.
+        dev_ops_platform_key (str): The SonarQube Source DevOps Platform Key.
+        repository_identifier (str): The DevOps Platform Repository Identifier
+        monorepo (bool): The SonarQube Project Mono Repository Status
+        project_identifier (str): The SonarQube Project Identifier
+        new_code_definition_type (ProjectCodeDefinitionType): The SonarQube Project New Code Definition Type
+        new_code_definition_value (str): The SonarQube Project New Code Definitio Value
+    """
+    project_key: str
+    project_name: str
+    dev_ops_platform_key: str
+    repository_identifier: str
+    monorepo: bool
+    project_identifier: Optional[str] = None
+
+    def __post_init__(self):
+
+        # Check project_key
+        if not self.project_key:
+            raise ValueError("Setting : The 'project_key' field is required.")
+
+        # Check project_name
+        if not self.project_name:
+            raise ValueError("Setting : The 'project_name' field is required.")
+
+        # Check dev_ops_platform_key
+        if not self.dev_ops_platform_key:
+            raise ValueError("Setting : The 'dev_ops_platform_key' field is required.")
+
+        # Check repository_identifier
+        if not self.repository_identifier:
+            raise ValueError("Setting : The 'repository_identifier' field is required.")
+
+    def to_api_json(self, dop_id: str = '') -> dict:
+        """
+        Returns a dictionary representation Compliant with API Model.
+        """
+        return {
+            "projectKey": self.project_key,
+            "projectName": self.project_name,
+            "devOpsPlatformSettingId": dop_id,
+            "repositoryIdentifier": self.repository_identifier,
+            "monorepo": self.monorepo,
+            "projectIdentifier": self.project_identifier
+        }
