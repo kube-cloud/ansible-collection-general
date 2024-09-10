@@ -30,6 +30,18 @@
         user_local='true'
       where login='{{ __sonar_admin_username }}'
 
+# Ensure Groups are Presents
+- name: "Ensure Groups are Presents"
+  kube_cloud.general.sonarqube.group:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    group_name: "{{ item.group_name }}"
+    group_description: "{{ item.group_description | default(omit) }}"
+    global_permissions: "{{ item.global_permissions | default([]) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ sonar_groups | default([]) }}"
+
 # Ensure Local Users are Presents
 - name: "Ensure Local Users are Presents"
   kube_cloud.general.sonarqube.user:
@@ -42,5 +54,6 @@
     user_local: "{{ item.local | default(true) }}"
     user_name: "{{ item.name }}"
     user_scm_accounts: "{{ item.scm_accounts | default([]) }}"
+    user_groups: "{{ item.user_groups | default(omit) }}"
     state: "{{ item.state | default('present') }}"
   loop: "{{ sonar_local_users }}"

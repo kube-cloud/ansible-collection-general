@@ -40,6 +40,13 @@ sonar_user: sonar
 # SonarQube Default Admin Password
 sonar_admin_password: 'admin'
 
+# Sonarqube groups
+sonar_groups: []
+#  - group_name: cicd-tools
+#    group_description: Continous Integration/Deployment Tools
+#    global_permissions:
+#      - scan
+
 # Sonarqube Local users
 sonar_local_users: []
 #  - login: "user1"
@@ -48,6 +55,8 @@ sonar_local_users: []
 #    name: "Jean-Jacques ETUNE NGI"
 #    scm_accounts:
 #      - "user1"
+#    sonar_local_users:
+#      - cicd-tools
 #    state: "present"
 
 # SonarQube service LimitNOFILE parameter
