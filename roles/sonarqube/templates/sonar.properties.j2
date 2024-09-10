@@ -151,9 +151,15 @@ sonar.path.temp={{ sonar_temp_dir | default('temp') }}
 {% if sonar_additional_properties is defined %}
 #--------------------------------------------------------------------------------------------------
 # ADDITIONAL PROPERIES
-{%   for p in sonar_additional_properties | dict2items %}
+{% for p in sonar_additional_properties | dict2items %}
+{% if p.value.single_value is defined %}
+{{ p.key }} = {{ p.value.single_value }}
+{% elif p.value.multiple_value is defined %}
+{{ p.key }} = {{ p.value.multiple_value | default('') }}
+{% else %}
 {{ p.key }} = {{ p.value }}
-{%   endfor %}
+{% endif %}
+{% endfor %}
 {% endif %}
 
 #--------------------------------------------------------------------------------------------------

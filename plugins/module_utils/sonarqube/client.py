@@ -12,6 +12,7 @@ from .client_alm_settings_azure import AlmSettingsAzureClient
 from .client_alm_settings_bitbucket import AlmSettingsBitbucketClient
 from .client_alm_settings_bitbucket_cloud import AlmSettingsBitbucketCloudClient
 from .client_alm_access_token import AlmAccessTokenClient
+from .client_projects import ProjectClient
 
 try:
     from requests.auth import HTTPBasicAuth     # type: ignore
@@ -127,6 +128,12 @@ class Client:
 
         # Initialize Access Token ALM Client
         self.alm_access_token = AlmAccessTokenClient(
+            base_url=base_url,
+            auth=self.auth
+        )
+
+        # Initialize Project Client
+        self.project = ProjectClient(
             base_url=base_url,
             auth=self.auth
         )
