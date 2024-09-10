@@ -1,0 +1,16 @@
+---
+
+# Ensure All DOP Project Imported
+- name: "Ensure Github Connector is Configured"
+  kube_cloud.general.sonarqube.dop_project:
+    base_url: "{{ __sonarqube_base_url }}"
+    username: "{{ __sonar_admin_username }}"
+    password: "{{ sonar_admin_password }}"
+    project_key: "{{ item.project_key }}"
+    project_name: "{{ item.project_name | default(item.project_key) }}"
+    dev_ops_platform_key: "{{ item.dev_ops_platform_key }}"
+    repository_identifier: "{{ item.repository_identifier }}"
+    monorepo: "{{ item.monorepo | default(true) }}"
+    project_identifier: "{{ item.project_identifier | default(omit) }}"
+    state: "{{ 'present' if item.enabled | default(true) else 'absent' }}"
+  loop: "{{ sonar_dop_projects | default([]) }}"

@@ -446,3 +446,12 @@ sonar_bitbucket_connector:
   key: "sonatqube-bitbucket-connector-name"
   url: "https://yourbitbucket.yourdomain.com"
   personal_access_token: "mty33wzkf2g4yrwo3ajvhhwr4ls7a"
+
+# Sonarqube DOP Projects to Imports
+sonar_dop_projects:
+  - enabled: false
+    project_key: sonar-project-key
+    project_name: sonar-project-name
+    dev_ops_platform_key: github-connector
+    repository_identifier: kube-cloud/some-project-repository
+    monorepo: true 
