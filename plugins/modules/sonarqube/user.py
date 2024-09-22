@@ -195,10 +195,10 @@ def build_ansible_module():
         password=dict(type='str', required=True, no_log=True),
         user_login=dict(type='str', required=True, no_log=True),
         user_password=dict(type='str', required=False, default=None, no_log=True),
-        user_email=dict(type='str', required=False, default=None),
-        user_name=dict(type='str', required=False, default=None),
-        user_local=dict(type='bool', required=False, default=True),
-        user_scm_accounts=dict(type='list', elements='str', required=False, default=[]),
+        user_email=dict(type='str', required=False, default=None, no_log=True),
+        user_name=dict(type='str', required=False, default=None, no_log=True),
+        user_local=dict(type='bool', required=False, default=True, no_log=False),
+        user_scm_accounts=dict(type='list', elements='str', required=False, default=[], no_log=False),
         user_groups=dict(type='list', elements='str', required=False, default=[], no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )

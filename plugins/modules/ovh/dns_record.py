@@ -127,18 +127,18 @@ def build_ansible_module():
 
     # Build Module Arguments Specification
     module_specification = dict(
-        endpoint=dict(type='str', required=True),
+        endpoint=dict(type='str', required=True, no_log=False),
         application_key=dict(type='str', required=True, no_log=True),
         application_secret=dict(type='str', required=True, no_log=True),
         consumer_key=dict(type='str', required=True, no_log=True),
-        domain=dict(type='str', required=True),
-        record_name=dict(type='str', required=True),
+        domain=dict(type='str', required=True, no_log=False),
+        record_name=dict(type='str', required=True, no_log=False),
         record_type=dict(type='str', default='A', choices=[
             'A', 'AAAA', 'CAA', 'CNAME', 'DKIM', 'DMARC', 'DNAME', 'LOC',
             'MX', 'NAPTR', 'NS', 'PTR', 'SPF', 'SRV', 'SSHFP', 'TLSA', 'TXT'
-        ]),
-        target=dict(type='str', required=True),
-        ttl=dict(type='int', default=3600),
+        ], no_log=False),
+        target=dict(type='str', required=True, no_log=False),
+        ttl=dict(type='int', default=3600, no_log=False),
         state=dict(type='str', default='present', choices=['present', 'absent'])
     )
 

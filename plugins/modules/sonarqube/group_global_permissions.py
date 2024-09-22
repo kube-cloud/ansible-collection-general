@@ -138,7 +138,7 @@ def build_ansible_module():
         username=dict(type='str', required=True, no_log=True),
         password=dict(type='str', required=True, no_log=True),
         group_name=dict(type='str', required=True),
-        permission_name=dict(type='str', required=True, choices=GroupGlobalPermission.AVAILABLE_PERMISSIONS),
+        permission_name=dict(type='str', required=True, choices=GroupGlobalPermission.AVAILABLE_PERMISSIONS, no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 

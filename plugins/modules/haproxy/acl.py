@@ -283,17 +283,17 @@ def build_ansible_module():
 
     # Build Module Arguments Specification
     module_specification = dict(
-        base_url=dict(type='str', required=True),
+        base_url=dict(type='str', required=True, no_log=False),
         username=dict(type='str', required=True, no_log=True),
         password=dict(type='str', required=True, no_log=True),
-        api_version=dict(type='str', required=False, default='v2'),
-        transaction_id=dict(type='str', required=False, default=''),
-        force_reload=dict(type='bool', required=False, default=True),
-        acl_parent_name=dict(type='str', required=True),
-        acl_parent_type=dict(type='str', required=True, choices=['frontend', 'backend']),
-        acl_name=dict(type='str', required=False, default=''),
-        acl_criterion=dict(type='str', required=False, default=''),
-        acl_value=dict(type='str', required=False, default=''),
+        api_version=dict(type='str', required=False, default='v2', no_log=False),
+        transaction_id=dict(type='str', required=False, default='', no_log=False),
+        force_reload=dict(type='bool', required=False, default=True, no_log=False),
+        acl_parent_name=dict(type='str', required=True, no_log=False),
+        acl_parent_type=dict(type='str', required=True, choices=['frontend', 'backend'], no_log=False),
+        acl_name=dict(type='str', required=False, default='', no_log=False),
+        acl_criterion=dict(type='str', required=False, default='', no_log=False),
+        acl_value=dict(type='str', required=False, default='', no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 

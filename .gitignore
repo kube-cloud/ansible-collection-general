@@ -1,3 +1,5 @@
+*.DS_Store
+
 # Any Generated Archive
 *.tar.gz
 

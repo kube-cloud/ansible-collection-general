@@ -269,16 +269,16 @@ def build_ansible_module():
 
     # Build Module Arguments Specification
     module_specification = dict(
-        base_url=dict(type='str', required=True),
+        base_url=dict(type='str', required=True, no_log=False),
         username=dict(type='str', required=True, no_log=True),
         password=dict(type='str', required=True, no_log=True),
-        api_version=dict(type='str', required=False, default='v2'),
-        transaction_id=dict(type='str', required=False, default=''),
-        force_reload=dict(type='bool', required=False, default=True),
-        rule_frontend=dict(type='str', required=True),
-        rule_cond=dict(type='str', required=False, choices=['if', 'unless']),
-        rule_cond_test=dict(type='str', required=False),
-        rule_name=dict(type='str', required=False),
+        api_version=dict(type='str', required=False, default='v2', no_log=False),
+        transaction_id=dict(type='str', required=False, default='', no_log=False),
+        force_reload=dict(type='bool', required=False, default=True, no_log=False),
+        rule_frontend=dict(type='str', required=True, no_log=False),
+        rule_cond=dict(type='str', required=False, choices=['if', 'unless'], no_log=False),
+        rule_cond_test=dict(type='str', required=False, no_log=False),
+        rule_name=dict(type='str', required=False, no_log=False),
         state=dict(type='str', required=False, default='present', choices=['present', 'absent'])
     )
 
