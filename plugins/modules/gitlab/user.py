@@ -14,7 +14,7 @@ module: user
 version_added: "1.0.0"
 short_description: User Management
 description:
-    - Used to Create, Update, Delete User Password
+    - Used to Create, Update, Delete User
 requirements:
     - requests
 author: Jean-Jacques ETUNE NGI (@jetune) <jetune@kube-cloud.com>
