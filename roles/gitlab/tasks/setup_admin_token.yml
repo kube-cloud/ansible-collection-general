@@ -1,0 +1,13 @@
+---
+
+# Ensure Admin Access Token is Generated
+- name: "Ensure Admin Access Token is Generated"
+  ansible.builtin.command: |
+    sudo gitlab-rails runner "
+      user_id = {{ _gitlab_admin_userid }}
+      token_name = '{{ token_name }}'
+      token = User.find(user_id).personal_access_tokens.create(scopes: ['api'], name: token_name, expires_at: {{ token_expiration }})
+      token.set_token('{{ _gitlab_admin_access_token }}')
+      token.save!
+    "
+  register: gitlab_admin_access_token_result

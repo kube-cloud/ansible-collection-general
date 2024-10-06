@@ -1,0 +1,16 @@
+---
+
+# Ensure Admin Access Token is Revoked
+- name: "Ensure Admin Access Token is Revoked"
+  ansible.builtin.command: |
+    sudo gitlab-rails runner "
+      userid = {{ _gitlab_admin_userid }}
+      token_name = '{{ _gitlab_admin_token_name }}'
+      user = User.find(userid)
+      token = user.personal_access_tokens.where(name: token_name, revoked: false).first
+      if token
+        token.revoke!
+        puts 'Token [#{token_name}] has been Revoked.'
+      end
+    "
+  ignore_errors: true

@@ -1,0 +1,120 @@
+---
+
+# Include OS-specific variables.
+- name: "Include OS-specific variables."
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+# Check if GitLab configuration file already exists.
+- name: "Check if GitLab configuration file already exists."
+  ansible.builtin.stat: path=/etc/gitlab/gitlab.rb
+  register: gitlab_config_file
+
+# Check if GitLab is already installed.
+- name: "Check if GitLab is already installed."
+  ansible.builtin.stat: path=/usr/bin/gitlab-ctl
+  register: gitlab_file
+
+# Install GitLab and its dependencies.
+- name: "Install GitLab dependencies."
+  ansible.builtin.package:
+    name: "{{ gitlab_dependencies }}"
+    state: present
+
+# Install GitLab dependencies (Debian).
+- name: "Install GitLab dependencies (Debian)."
+  ansible.builtin.apt:
+    name: gnupg2
+    state: present
+  when: ansible_os_family == 'Debian'
+
+# Download GitLab repository installation script.
+- name: "Download GitLab repository installation script."
+  ansible.builtin.get_url:
+    url: "{{ gitlab_repository_installation_script_url }}"
+    dest: /tmp/gitlab_install_repository.sh
+    validate_certs: "{{ gitlab_download_validate_certs }}"
+  when: not gitlab_file.stat.exists
+
+# Install GitLab repository.
+- name: "Install GitLab repository."
+  ansible.builtin.command: bash /tmp/gitlab_install_repository.sh
+  register: output
+  when: not gitlab_file.stat.exists
+
+# Define the Gitlab package name.
+- name: "Define the Gitlab package name."
+  ansible.builtin.set_fact:
+    gitlab_package_name: "{{ gitlab_edition }}{{ gitlab_package_version_separator }}{{ gitlab_version }}"
+  when: gitlab_version | default(false)
+
+# Install GitLab
+- name: "Install GitLab"
+  ansible.builtin.package:
+    name: "{{ gitlab_package_name | default(gitlab_edition) }}"
+    state: present
+  async: 300
+  poll: 5
+  when: not gitlab_file.stat.exists
+
+# Start and configure GitLab. Sometimes the first run fails, but after that,
+# restarts fix problems, so ignore failures on this run.
+- name: "Reconfigure GitLab (first run)."
+  ansible.builtin.command: >
+    gitlab-ctl reconfigure
+    creates=/var/opt/gitlab/bootstrapped
+  failed_when: false
+
+# Create GitLab SSL configuration folder.
+- name: "Create GitLab SSL configuration folder."
+  ansible.builtin.file:
+    path: /etc/gitlab/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+  when: gitlab_create_self_signed_cert
+
+# Create self-signed certificate.
+- name: "Create self-signed certificate."
+  ansible.builtin.command: >
+    openssl req -new -nodes -x509 -subj "{{ gitlab_self_signed_cert_subj }}"
+    -days 3650 -keyout {{ gitlab_ssl_certificate_key }} -out {{ gitlab_ssl_certificate }} -extensions v3_ca
+    creates={{ gitlab_ssl_certificate }}
+  when: gitlab_create_self_signed_cert
+
+# Copy GitLab configuration file.
+- name: "Copy GitLab configuration file."
+  ansible.builtin.template:
+    src: "{{ gitlab_config_template }}"
+    dest: /etc/gitlab/gitlab.rb
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart gitlab
+
+# Define the Gitlab Admin Token.
+- name: "Define the Gitlab Admin Token"
+  ansible.builtin.set_fact:
+    _gitlab_admin_access_token: "glpat-adm-{{ lookup('pipe', 'uuidgen') }}"
+    _gitlab_admin_username: "{{ gitlab_admin_username }}"
+    _gitlab_admin_userid: "1"
+    _gitlab_admin_token_expiration: "1.hours.from_now"
+    _gitlab_admin_token_name: "role-automation-token-{{ '%Y-%m-%d-%Hh%Mm' | strftime(ansible_date_time.epoch) }}"
+
+# Setup Admin Password
+- name: "Setup Admin Token"
+  ansible.builtin.include_tasks: setup_admin_token.yml
+
+# Setup Admin Password
+- name: "Setup Admin Password"
+  ansible.builtin.include_tasks: setup_admin_password.yml
+
+# Execute Custom Tasks File
+- name: "Execute Custom Tasks File"
+  ansible.builtin.include_tasks: "{{ gitlab_custom_tasks_file_path }}"
+  when:
+    - gitlab_custom_tasks_file_path | default('') | trim | length > 0
+
+# Revoke Admin Token
+- name: "Revoke Admin Token"
+  ansible.builtin.include_tasks: revoke_admin_token.yml
