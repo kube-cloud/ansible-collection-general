@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from typing import List, Dict, Optional, Type
+from typing import Optional, Type
 from dataclasses import dataclass, field
 
 
@@ -16,7 +16,7 @@ class User:
         username (str): The User Login.
         password (str): The User Password.
         name (str): The User Name.
-        state (str): The User State.
+        user_state (str): The User State.
         locked (bool): The User Locked Flag.
         avatar_url (str): The User Avatar URL.
         web_url (str): The User Web URL.
@@ -54,11 +54,12 @@ class User:
         skip_confirmation (bool): The User Skip Confirmation Flag (For Creation).
 
     """
-    id: Optional[int] = field(default=None)                        # The User ID.
     username: str                                                  # The User Login.
-    password: Optional[str] = field(default=None)                  # The User Password (For Creation).
     name: str                                                      # The User Name.
-    state: Optional[str] = field(default=None)                     # The User State.
+    email: str                                                     # The User Private Email.
+    id: Optional[int] = field(default=None)                        # The User ID.
+    password: Optional[str] = field(default=None)                  # The User Password (For Creation).
+    user_state: Optional[str] = field(default=None)                # The User State.
     locked: Optional[bool] = field(default=None)                   # The User Locked Flag.
     avatar_url: Optional[str] = field(default=None)                # The User Avatar URL.
     web_url: Optional[str] = field(default=None)                   # The User Web URL.
@@ -78,7 +79,6 @@ class User:
     last_sign_in_at: Optional[str] = field(default=None)           # The User Last Sign In Date.
     confirmed_at: Optional[str] = field(default=None)              # The User Confirmation Date.
     last_activity_on: Optional[str] = field(default=None)          # The User Last Activity Date.
-    email: str                                                     # The User Private Email.
     theme_id: Optional[str] = field(default=None)                  # The User Theme ID.
     color_scheme_id: Optional[str] = field(default=None)           # The User Color Scheme ID.
     projects_limit: Optional[str] = field(default=None)            # The User Project Limit.
@@ -94,7 +94,6 @@ class User:
     auditor: Optional[bool] = field(default=None)                  # The User Auditor Flag (Used for Creation).
     note: Optional[str] = field(default=None)                      # The User Admin Note (Used for Creation).
     skip_confirmation: Optional[bool] = field(default=None)        # The User Skip Configmation Flag (Used for Creation).
-
 
     def __post_init__(self):
 
@@ -126,7 +125,7 @@ class User:
             username=response.get('username', None),
             password=response.get('password', None),
             name=response.get('name', None),
-            state=response.get('state', None),
+            user_state=response.get('state', None),
             locked=response.get('locked', None),
             avatar_url=response.get('avatar_url', None),
             web_url=response.get('web_url', None),

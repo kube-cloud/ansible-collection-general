@@ -4,7 +4,6 @@ __metaclass__ = type
 from ..commons import filter_none, is_2xx
 from ..commons_security import HttpTokenAuth
 from ...module_utils.gitlab.models import User
-from typing import List
 
 try:
     import requests
@@ -20,7 +19,7 @@ class UserClient:
 
     Attributes:
         base_url (str): The base URL of the Gitlab API.
-        auth (HTTPBasicAuth): The HTTP basic authentication credentials.
+        auth (HttpTokenAuth): The HTTP Token authentication credentials.
     """
 
     # Définir la constante pour application/json
