@@ -12,8 +12,8 @@ except ImportError:
     IMPORTS_OK = False
 
 
-# HTTP Token Based Authentication
-class HttpTokenAuth:
+# JWT Token Based Authentication
+class JwtTokenAuth:
 
     # Initialize Instance
     def __init__(
@@ -36,6 +36,27 @@ class HttpTokenAuth:
         # Get Authorization Header for Request
         return "Bearer {token}".format(
             token=self.jwt
+        )
+
+
+# HTTP Token Based Authentication
+class HttpTokenAuth:
+
+    # Initialize Instance
+    def __init__(
+        self,
+        token: str
+    ):
+
+        # Build JWT
+        self.token = token
+
+    # Override Call function
+    def get_auth_header_value(self):
+
+        # Get Authorization Header for Request
+        return "Bearer {token}".format(
+            token=self.token
         )
 
 

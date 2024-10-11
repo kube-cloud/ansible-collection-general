@@ -4,7 +4,7 @@ __metaclass__ = type
 from ...module_utils.commons import is_2xx
 from ...module_utils.github.enums import PrivateKeyFormat
 from ...module_utils.commons_security import convert_to_pkcs8
-from ...module_utils.commons_security import HttpTokenAuth
+from ...module_utils.commons_security import JwtTokenAuth
 
 try:
     import requests
@@ -24,7 +24,7 @@ class AppAccessTokenClient:
         app_installation_id (str): The Github App Installation ID (eg. 123456789)
         app_id (str): The Github App ID (eg. 963346)
         jwt_algorithm (str): The Temporary Generated JWT Algorithm (eg. RS256)
-        auth (HttpTokenAuth): The HTTP Token authentication credentials.
+        auth (JwtTokenAuth): The HTTP Token authentication credentials.
     """
 
     # Define Content Type application/json
@@ -120,7 +120,7 @@ class AppAccessTokenClient:
             )
 
         # Initialize Auth
-        self.auth = HttpTokenAuth(
+        self.auth = JwtTokenAuth(
             jwt_algorithm=jwt_algorithm,
             jwt_payload={
                 "iss": app_id,

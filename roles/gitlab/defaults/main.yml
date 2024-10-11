@@ -1,0 +1,186 @@
+---
+
+# ALL Config : https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template
+
+# General config.
+gitlab_domain: gitlab
+gitlab_external_url: "https://{{ gitlab_domain }}/"
+gitlab_git_data_dir: "/var/opt/gitlab/git-data"
+gitlab_edition: "gitlab-ce"
+gitlab_version: ''
+gitlab_backup_path: "/var/opt/gitlab/backups"
+gitlab_config_template: "gitlab.rb.j2"
+
+# Admin configuration
+gitlab_admin_password_hash_file: "/etc/gitlab/admin_password_hash"
+gitlab_initial_password_file: "/etc/gitlab/initial_root_password"
+gitlab_admin_username: "admin"
+gitlab_admin_password: "admin"
+gitlab_admin_password_force_update: false
+
+# SSL Configuration.
+gitlab_redirect_http_to_https: true
+gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+
+# SSL Self-signed Certificate Configuration.
+gitlab_create_self_signed_cert: true
+gitlab_self_signed_cert_subj: "/C=US/ST=Missouri/L=Saint Louis/O=IT/CN={{ gitlab_domain }}"
+
+# LDAP Configuration.
+gitlab_ldap_enabled: false
+gitlab_ldap_host: "example.com"
+gitlab_ldap_port: "389"
+gitlab_ldap_uid: "sAMAccountName"
+gitlab_ldap_method: "plain"
+gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
+gitlab_ldap_password: "password"
+gitlab_ldap_base: "DC=example,DC=com"
+
+# SMTP Configuration
+gitlab_smtp_enable: false
+gitlab_smtp_address: "smtp.server"
+gitlab_smtp_port: "465"
+gitlab_smtp_user_name: "smtp user"
+gitlab_smtp_password: "smtp password"
+gitlab_smtp_domain: "example.com"
+gitlab_smtp_authentication: "login"
+gitlab_smtp_enable_starttls_auto: true
+gitlab_smtp_tls: false
+gitlab_smtp_openssl_verify_mode: "none"
+gitlab_smtp_ca_path: "/etc/ssl/certs"
+gitlab_smtp_ca_file: "/etc/ssl/certs/ca-certificates.crt"
+
+# 2-way SSL Client Authentication support.
+gitlab_nginx_ssl_verify_client: ""
+gitlab_nginx_ssl_client_certificate: ""
+
+# Probably best to leave this as the default, unless doing testing.
+gitlab_restart_handler_failed_when: 'gitlab_restart.rc != 0'
+
+# Dependencies.
+gitlab_dependencies:
+  - openssh-server
+  - postfix
+  - curl
+  - openssl
+  - tzdata
+
+# Optional settings.
+gitlab_time_zone: "UTC"
+gitlab_backup_keep_time: "604800"
+gitlab_download_validate_certs: true
+gitlab_default_theme: '2'
+
+# Email configuration.
+gitlab_email_enabled: false
+gitlab_email_from: "gitlab@example.com"
+gitlab_email_display_name: "Gitlab"
+gitlab_email_reply_to: "gitlab@example.com"
+
+# Registry configuration.
+gitlab_registry_enable: false
+gitlab_registry_external_url: "https://gitlab.example.com:4567"
+gitlab_registry_nginx_ssl_certificate: "/etc/gitlab/ssl/gitlab.crt"
+gitlab_registry_nginx_ssl_certificate_key: "/etc/gitlab/ssl/gitlab.key"
+
+# LetsEncrypt configuration.
+gitlab_letsencrypt_enable: false
+gitlab_letsencrypt_contact_emails: ["gitlab@example.com"]
+gitlab_letsencrypt_auto_renew_hour: 1
+gitlab_letsencrypt_auto_renew_minute: 30
+gitlab_letsencrypt_auto_renew_day_of_month: "*/7"
+gitlab_letsencrypt_auto_renew: true
+
+# Gitlab Custom Task File Path
+gitlab_custom_tasks_file_path: ''
+
+# SAML Providers Configuration
+
+# https://docs.gitlab.com/ee/integration/saml.html
+# https://docs.gitlab.com/ee/integration/saml.html#configure-saml-support-in-gitlab
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#okta
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#onelogin
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#azure-active-directory
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#google-workspace
+
+gitlab_omniauth_enabled: false
+gitlab_omniauth_allow_single_sign_on: []
+gitlab_omniauth_block_auto_created_users: true
+
+# List of Provider for which Autolink is Enabled (saml, google_oauth2, etc...)
+gitlab_omniauth_auto_link_user: []
+gitlab_omniauth_auto_link_saml_user: false
+gitlab_omniauth_auto_link_ldap_user: false
+gitlab_omniauth_auto_sign_in_with_provider: ''
+
+#[
+# {
+#     name: "google_oauth2",
+#     app_id: "asdf.apps.googleusercontent.com",
+#     app_secret: "12345678",
+#     args: {
+#       access_type: "offline",
+#       approval_prompt: "auto",
+#       hd: "example.com"
+#     }
+# },
+# {
+#   name: "saml",
+#   label: "Provider name",
+#   args: {
+#       assertion_consumer_service_url: "https://gitlab.example.com/users/auth/saml/callback",
+#       idp_cert_fingerprint: "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8",
+#       idp_sso_target_url: "https://login.example.com/idp",
+#       issuer: "https://gitlab.example.com",
+#       name_identifier_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#   }
+# }
+#]
+gitlab_omniauth_providers: []
+
+# Providers for which you want to by pass 2FA (saml, google_oauth2, etc...)
+gitlab_omniauth_allow_bypass_two_factor: []
+
+# Users who create accounts or sign in to GitLab through the listed providers do not get access
+# to internal projects and are marked as external users.
+gitlab_omniauth_external_providers: []
+
+# Providers fro which you want to enable account infos synchronization (saml, google_oauth2, etc...)
+gitlab_omniauth_sync_profile_from_provider: []
+
+# Providers Attributes to synchronize (name, email, location, etc...)
+gitlab_omniauth_sync_profile_attributes: []
+
+# Provider on which Email Synchronization is enabled
+gitlab_omniauth_sync_email_from_provider: ''
+
+# Gitlab Database Properties
+gitlab_external_db_enabled: false
+gitlab_external_db_adapter: 'postgresql'
+gitlab_external_db_encoding: 'utf8'
+gitlab_external_db_collation: ''
+gitlab_external_db_database: 'gitlab'
+gitlab_external_db_username: 'gitlab'
+gitlab_external_db_password: 'gitlab'
+gitlab_external_db_host: 'localhost'
+gitlab_external_db_port: 5432
+gitlab_external_db_socket: ''
+gitlab_external_db_sslmode: ''
+gitlab_external_db_sslcompression: 0
+gitlab_external_db_sslrootcert: ''
+gitlab_external_db_sslcert: ''
+gitlab_external_db_sslkey: ''
+gitlab_external_db_prepared_statements: false
+gitlab_external_db_statements_limit: 1000
+gitlab_external_db_connect_timeout: 30
+gitlab_external_db_keepalives: true
+gitlab_external_db_keepalives_idle: 60
+gitlab_external_db_keepalives_interval: 10
+gitlab_external_db_keepalives_count: 5
+gitlab_external_db_tcp_user_timeout: 10000
+gitlab_external_db_application_name: gitlab
+gitlab_external_db_database_tasks: true
+
+# Initial License File
+gitlab_initial_license_file: ''
