@@ -1,5 +1,7 @@
 ---
 
+# ALL Config : https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template
+
 # General config.
 gitlab_domain: gitlab
 gitlab_external_url: "https://{{ gitlab_domain }}/"
@@ -92,3 +94,93 @@ gitlab_letsencrypt_auto_renew: true
 
 # Gitlab Custom Task File Path
 gitlab_custom_tasks_file_path: ''
+
+# SAML Providers Configuration
+
+# https://docs.gitlab.com/ee/integration/saml.html
+# https://docs.gitlab.com/ee/integration/saml.html#configure-saml-support-in-gitlab
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#okta
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#onelogin
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#azure-active-directory
+# https://docs.gitlab.com/ee/user/group/saml_sso/example_saml_config.html#google-workspace
+
+gitlab_omniauth_enabled: false
+gitlab_omniauth_allow_single_sign_on: []
+gitlab_omniauth_block_auto_created_users: true
+
+# List of Provider for which Autolink is Enabled (saml, google_oauth2, etc...)
+gitlab_omniauth_auto_link_user: []
+gitlab_omniauth_auto_link_saml_user: false
+gitlab_omniauth_auto_link_ldap_user: false
+gitlab_omniauth_auto_sign_in_with_provider: ''
+
+#[
+# {
+#     name: "google_oauth2",
+#     app_id: "asdf.apps.googleusercontent.com",
+#     app_secret: "12345678",
+#     args: {
+#       access_type: "offline",
+#       approval_prompt: "auto",
+#       hd: "example.com"
+#     }
+# },
+# {
+#   name: "saml",
+#   label: "Provider name",
+#   args: {
+#       assertion_consumer_service_url: "https://gitlab.example.com/users/auth/saml/callback",
+#       idp_cert_fingerprint: "43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8",
+#       idp_sso_target_url: "https://login.example.com/idp",
+#       issuer: "https://gitlab.example.com",
+#       name_identifier_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#   }
+# }
+#]
+gitlab_omniauth_providers: []
+
+# Providers for which you want to by pass 2FA (saml, google_oauth2, etc...)
+gitlab_omniauth_allow_bypass_two_factor: []
+
+# Users who create accounts or sign in to GitLab through the listed providers do not get access
+# to internal projects and are marked as external users.
+gitlab_omniauth_external_providers: []
+
+# Providers fro which you want to enable account infos synchronization (saml, google_oauth2, etc...)
+gitlab_omniauth_sync_profile_from_provider: []
+
+# Providers Attributes to synchronize (name, email, location, etc...)
+gitlab_omniauth_sync_profile_attributes: []
+
+# Provider on which Email Synchronization is enabled
+gitlab_omniauth_sync_email_from_provider: ''
+
+# Gitlab Database Properties
+gitlab_external_db_enabled: false
+gitlab_external_db_adapter: 'postgresql'
+gitlab_external_db_encoding: 'utf8'
+gitlab_external_db_collation: ''
+gitlab_external_db_database: 'gitlab'
+gitlab_external_db_username: 'gitlab'
+gitlab_external_db_password: 'gitlab'
+gitlab_external_db_host: 'localhost'
+gitlab_external_db_port: 5432
+gitlab_external_db_socket: ''
+gitlab_external_db_sslmode: ''
+gitlab_external_db_sslcompression: 0
+gitlab_external_db_sslrootcert: ''
+gitlab_external_db_sslcert: ''
+gitlab_external_db_sslkey: ''
+gitlab_external_db_prepared_statements: false
+gitlab_external_db_statements_limit: 1000
+gitlab_external_db_connect_timeout: 30
+gitlab_external_db_keepalives: true
+gitlab_external_db_keepalives_idle: 60
+gitlab_external_db_keepalives_interval: 10
+gitlab_external_db_keepalives_count: 5
+gitlab_external_db_tcp_user_timeout: 10000
+gitlab_external_db_application_name: gitlab
+gitlab_external_db_database_tasks: true
+
+# Initial License File
+gitlab_initial_license_file: ''

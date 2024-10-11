@@ -97,6 +97,83 @@ registry_nginx['ssl_certificate'] = "{{ gitlab_registry_nginx_ssl_certificate }}
 registry_nginx['ssl_certificate_key'] = "{{ gitlab_registry_nginx_ssl_certificate_key }}"
 {% endif %}
 
+### OmniAuth Settings
+###! Docs: https://docs.gitlab.com/ee/integration/omniauth.html
+gitlab_rails['omniauth_enabled'] = {{ gitlab_omniauth_enabled }}
+gitlab_rails['omniauth_allow_single_sign_on'] = {{ gitlab_omniauth_allow_single_sign_on }
+{% if gitlab_omniauth_sync_email_from_provider | default('') | trim | length > 0  %}
+gitlab_rails['omniauth_sync_email_from_provider'] = '{{ gitlab_omniauth_sync_email_from_provider }}'
+{% endif %}
+{% if gitlab_omniauth_sync_profile_from_provider | length > 0 %}
+gitlab_rails['omniauth_sync_profile_from_provider'] = {{ gitlab_omniauth_sync_profile_from_provider }}
+{% endif %}
+{% if gitlab_omniauth_sync_profile_attributes | length > 0 %}
+gitlab_rails['omniauth_sync_profile_attributes'] = {{ gitlab_omniauth_sync_profile_attributes }}
+{% endif %}
+{% if gitlab_omniauth_auto_sign_in_with_provider | default('') | trim | length > 0  %}
+gitlab_rails['omniauth_auto_sign_in_with_provider'] = '{{ gitlab_omniauth_auto_sign_in_with_provider }}'
+{% endif %}
+gitlab_rails['omniauth_block_auto_created_users'] = {{ gitlab_omniauth_block_auto_created_users }}
+gitlab_rails['omniauth_auto_link_ldap_user'] = {{ gitlab_omniauth_auto_link_ldap_user }}
+gitlab_rails['omniauth_auto_link_saml_user'] = {{ gitlab_omniauth_auto_link_saml_user }}
+{% if gitlab_omniauth_auto_link_user | length > 0 %}
+gitlab_rails['omniauth_auto_link_user'] = {{ gitlab_omniauth_auto_link_user }}
+{% endif %}
+{% if gitlab_omniauth_external_providers | length > 0 %}
+gitlab_rails['omniauth_external_providers'] = {{ gitlab_omniauth_external_providers }}
+{% endif %}
+{% if gitlab_omniauth_allow_bypass_two_factor | length > 0 %}
+gitlab_rails['omniauth_allow_bypass_two_factor'] = {{ gitlab_omniauth_allow_bypass_two_factor }}
+{% endif %}
+{% if gitlab_omniauth_providers | length > 0 %}
+gitlab_rails['omniauth_providers'] = {{ gitlab_omniauth_providers }}
+{% endif %}
+
+### GitLab database settings
+###! Docs: https://docs.gitlab.com/omnibus/settings/database.html
+###! **Only needed if you use an external database.**
+%{ if gitlab_external_db_enabled == true }
+gitlab_rails['db_adapter'] = '{{ gitlab_external_db_adapter }}'
+gitlab_rails['db_encoding'] = '{{ gitlab_external_db_encoding }}'
+{% if gitlab_external_db_collation | default('') | trim | length > 0 %}
+gitlab_rails['db_collation'] = '{{ gitlab_external_db_collation | trim }}'
+{% endif %}
+gitlab_rails['db_database'] = '{{ gitlab_external_db_database | trim }}'
+gitlab_rails['db_username'] = '{{ gitlab_external_db_username | trim }}'
+gitlab_rails['db_password'] = '{{ gitlab_external_db_password | trim }}'
+gitlab_rails['db_host'] = '{{ gitlab_external_db_host | trim }}'
+gitlab_rails['db_port'] = {{ gitlab_external_db_port }}
+{% if gitlab_db_socket | default('') | trim | length > 0 %}
+gitlab_rails['db_socket'] = '{{ gitlab_external_db_socket | trim }}'
+{% endif %}
+{% if gitlab_external_db_sslmode | default('') | trim | length > 0 %}
+gitlab_rails['db_sslmode'] = '{{ gitlab_external_db_sslmode | trim }}'
+{% endif %}
+gitlab_rails['db_sslcompression'] = {{ gitlab_external_db_sslcompression }}
+{% if gitlab_external_db_sslrootcert | default('') | trim | length > 0 %}
+gitlab_rails['db_sslrootcert'] = '{{ gitlab_external_db_sslrootcert }}'
+{% endif %}
+{% if gitlab_external_db_sslcert | default('') | trim | length > 0 %}
+gitlab_rails['db_sslcert'] = '{{ gitlab_external_db_sslcert | trim }}'
+{% endif %}
+{% if gitlab_external_db_sslkey | default('') | trim | length > 0 %}
+gitlab_rails['db_sslkey'] = '{{ gitlab_external_db_sslkey | trim }}'
+{% endif %}
+gitlab_rails['db_prepared_statements'] = {{ gitlab_external_db_prepared_statements }}
+gitlab_rails['db_statements_limit'] = {{ gitlab_external_db_statements_limit }}
+gitlab_rails['db_connect_timeout'] = {{ gitlab_external_db_connect_timeout }}
+gitlab_rails['db_keepalives'] = {{ gitlab_external_db_keepalives }}
+gitlab_rails['db_keepalives_idle'] = {{ gitlab_external_db_keepalives_idle }}
+gitlab_rails['db_keepalives_interval'] = {{ gitlab_external_db_keepalives_interval }}
+gitlab_rails['db_keepalives_count'] = {{ gitlab_external_db_keepalives_count }}
+gitlab_rails['db_tcp_user_timeout'] = {{ gitlab_external_db_tcp_user_timeout }}
+gitlab_rails['db_application_name'] = '{{ gitlab_external_db_application_name }}'
+%{ endif }
+
+{% if gitlab_initial_license_file | trim | length > 0 %}
+gitlab_rails['initial_license_file'] = '{{ gitlab_initial_license_file | trim }}'
+{% endif %}
+
 {% if gitlab_extra_settings is defined %}
 # Extra configuration
 {% for extra in gitlab_extra_settings %}
@@ -109,7 +186,6 @@ registry_nginx['ssl_certificate_key'] = "{{ gitlab_registry_nginx_ssl_certificat
 {% endif %}
 {% endfor %}
 {% endfor %}
-
 {% endfor %}
 {% endif %}
 

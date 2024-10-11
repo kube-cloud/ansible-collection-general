@@ -102,8 +102,8 @@
     _gitlab_admin_token_name: "role-automation-token-{{ '%Y-%m-%d-%Hh%Mm' | strftime(ansible_date_time.epoch) }}"
 
 # Setup Admin Password
-- name: "Setup Admin Token"
-  ansible.builtin.include_tasks: setup_admin_token.yml
+#- name: "Setup Admin Token"
+#  ansible.builtin.include_tasks: setup_admin_token.yml
 
 # Setup Admin Password
 - name: "Setup Admin Password"
@@ -114,7 +114,8 @@
   ansible.builtin.include_tasks: "{{ gitlab_custom_tasks_file_path }}"
   when:
     - gitlab_custom_tasks_file_path | default('') | trim | length > 0
+  notify: restart gitlab
 
 # Revoke Admin Token
-- name: "Revoke Admin Token"
-  ansible.builtin.include_tasks: revoke_admin_token.yml
+#- name: "Revoke Admin Token"
+#  ansible.builtin.include_tasks: revoke_admin_token.yml
