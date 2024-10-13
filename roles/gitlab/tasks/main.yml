@@ -114,7 +114,6 @@
   ansible.builtin.include_tasks: "{{ gitlab_custom_tasks_file_path }}"
   when:
     - gitlab_custom_tasks_file_path | default('') | trim | length > 0
-  notify: restart gitlab
 
 # Revoke Admin Token
 #- name: "Revoke Admin Token"

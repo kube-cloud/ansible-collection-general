@@ -164,14 +164,14 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
     ovh_application_key: "<OVH_APPLICATION_KEY>"
     ovh_application_secret: "<OVH_APPLICATION_SECRET>"
     ovh_consumer_key: "<OVH_CONSUMER_KEY>"
-    _acme_base_path: "./target/demo-acme-role/letsencrypt"
-    _acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
-    _acme_account_key_src: "{{ _acme_base_path }}/account.key"
     _acme_version: 2
+    _acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    _acme_base_path: "./target/demo-acme-role/letsencrypt"
+    _acme_account_key_src: "{{ _acme_base_path }}/account.key"
     _acme_cert_common_name: "{{ subdomain }}.{{ root_domain }}"
-    _acme_private_key_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/private"
-    _acme_csr_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/csr"
-    _acme_certificate_dir: "{{ acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/cert"
+    _acme_private_key_dir: "{{ _acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/private"
+    _acme_csr_dir: "{{ _acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/csr"
+    _acme_certificate_dir: "{{ _acme_base_path | regex_replace('/$', '') }}/{{ _acme_cert_common_name }}/cert"
     _acme_private_key_file: "{{ _acme_private_key_dir }}/private.pem"
     _acme_csr_file: "{{ _acme_csr_dir }}/certificate.csr"
     _acme_cert_file: "{{ _acme_certificate_dir }}/certificate.pem"
@@ -180,6 +180,23 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
     _acme_fullchain_cert_key_file: "{{ _acme_certificate_dir }}/certificate-fullchain-and-key.pem"
     _acme_challenge: dns-01
     _acme_certificate_remaining_days: 60
+    _acme_csr_backup: true
+    _acme_csr_country_name: "FR"
+    _acme_csr_locality_name: "SEINE-ET-MARNE"
+    _acme_csr_organization_name: "KubeCloud"
+    _acme_csr_organizational_unit_name: "DPEP - Digital Products Engineering and Platform"
+    _acme_csr_email_address: "{{ account_email }}"
+    _acme_csr_digest: sha256
+    _acme_csr_key_usage:
+      - digitalSignature
+      - keyAgreement
+    _acme_csr_key_usage_critical: false
+    _acme_csr_extended_key_usage:
+      - clientAuth
+    _acme_csr_extended_key_usage_critical: false
+    _acme_csr_create_subject_key_identifier: false
+    _acme_csr_force_regenerate: false
+    _acme_csr_san: []
 
   tasks:
 
@@ -190,7 +207,7 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
         state: directory
         mode: '0755'
       loop:
-        - "{{ acme_base_path }}"
+        - "{{ _acme_base_path }}"
         - "{{ _acme_csr_dir }}"
         - "{{ _acme_certificate_dir }}"
         - "{{ _acme_private_key_dir }}"
@@ -222,17 +239,20 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
     # Generate Open SSL CSR
     - name: Generate an OpenSSL Certificate Signing Request with Subject information
       community.crypto.openssl_csr:
+        backup: "{{ _acme_csr_backup }}"
+        common_name: "{{ _acme_cert_common_name }}"
+        subject_alt_name: "{{ _acme_san | default([]) }}"
+        country_name: "{{ _acme_csr_country_name }}"
+        locality_name: "{{ _acme_csr_locality_name }}"
+        organization_name: "{{ _acme_csr_organization_name }}"
+        organizational_unit_name: "{{ _acme_csr_organizational_unit_name }}"
+        email_address: "{{ _acme_csr_email_address }}"
+        key_usage: "{{ _acme_csr_key_usage }}"
+        key_usage_critical: "{{ _acme_csr_key_usage_critical }}"
+        extended_key_usage: "{{ _acme_csr_extended_key_usage }}"
+        extended_key_usage_critical: "{{ _acme_csr_extended_key_usage_critical }}"
         path: "{{ _acme_csr_file }}"
         privatekey_path: "{{ _acme_private_key_file }}"
-        country_name: FR
-        organization_name: "KubeCloud"
-        email_address: "{{ account_email }}"
-        common_name: "{{ _acme_cert_common_name }}"
-        key_usage:
-          - digitalSignature
-          - keyAgreement
-        extended_key_usage:
-          - clientAuth
 
     # Be Sure Chellenge is Generated
     - name: "Create a challenge for requested certificate ({{ _acme_cert_common_name }})"
@@ -337,4 +357,5 @@ Install Collection `ansible-galaxy collections install kube_cloud.general`
         dest: "{{ _acme_fullchain_cert_key_file }}"
         mode: "0766"
       changed_when: false
+
 ```
