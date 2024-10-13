@@ -18,10 +18,12 @@ gitlab_admin_username: "admin"
 gitlab_admin_password: "admin"
 gitlab_admin_password_force_update: false
 
-# SSL Configuration.
-gitlab_redirect_http_to_https: true
-gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
-gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+# NGINX Configuration.
+gitlab_nginx_enabled: true
+gitlab_nginx_listen_port: 443
+gitlab_nginx_redirect_http_to_https: true
+gitlab_nginx_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+gitlab_nginx_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
 
 # SSL Self-signed Certificate Configuration.
 gitlab_create_self_signed_cert: true

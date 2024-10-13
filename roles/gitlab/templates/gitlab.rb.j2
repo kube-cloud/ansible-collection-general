@@ -14,10 +14,15 @@ gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 # Default Theme
 gitlab_rails['gitlab_default_theme'] = "{{ gitlab_default_theme }}"
 
-# Whether to redirect http to https.
-nginx['redirect_http_to_https'] = {{ gitlab_redirect_http_to_https | lower }}
-nginx['ssl_certificate'] = "{{ gitlab_ssl_certificate }}"
-nginx['ssl_certificate_key'] = "{{ gitlab_ssl_certificate_key }}"
+# NGinx Configuration
+nginx['enable'] = {{ gitlab_nginx_enabled | lower }}
+nginx['listen_https'] = {{ gitlab_nginx_listen_https | lower }}
+nginx['listen_port'] = {{ gitlab_nginx_listen_port }}
+nginx['redirect_http_to_https'] = {{ gitlab_nginx_redirect_http_to_https | lower }}
+{% if gitlab_nginx_listen_https }
+nginx['ssl_certificate'] = "{{ gitlab_nginx_ssl_certificate }}"
+nginx['ssl_certificate_key'] = "{{ gitlab_nginx_ssl_certificate_key }}"
+{% endif }
 
 letsencrypt['enable'] = {{ gitlab_letsencrypt_enable | lower }}
 {% if gitlab_letsencrypt_enable %}
@@ -113,9 +118,9 @@ gitlab_rails['omniauth_sync_profile_attributes'] = {{ gitlab_omniauth_sync_profi
 {% if gitlab_omniauth_auto_sign_in_with_provider | default('') | trim | length > 0  %}
 gitlab_rails['omniauth_auto_sign_in_with_provider'] = '{{ gitlab_omniauth_auto_sign_in_with_provider }}'
 {% endif %}
-gitlab_rails['omniauth_block_auto_created_users'] = {{ gitlab_omniauth_block_auto_created_users }}
-gitlab_rails['omniauth_auto_link_ldap_user'] = {{ gitlab_omniauth_auto_link_ldap_user }}
-gitlab_rails['omniauth_auto_link_saml_user'] = {{ gitlab_omniauth_auto_link_saml_user }}
+gitlab_rails['omniauth_block_auto_created_users'] = {{ gitlab_omniauth_block_auto_created_users | lower }}
+gitlab_rails['omniauth_auto_link_ldap_user'] = {{ gitlab_omniauth_auto_link_ldap_user | lower }}
+gitlab_rails['omniauth_auto_link_saml_user'] = {{ gitlab_omniauth_auto_link_saml_user | lower }}
 {% if gitlab_omniauth_auto_link_user | length > 0 %}
 gitlab_rails['omniauth_auto_link_user'] = {{ gitlab_omniauth_auto_link_user }}
 {% endif %}
@@ -159,10 +164,10 @@ gitlab_rails['db_sslcert'] = '{{ gitlab_external_db_sslcert | trim }}'
 {% if gitlab_external_db_sslkey | default('') | trim | length > 0 %}
 gitlab_rails['db_sslkey'] = '{{ gitlab_external_db_sslkey | trim }}'
 {% endif %}
-gitlab_rails['db_prepared_statements'] = {{ gitlab_external_db_prepared_statements }}
+gitlab_rails['db_prepared_statements'] = {{ gitlab_external_db_prepared_statements | lower }}
 gitlab_rails['db_statements_limit'] = {{ gitlab_external_db_statements_limit }}
 gitlab_rails['db_connect_timeout'] = {{ gitlab_external_db_connect_timeout }}
-gitlab_rails['db_keepalives'] = {{ gitlab_external_db_keepalives }}
+gitlab_rails['db_keepalives'] = {{ gitlab_external_db_keepalives | lower }}
 gitlab_rails['db_keepalives_idle'] = {{ gitlab_external_db_keepalives_idle }}
 gitlab_rails['db_keepalives_interval'] = {{ gitlab_external_db_keepalives_interval }}
 gitlab_rails['db_keepalives_count'] = {{ gitlab_external_db_keepalives_count }}
