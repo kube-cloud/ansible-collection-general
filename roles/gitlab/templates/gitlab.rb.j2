@@ -19,10 +19,10 @@ nginx['enable'] = {{ gitlab_nginx_enabled | lower }}
 nginx['listen_https'] = {{ gitlab_nginx_listen_https | lower }}
 nginx['listen_port'] = {{ gitlab_nginx_listen_port }}
 nginx['redirect_http_to_https'] = {{ gitlab_nginx_redirect_http_to_https | lower }}
-{% if gitlab_nginx_listen_https }
+{% if gitlab_nginx_listen_https %}
 nginx['ssl_certificate'] = "{{ gitlab_nginx_ssl_certificate }}"
 nginx['ssl_certificate_key'] = "{{ gitlab_nginx_ssl_certificate_key }}"
-{% endif }
+{% endif %}
 
 letsencrypt['enable'] = {{ gitlab_letsencrypt_enable | lower }}
 {% if gitlab_letsencrypt_enable %}
