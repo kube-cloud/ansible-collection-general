@@ -105,7 +105,7 @@ registry_nginx['ssl_certificate_key'] = "{{ gitlab_registry_nginx_ssl_certificat
 ### OmniAuth Settings
 ###! Docs: https://docs.gitlab.com/ee/integration/omniauth.html
 gitlab_rails['omniauth_enabled'] = {{ gitlab_omniauth_enabled }}
-gitlab_rails['omniauth_allow_single_sign_on'] = {{ gitlab_omniauth_allow_single_sign_on }
+gitlab_rails['omniauth_allow_single_sign_on'] = {{ gitlab_omniauth_allow_single_sign_on }}
 {% if gitlab_omniauth_sync_email_from_provider | default('') | trim | length > 0  %}
 gitlab_rails['omniauth_sync_email_from_provider'] = '{{ gitlab_omniauth_sync_email_from_provider }}'
 {% endif %}
@@ -137,7 +137,7 @@ gitlab_rails['omniauth_providers'] = {{ gitlab_omniauth_providers }}
 ### GitLab database settings
 ###! Docs: https://docs.gitlab.com/omnibus/settings/database.html
 ###! **Only needed if you use an external database.**
-%{ if gitlab_external_db_enabled == true }
+{% if gitlab_external_db_enabled == true %}
 gitlab_rails['db_adapter'] = '{{ gitlab_external_db_adapter }}'
 gitlab_rails['db_encoding'] = '{{ gitlab_external_db_encoding }}'
 {% if gitlab_external_db_collation | default('') | trim | length > 0 %}
@@ -173,7 +173,7 @@ gitlab_rails['db_keepalives_interval'] = {{ gitlab_external_db_keepalives_interv
 gitlab_rails['db_keepalives_count'] = {{ gitlab_external_db_keepalives_count }}
 gitlab_rails['db_tcp_user_timeout'] = {{ gitlab_external_db_tcp_user_timeout }}
 gitlab_rails['db_application_name'] = '{{ gitlab_external_db_application_name }}'
-%{ endif }
+{% endif %}
 
 {% if gitlab_initial_license_file | trim | length > 0 %}
 gitlab_rails['initial_license_file'] = '{{ gitlab_initial_license_file | trim }}'
