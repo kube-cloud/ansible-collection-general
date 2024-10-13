@@ -16,6 +16,7 @@ gitlab_admin_password_hash_file: "/etc/gitlab/admin_password_hash"
 gitlab_initial_password_file: "/etc/gitlab/initial_root_password"
 gitlab_admin_username: "admin"
 gitlab_admin_password: "admin"
+gitlab_admin_userid: 1
 gitlab_admin_password_force_update: false
 
 # NGINX Configuration.

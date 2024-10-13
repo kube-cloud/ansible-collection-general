@@ -97,7 +97,7 @@
   ansible.builtin.set_fact:
     _gitlab_admin_access_token: "glpat-adm-{{ lookup('pipe', 'uuidgen') }}"
     _gitlab_admin_username: "{{ gitlab_admin_username }}"
-    _gitlab_admin_userid: "1"
+    _gitlab_admin_userid: "{{ gitlab_admin_userid }}"
     _gitlab_admin_token_expiration: "1.hours.from_now"
     _gitlab_admin_token_name: "role-automation-token-{{ '%Y-%m-%d-%Hh%Mm' | strftime(ansible_date_time.epoch) }}"
 
