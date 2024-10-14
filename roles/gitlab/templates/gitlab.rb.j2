@@ -16,10 +16,10 @@ gitlab_rails['gitlab_default_theme'] = "{{ gitlab_default_theme }}"
 
 # NGinx Configuration
 nginx['enable'] = {{ gitlab_nginx_enabled | lower }}
-nginx['listen_https'] = {{ gitlab_nginx_listen_https | lower }}
+nginx['listen_https'] = {{ gitlab_nginx_listen_https | default(false) | lower }}
 nginx['listen_port'] = {{ gitlab_nginx_listen_port }}
 nginx['redirect_http_to_https'] = {{ gitlab_nginx_redirect_http_to_https | lower }}
-{% if gitlab_nginx_listen_https %}
+{% if gitlab_nginx_listen_https | default(false) %}
 nginx['ssl_certificate'] = "{{ gitlab_nginx_ssl_certificate }}"
 nginx['ssl_certificate_key'] = "{{ gitlab_nginx_ssl_certificate_key }}"
 {% endif %}
@@ -51,15 +51,6 @@ gitlab_rails['ldap_bind_dn'] = '{{ gitlab_ldap_bind_dn }}'
 gitlab_rails['ldap_password'] = '{{ gitlab_ldap_password }}'
 gitlab_rails['ldap_allow_username_or_email_login'] = true
 gitlab_rails['ldap_base'] = '{{ gitlab_ldap_base }}'
-{% endif %}
-
-# GitLab Nginx
-## See https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/nginx.md
-{% if gitlab_nginx_listen_port is defined %}
-nginx['listen_port'] = "{{ gitlab_nginx_listen_port }}"
-{% endif %}
-{% if gitlab_nginx_listen_https is defined %}
-nginx['listen_https'] = {{ gitlab_nginx_listen_https | lower }}
 {% endif %}
 
 # Use smtp instead of sendmail/postfix
@@ -104,7 +95,7 @@ registry_nginx['ssl_certificate_key'] = "{{ gitlab_registry_nginx_ssl_certificat
 
 ### OmniAuth Settings
 ###! Docs: https://docs.gitlab.com/ee/integration/omniauth.html
-gitlab_rails['omniauth_enabled'] = {{ gitlab_omniauth_enabled }}
+gitlab_rails['omniauth_enabled'] = {{ gitlab_omniauth_enabled | lower }}
 gitlab_rails['omniauth_allow_single_sign_on'] = {{ gitlab_omniauth_allow_single_sign_on }}
 {% if gitlab_omniauth_sync_email_from_provider | default('') | trim | length > 0  %}
 gitlab_rails['omniauth_sync_email_from_provider'] = '{{ gitlab_omniauth_sync_email_from_provider }}'
@@ -131,7 +122,7 @@ gitlab_rails['omniauth_external_providers'] = {{ gitlab_omniauth_external_provid
 gitlab_rails['omniauth_allow_bypass_two_factor'] = {{ gitlab_omniauth_allow_bypass_two_factor }}
 {% endif %}
 {% if gitlab_omniauth_providers | length > 0 %}
-gitlab_rails['omniauth_providers'] = {{ gitlab_omniauth_providers }}
+gitlab_rails['omniauth_providers'] = {{ gitlab_omniauth_providers | to_json(indent=4) }}
 {% endif %}
 
 ### GitLab database settings
@@ -148,7 +139,7 @@ gitlab_rails['db_username'] = '{{ gitlab_external_db_username | trim }}'
 gitlab_rails['db_password'] = '{{ gitlab_external_db_password | trim }}'
 gitlab_rails['db_host'] = '{{ gitlab_external_db_host | trim }}'
 gitlab_rails['db_port'] = {{ gitlab_external_db_port }}
-{% if gitlab_db_socket | default('') | trim | length > 0 %}
+{% if gitlab_external_db_socket | default('') | trim | length > 0 %}
 gitlab_rails['db_socket'] = '{{ gitlab_external_db_socket | trim }}'
 {% endif %}
 {% if gitlab_external_db_sslmode | default('') | trim | length > 0 %}
@@ -167,7 +158,7 @@ gitlab_rails['db_sslkey'] = '{{ gitlab_external_db_sslkey | trim }}'
 gitlab_rails['db_prepared_statements'] = {{ gitlab_external_db_prepared_statements | lower }}
 gitlab_rails['db_statements_limit'] = {{ gitlab_external_db_statements_limit }}
 gitlab_rails['db_connect_timeout'] = {{ gitlab_external_db_connect_timeout }}
-gitlab_rails['db_keepalives'] = {{ gitlab_external_db_keepalives | lower }}
+gitlab_rails['db_keepalives'] = {{ 1 if gitlab_external_db_keepalives | default(true) ele 0 }}
 gitlab_rails['db_keepalives_idle'] = {{ gitlab_external_db_keepalives_idle }}
 gitlab_rails['db_keepalives_interval'] = {{ gitlab_external_db_keepalives_interval }}
 gitlab_rails['db_keepalives_count'] = {{ gitlab_external_db_keepalives_count }}
