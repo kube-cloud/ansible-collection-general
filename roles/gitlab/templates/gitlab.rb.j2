@@ -43,14 +43,10 @@ gitlab_rails['backup_path'] = "{{ gitlab_backup_path }}"
 # https://gitlab.com/gitlab-org/gitlab-ce/blob/master/config/gitlab.yml.example#L118
 gitlab_rails['ldap_enabled'] = {{ gitlab_ldap_enabled | lower }}
 {% if gitlab_ldap_enabled %}
-gitlab_rails['ldap_host'] = '{{ gitlab_ldap_host }}'
-gitlab_rails['ldap_port'] = {{ gitlab_ldap_port }}
-gitlab_rails['ldap_uid'] = '{{ gitlab_ldap_uid }}'
-gitlab_rails['ldap_method'] = '{{ gitlab_ldap_method}}' # 'ssl' or 'plain'
-gitlab_rails['ldap_bind_dn'] = '{{ gitlab_ldap_bind_dn }}'
-gitlab_rails['ldap_password'] = '{{ gitlab_ldap_password }}'
-gitlab_rails['ldap_allow_username_or_email_login'] = true
-gitlab_rails['ldap_base'] = '{{ gitlab_ldap_base }}'
+gitlab_rails['prevent_ldap_sign_in'] = {{ gitlab_ldap_prevent_sign_in | default(false) | lower }}
+gitlab_rails['ldap_servers'] = YAML.load <<-'EOS'
+{{ gitlab_ldap_servers | default({}) | to_nice_yaml }}
+EOS
 {% endif %}
 
 # Use smtp instead of sendmail/postfix

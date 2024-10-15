@@ -33,13 +33,32 @@ gitlab_nginx_self_signed_cert_subj: "/C=FR/ST=SEINE-ET-MARNE/L=Bussy Saint Georg
 
 # LDAP Configuration.
 gitlab_ldap_enabled: false
-gitlab_ldap_host: "example.com"
-gitlab_ldap_port: "389"
-gitlab_ldap_uid: "sAMAccountName"
-gitlab_ldap_method: "plain"
-gitlab_ldap_bind_dn: "CN=Username,CN=Users,DC=example,DC=com"
-gitlab_ldap_password: "password"
-gitlab_ldap_base: "DC=example,DC=com"
+gitlab_ldap_prevent_sign_in: false
+gitlab_ldap_servers:
+  main:
+    label: "LDAP Auth Connector"
+    host: "localhost"
+    port: 636
+    uid: "uid"
+    bind_dn: "uid=admin,dc=exemple,dc=com"
+    password: "admin"
+    encryption: "simple_tls"
+    verify_certificates: true
+    smartcard_auth: false
+    active_directory: false
+    allow_username_or_email_login: false
+    lowercase_usernames: false
+    block_auto_created_users: true
+    base: "ou=users,dc=exemple,dc=com"
+    group_base: "ou=groups,dc=exemple,dc=com"
+    admin_group: "cn=Admins"
+    user_filter: "(objectClass=inetOrgPerson)"
+    attributes:
+      username: "uid"
+      email: "mail"
+      name: "cn"
+      first_name: "givenName"
+      last_name: "sn"
 
 # SMTP Configuration
 gitlab_smtp_enable: false
