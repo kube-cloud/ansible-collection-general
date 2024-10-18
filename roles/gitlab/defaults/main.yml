@@ -207,3 +207,12 @@ gitlab_external_db_database_tasks: true
 
 # Initial License File
 gitlab_initial_license_file: ''
+
+# Gitlab Object Store Connection
+gitlab_object_store_enabled: false
+gitlab_object_store_proxy_download: false
+gitlab_object_store_connection: {}
+gitlab_object_store_storage_options: {}
+gitlab_object_store_buckets: [
+  { "key": "artifacts", "value": "gitlab-artifacts", "enabled": true }
+]

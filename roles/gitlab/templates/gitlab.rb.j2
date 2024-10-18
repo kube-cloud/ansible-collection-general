@@ -162,6 +162,25 @@ gitlab_rails['db_tcp_user_timeout'] = {{ gitlab_external_db_tcp_user_timeout }}
 gitlab_rails['db_application_name'] = '{{ gitlab_external_db_application_name }}'
 {% endif %}
 
+{% if gitlab_object_store_enabled | default(false) %}
+# https://docs.gitlab.com/ee/administration/object_storage.html
+gitlab_rails['object_store']['enabled'] = {{ gitlab_object_store_enabled | lower }}
+gitlab_rails['object_store']['proxy_download'] = {{ gitlab_object_store_proxy_download | lower }}
+{% if gitlab_object_store_connection | default({}) | dict2items | length > 0 %}
+gitlab_rails['object_store']['connection'] = YAML.load <<-'EOS'
+{{ gitlab_object_store_connection | to_nice_yaml(indent=2) }}
+EOS
+{% endif %}
+{% if gitlab_object_store_storage_options | default({}) | dict2items | length > 0 %}
+gitlab_rails['object_store']['storage_options'] = YAML.load <<-'EOS'
+{{ gitlab_object_store_storage_options | to_nice_yaml(indent=2) }}
+EOS
+{% endif %}
+{% for bucket in gitlab_object_store_buckets %}
+gitlab_rails['object_store']['objects']['{{ bucket.key }}']['bucket'] = '{{ bucket.value }}'
+{% endfor %}
+{% endif %}
+
 {% if gitlab_initial_license_file | trim | length > 0 %}
 gitlab_rails['initial_license_file'] = '{{ gitlab_initial_license_file | trim }}'
 {% endif %}
