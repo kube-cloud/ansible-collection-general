@@ -190,7 +190,11 @@ gitlab_rails['initial_license_file'] = '{{ gitlab_initial_license_file | trim }}
 {% for extra in gitlab_extra_settings %}
 {% for setting in extra %}
 {% for kv in extra[setting] %}
-{% if (kv.type is defined and kv.type == 'plain') or (kv.value is not string) %}
+{% if (kv.type is defined and kv.type == 'bool') %}
+{{ setting }}['{{ kv.key }}'] = {{ kv.value | lower }}
+{% elif (kv.type is defined and kv.type == 'json') %}
+{{ setting }}['{{ kv.key }}'] = {{ kv.value | to_json(indent=4) }}
+{% elif (kv.type is defined and kv.type == 'plain') or (kv.value is not string) %}
 {{ setting }}['{{ kv.key }}'] = {{ kv.value }}
 {% else %}
 {{ setting }}['{{ kv.key }}'] = '{{ kv.value }}'
