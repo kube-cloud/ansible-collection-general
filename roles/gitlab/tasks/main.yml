@@ -109,6 +109,10 @@
 - name: "Setup Admin Password"
   ansible.builtin.include_tasks: setup_admin_password.yml
 
+# Setup Runners
+- name: "Setup Runners"
+  ansible.builtin.include_tasks: setup_runners.yml
+
 # Execute Custom Tasks File
 - name: "Execute Custom Tasks File"
   ansible.builtin.include_tasks: "{{ gitlab_custom_tasks_file_path }}"

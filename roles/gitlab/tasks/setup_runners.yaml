@@ -1,0 +1,28 @@
+---
+
+# Ensure Admin Access Token is Generated
+- name: "Ensure Admin Access Token is Generated"
+  ansible.builtin.command: |
+    sudo gitlab-rails runner "
+      name = {{ runner.name }}
+      description = {{ runner.description | default('') }}
+      active = {{ runner.enabled | default(true) }}
+      locked = {{ runner.locked | default(false) }}
+      runner_type = {{ runner.type | default('instance_type') }}
+      run_untagged = {{ runner.run_untagged | default(true) }}
+      token = {{ runner.token | default('') }}
+      tags = {{ runner.tags | join("', '") | prepend("['") | append("']") }}
+      runner = Ci::Runner.new(
+        name: name,
+        description: description,
+        active: active,
+        locked: locked,
+        runner_type: :runner_type,
+        tag_list: tags,
+        run_untagged: run_untagged,
+        token: token
+      )
+      runner.save!
+    "
+  loop: "{{ gitlab_instance_runners }}"
+  loop_control: runner
