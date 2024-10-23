@@ -1,28 +1,36 @@
 ---
 
-# Ensure Admin Access Token is Generated
-- name: "Ensure Admin Access Token is Generated"
+# Ensure Instance Runners are Created
+- name: "Ensure Instance Runners are Created"
   ansible.builtin.command: |
     sudo gitlab-rails runner "
       name = {{ runner.name }}
       description = {{ runner.description | default('') }}
       active = {{ runner.enabled | default(true) }}
       locked = {{ runner.locked | default(false) }}
-      runner_type = {{ runner.type | default('instance_type') }}
       run_untagged = {{ runner.run_untagged | default(true) }}
       token = {{ runner.token | default('') }}
       tags = {{ runner.tags | join("', '") | prepend("['") | append("']") }}
-      runner = Ci::Runner.new(
-        name: name,
-        description: description,
-        active: active,
-        locked: locked,
-        runner_type: :runner_type,
-        tag_list: tags,
-        run_untagged: run_untagged,
-        token: token
-      )
-      runner.save!
+      existing_runner = Ci::Runner.find_by(name: name)
+      if existing_runner.nil?
+        runner = Ci::Runner.new(
+          name: name,
+          description: description,
+          active: active,
+          locked: locked,
+          runner_type: :instance_type,
+          tag_list: tags,
+          run_untagged: run_untagged,
+          token: token
+        )
+        if runner.save!
+          puts "Runner created Successfully"
+        else
+          puts "Error occured when creating Runner."
+        end
+      else
+        puts "The Runner (Name : #{name}) already exists."
+      end
     "
   loop: "{{ gitlab_instance_runners }}"
   loop_control: runner
