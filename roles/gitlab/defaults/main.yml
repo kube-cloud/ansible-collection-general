@@ -218,14 +218,14 @@ gitlab_object_store_buckets: [
 ]
 
 # Gitlab Instance Runners
-gitlab_instance_runners:
-  - enabled: false
-    name: global-runner
-    description: Global Runner
-    run_untagged: true
-    locked: false
-    access_level: not_protected
-    maximum_timeout: 600
-    type: instance_type
-    token: glrt-AiteJJbA9qyarE6DTOpy
-    tags: ['kubernetes', 'docker']
+gitlab_instance_runners: []
+#  - enabled: false
+#    name: global-runner
+#    description: Global Runner
+#    run_untagged: true
+#    locked: false
+#    access_level: not_protected
+#    maximum_timeout: 600
+#    type: instance_type
+#    token: glrt-AiteJJbA9qyarE6DTOpy
+#    tags: ['kubernetes', 'docker']
