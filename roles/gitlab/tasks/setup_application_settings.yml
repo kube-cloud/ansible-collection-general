@@ -6,7 +6,7 @@
     sudo gitlab-rails runner "
       settings = ApplicationSetting.current
       settings.update({
-        {{ application_settings | map(attribute='name') | zip(application_settings | map(attribute='value')) | map('join', ' = ') | join(', ') }}
+        {{ gitlab_application_settings | map(attribute='name') | zip(gitlab_application_settings | map(attribute='value')) | map('join', ' = ') | join(', ') }}
       })
       settings.save!
     "
