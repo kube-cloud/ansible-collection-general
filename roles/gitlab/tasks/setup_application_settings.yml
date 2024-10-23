@@ -5,9 +5,9 @@
   ansible.builtin.command: |
     sudo gitlab-rails runner "
       settings = ApplicationSetting.current
-      settings.update({
-        {{ gitlab_application_settings | map(attribute='name') | zip(gitlab_application_settings | map(attribute='value')) | map('join', ' = ') | join(', ') }}
+      settings.update!({
+        {{ gitlab_application_settings | map(attribute='name') | zip(gitlab_application_settings | map(attribute='value')) | map('join', ': ') | join(', ') }}
       })
       settings.save!
     "
-  when: "{{ gitlab_application_settings | default([]) | length > 0 }}"
+  when: gitlab_application_settings | default([]) | length > 0
