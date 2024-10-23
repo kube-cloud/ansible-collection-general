@@ -220,6 +220,7 @@ gitlab_object_store_buckets: [
 # Gitlab Instance Runners
 gitlab_instance_runners: []
 #  - enabled: false
+#    update_existing: true
 #    name: global-runner
 #    description: Global Runner
 #    run_untagged: true

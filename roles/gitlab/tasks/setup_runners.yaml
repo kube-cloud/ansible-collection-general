@@ -11,6 +11,7 @@
       run_untagged = {{ runner.run_untagged | default(true) }}
       token = {{ runner.token | default('') }}
       tags = {{ runner.tags | join("', '") | prepend("['") | append("']") }}
+      update_existing = {{ runner.update_existing | default(true) }}
       existing_runner = Ci::Runner.find_by(name: name)
       if existing_runner.nil?
         runner = Ci::Runner.new(
@@ -24,12 +25,29 @@
           token: token
         )
         if runner.save!
-          puts "Runner created Successfully"
+          puts "Runner created successfully"
         else
           puts "Error occured when creating Runner."
         end
       else
-        puts "The Runner (Name : #{name}) already exists."
+        if update_existing
+          existing_runner.update(
+            description: description,
+            active: active,
+            locked: locked,
+            runner_type: :instance_type,
+            tag_list: tags,
+            run_untagged: run_untagged,
+            token: token
+          )
+          if runner.save!
+            puts "Runner updated successfully"
+          else
+            puts "Error occured when updating Runner."
+          end
+        else
+          puts "Runner (Name: #{name}) already exists but Update disabled (update_existing: #{update_existing})."
+        end
       end
     "
   loop: "{{ gitlab_instance_runners }}"
