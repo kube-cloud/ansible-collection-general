@@ -219,7 +219,7 @@ gitlab_object_store_buckets:
     enabled": true
 
 # Gitlab Application Settings
-gitlab_application_settings:
+gitlab_application_settings: []
 #  - name: "reject_unverified_users"
 #    value: "true"
 #  - name: "prevent_secrets"
