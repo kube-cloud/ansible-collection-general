@@ -109,6 +109,10 @@
 - name: "Setup Admin Password"
   ansible.builtin.include_tasks: setup_admin_password.yml
 
+# Setup Application Settings
+- name: "Setup Application Settings"
+  ansible.builtin.include_tasks: setup_application_settings.yml
+
 # Setup Runners
 - name: "Setup Runners"
   ansible.builtin.include_tasks: setup_runners.yml

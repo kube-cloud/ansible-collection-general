@@ -213,9 +213,17 @@ gitlab_object_store_enabled: false
 gitlab_object_store_proxy_download: false
 gitlab_object_store_connection: {}
 gitlab_object_store_storage_options: {}
-gitlab_object_store_buckets: [
-  { "key": "artifacts", "value": "gitlab-artifacts", "enabled": true }
-]
+gitlab_object_store_buckets:
+  - key: "artifacts"
+    value: "gitlab-artifacts"
+    enabled": true
+
+# Gitlab Application Settings
+gitlab_application_settings:
+#  - name: "reject_unverified_users"
+#    value: "true"
+#  - name: "prevent_secrets"
+#    value: "true"
 
 # Gitlab Instance Runners
 gitlab_instance_runners: []
