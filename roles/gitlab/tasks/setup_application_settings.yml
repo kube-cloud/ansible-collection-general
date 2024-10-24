@@ -1,7 +1,7 @@
 ---
 
-# Ensure Instance Runners are Created
-- name: "Ensure Instance Runners are Created"
+# Ensure Application Settings are Created
+- name: "Ensure Application Settings are Created"
   ansible.builtin.command: |
     sudo gitlab-rails runner "
       settings = ApplicationSetting.current

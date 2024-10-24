@@ -51,4 +51,5 @@
       end
     "
   loop: "{{ gitlab_instance_runners }}"
-  loop_control: runner
+  loop_control:
+    loop_var: runner
