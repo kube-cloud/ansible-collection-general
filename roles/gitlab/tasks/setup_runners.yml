@@ -25,9 +25,9 @@
           token: token
         )
         if runner.save!
-          puts "Runner created successfully"
+          puts 'Runner created successfully'
         else
-          puts "Error occured when creating Runner."
+          puts 'Error occured when creating Runner.'
         end
       else
         if update_existing
@@ -41,12 +41,12 @@
             token: token
           )
           if runner.save!
-            puts "Runner updated successfully"
+            puts 'Runner updated successfully'
           else
-            puts "Error occured when updating Runner."
+            puts 'Error occured when updating Runner.'
           end
         else
-          puts "Runner (Name: #{name}) already exists but Update disabled (update_existing: #{update_existing})."
+          puts 'Runner (Name: ' + name + ') already exists but Update disabled (update_existing: ' + update_existing + ').'
         end
       end
     "
