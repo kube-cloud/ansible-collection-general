@@ -6,12 +6,12 @@
     sudo gitlab-rails runner "
       name = '{{ runner.name }}'
       description = '{{ runner.description | default('') }}'
-      active = {{ runner.enabled | default(true) }}
-      locked = {{ runner.locked | default(false) }}
-      run_untagged = {{ runner.run_untagged | default(true) }}
+      active = {{ runner.enabled | default(true) | lower }}
+      locked = {{ runner.locked | default(false) | lower }}
+      run_untagged = {{ runner.run_untagged | default(true) | lower }}
       token = '{{ runner.token | default('') }}'
       tags = ['{{ runner.tags | join("', '") }}']
-      update_existing = {{ runner.update_existing | default(true) }}
+      update_existing = {{ runner.update_existing | default(true) | lower }}
       existing_runner = Ci::Runner.find_by(name: name)
       if existing_runner.nil?
         runner = Ci::Runner.new(
