@@ -1,0 +1,13 @@
+user_id = {{ _gitlab_admin_userid }}
+username = '{{ _gitlab_admin_username }}'
+email = '{{ gitlab_admin_email }}'
+new_password = '{{ gitlab_admin_password }}'
+user = User.find(user_id)
+user.username = username
+user.email = email
+user.password = new_password
+user.password_confirmation = new_password
+user.password_automatically_set = false
+user.confirmed_at = Time.now
+user.save!((validate: false))
+puts 'Admin Has been Updated.'

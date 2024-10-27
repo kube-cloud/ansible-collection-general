@@ -3,30 +3,24 @@
 # Ensure required facts are defined
 - name: "Ensure required facts are defined"
   ansible.builtin.set_fact:
-    gitlab_scheme: "{{ 'https' if gitlab_nginx_listen_https == true else 'http' }}"
-    gitlab_host: "localhost"
-    gitlab_port: "{{ gitlab_nginx_listen_port }}"
-    app_settings_uri: "api/v4/application/settings"
-    app_settings_body: >-
-      {{
-        gitlab_application_settings | 
-        default([]) | 
-        items2dict(key_name='name', value_name='value')
-      }}
+    update_application_settings_rb_script: "/tmp/update_application_settings.rb"
+
+# Copy GitLab Update Application Settings Ruby Script.
+- name: "Copy GitLab Update Application Settings Ruby Script."
+  ansible.builtin.template:
+    src: "update_application_settings.rb.j2"
+    dest: "{{ update_application_settings_rb_script }}"
+    owner: root
+    group: root
+    mode: 0755
 
 # Ensure Application Settings are Created
 - name: "Ensure Application Settings are Created"
-  ansible.builtin.uri:
-    url: "{{ gitlab_scheme }}://{{ gitlab_host }}:{{ gitlab_port }}/{{ app_settings_uri }}"
-    method: PUT
-    headers:
-      Authorization: "Bearer {{ _gitlab_admin_access_token }}"
-    validate_certs: false
-    body_format: json
-    body: >-
-      {{
-        gitlab_application_settings | 
-        default([]) | 
-        items2dict(key_name='name', value_name='value')
-      }}
+  ansible.builtin.command: |
+    sudo gitlab-rails runner {{ update_application_settings_rb_script }}
   when: gitlab_application_settings | default([]) | length > 0
+
+# Ensure Gitlab Restarted
+- name: "Ensure Gitlab Restarted"
+  ansible.builtin.command: gitlab-ctl restart
+  failed_when: false
