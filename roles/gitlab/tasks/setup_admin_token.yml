@@ -6,7 +6,7 @@
     sudo gitlab-rails runner "
       user_id = {{ _gitlab_admin_userid }}
       token_name = '{{ _gitlab_admin_token_name }}'
-      token = User.find(user_id).personal_access_tokens.create(scopes: ['api'], name: token_name, expires_at: {{ _gitlab_admin_token_expiration }})
+      token = User.find(user_id).personal_access_tokens.create(scopes: ['api', 'admin_mode'], name: token_name, expires_at: {{ _gitlab_admin_token_expiration }})
       token.set_token('{{ _gitlab_admin_access_token }}')
       token.save!
     "

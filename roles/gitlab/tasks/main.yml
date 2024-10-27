@@ -124,5 +124,5 @@
     - gitlab_custom_tasks_file_path | default('') | trim | length > 0
 
 # Revoke Admin Token
-- name: "Revoke Admin Token"
-  ansible.builtin.include_tasks: revoke_admin_token.yml
+#- name: "Revoke Admin Token"
+#  ansible.builtin.include_tasks: revoke_admin_token.yml
