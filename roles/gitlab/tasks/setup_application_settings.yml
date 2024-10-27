@@ -1,13 +1,32 @@
 ---
 
+# Ensure required facts are defined
+- name: "Ensure required facts are defined"
+  ansible.builtin.set_fact:
+    gitlab_scheme: "{{ 'https' if gitlab_nginx_listen_https == true else 'http' }}"
+    gitlab_host: "localhost"
+    gitlab_port: "{{ gitlab_nginx_listen_port }}"
+    app_settings_uri: "api/v4/application/settings"
+    app_settings_body: >-
+      {{
+        gitlab_application_settings | 
+        default([]) | 
+        items2dict(key_name='name', value_name='value')
+      }}
+
 # Ensure Application Settings are Created
 - name: "Ensure Application Settings are Created"
-  ansible.builtin.command: |
-    sudo gitlab-rails runner "
-      settings = ApplicationSetting.current
-      settings.update!({
-        {{ gitlab_application_settings | map(attribute='name') | zip(gitlab_application_settings | map(attribute='value')) | map('join', ': ') | join(', ') }}
-      })
-      settings.save!
-    "
+  ansible.builtin.uri:
+    url: "{{ gitlab_scheme }}://{{ gitlab_host }}:{{ gitlab_port }}/{{ app_settings_uri }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ _gitlab_admin_access_token }}"
+    validate_certs: false
+    body_format: json
+    body: >-
+      {{
+        gitlab_application_settings | 
+        default([]) | 
+        items2dict(key_name='name', value_name='value')
+      }}
   when: gitlab_application_settings | default([]) | length > 0
