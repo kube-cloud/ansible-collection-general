@@ -10,6 +10,8 @@ gitlab_edition: "gitlab-ce"
 gitlab_version: ''
 gitlab_backup_path: "/var/opt/gitlab/backups"
 gitlab_config_template: "gitlab.rb.j2"
+gitlab_rb_scripts_owner: git
+gitlab_rb_scripts_group: git
 
 # Admin configuration
 gitlab_admin_password_hash_file: "/etc/gitlab/admin_password_hash"
