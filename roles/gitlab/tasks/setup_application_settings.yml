@@ -5,22 +5,26 @@
   ansible.builtin.set_fact:
     update_application_settings_rb_script: "/tmp/update_application_settings.rb"
 
-# Copy GitLab Update Application Settings Ruby Script.
-- name: "Copy GitLab Update Application Settings Ruby Script."
-  ansible.builtin.template:
-    src: "update_application_settings.rb.j2"
-    dest: "{{ update_application_settings_rb_script }}"
-    owner: root
-    group: root
-    mode: 0755
-
-# Ensure Application Settings are Created
-- name: "Ensure Application Settings are Created"
-  ansible.builtin.command: |
-    sudo gitlab-rails runner {{ update_application_settings_rb_script }}
+# Admin Password Update Enabled Block
+- name: "Admin Password Update Enabled Block"
   when: gitlab_application_settings | default([]) | length > 0
+  block:
 
-# Ensure Gitlab Restarted
-- name: "Ensure Gitlab Restarted"
-  ansible.builtin.command: gitlab-ctl restart
-  failed_when: false
+    # Copy GitLab Update Application Settings Ruby Script.
+    - name: "Copy GitLab Update Application Settings Ruby Script."
+      ansible.builtin.template:
+        src: "update_application_settings.rb.j2"
+        dest: "{{ update_application_settings_rb_script }}"
+        owner: root
+        group: root
+        mode: 0755
+
+    # Ensure Application Settings are Created
+    - name: "Ensure Application Settings are Created"
+      ansible.builtin.command: |
+        sudo gitlab-rails runner {{ update_application_settings_rb_script }}
+
+    # Ensure Gitlab Restarted
+    - name: "Ensure Gitlab Restarted"
+      ansible.builtin.command: gitlab-ctl restart
+      failed_when: false
