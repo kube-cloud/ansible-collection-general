@@ -1,5 +1,9 @@
+{% if gitlab_application_settings | default([]) | length > 0 %}
 settings = ApplicationSetting.current
 settings.update!({
   {{ gitlab_application_settings | map(attribute='name') | zip(gitlab_application_settings | map(attribute='value')) | map('join', ': ') | join(', ') }}
 })
 settings.save!
+{% else %}
+puts "No Application Properties to Update"
+{% endif %}
