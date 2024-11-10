@@ -126,3 +126,12 @@
 # Revoke Admin Token
 #- name: "Revoke Admin Token"
 #  ansible.builtin.include_tasks: revoke_admin_token.yml
+
+# Execute Custom Tasks File
+- name: "Log the End"
+  ansible.builtin.debug:
+    msg: "Installation and Configuration executed. Restart Service"
+  notify: restart gitlab
+
+- name: Exécuter immédiatement tous les handlers en attente
+  ansible.builtin.meta: flush_handlers
