@@ -36,6 +36,7 @@ gitlab_nginx_self_signed_cert_subj: "/C=FR/ST=SEINE-ET-MARNE/L=Bussy Saint Georg
 
 # LDAP Configuration.
 gitlab_ldap_enabled: false
+gitlab_force_group_sync: true
 gitlab_ldap_prevent_sign_in: false
 gitlab_ldap_servers:
   main:

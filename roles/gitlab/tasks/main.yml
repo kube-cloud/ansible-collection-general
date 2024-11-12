@@ -92,6 +92,12 @@
     mode: 0600
   notify: restart gitlab
 
+# Force Gitlab Recofngiration
+- name: "Reconfigure GitLab After Gitlab Ruby Configuration Updated"
+  ansible.builtin.command: >
+    gitlab-ctl reconfigure
+  failed_when: false
+
 # Define the Gitlab Admin Token.
 - name: "Define the Gitlab Admin Token"
   ansible.builtin.set_fact:
@@ -101,14 +107,6 @@
     _gitlab_admin_token_expiration: "1.hours.from_now"
     _gitlab_admin_token_name: "role-automation-token-{{ '%Y-%m-%d-%Hh%Mm' | strftime(ansible_date_time.epoch) }}"
 
-# Setup Admin Password
-- name: "Setup Admin Token"
-  ansible.builtin.include_tasks: setup_admin_token.yml
-
-# Setup Admin Password
-- name: "Setup Admin Password"
-  ansible.builtin.include_tasks: setup_admin_password.yml
-
 # Setup Application Settings
 - name: "Setup Application Settings"
   ansible.builtin.include_tasks: setup_application_settings.yml
@@ -117,11 +115,25 @@
 - name: "Setup Runners"
   ansible.builtin.include_tasks: setup_runners.yml
 
+# Setup Admin Password
+- name: "Setup Admin Token"
+  ansible.builtin.include_tasks: setup_admin_token.yml
+
+# Setup Admin Password
+- name: "Setup Admin Password"
+  ansible.builtin.include_tasks: setup_admin_password.yml
+
 # Execute Custom Tasks File
 - name: "Execute Custom Tasks File"
   ansible.builtin.include_tasks: "{{ gitlab_custom_tasks_file_path }}"
   when:
     - gitlab_custom_tasks_file_path | default('') | trim | length > 0
+
+# Sync LDAP Groups
+- name: "Force Sync LDAP Groups"
+  ansible.builtin.command: >
+    gitlab-rake gitlab:ldap:group_sync
+  when: gitlab_force_group_sync
 
 # Revoke Admin Token
 #- name: "Revoke Admin Token"
@@ -132,6 +144,3 @@
   ansible.builtin.debug:
     msg: "Installation and Configuration executed. Restart Service"
   notify: restart gitlab
-
-- name: Exécuter immédiatement tous les handlers en attente
-  ansible.builtin.meta: flush_handlers
