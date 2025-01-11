@@ -1,0 +1,98 @@
+---
+
+- name: Create installation directories
+  ansible.builtin.file:
+    path: "{{ maven_install_dir }}"
+    mode: '0755'
+    state: directory
+
+- name: Unarchive Downloaded maven archives
+  ansible.builtin.unarchive:
+    src: "{{ maven_downloaded_file }}"
+    dest: "{{ maven_install_dir }}"
+    creates: "{{ maven_install_dir }}/bin/mvn"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+
+- name: Find all script files
+  ansible.builtin.find:
+    file_type: file
+    paths: "{{ maven_install_dir }}/bin/"
+    patterns: "mvn,mvnDebug"
+    recurse: false
+    use_regex: false
+  register: scripts_find_result
+
+- name: Print Find task register result JSON
+  ansible.builtin.debug:
+    var: scripts_find_result
+
+- name: Set execution right to script files
+  ansible.builtin.file:
+    dest: "{{ file.path }}"
+    mode: "a+rx"
+  loop: "{{ scripts_find_result.files }}"
+  loop_control:
+    loop_var: file
+
+- name: Set the Maven bin commands links in /usr/bin/
+  ansible.builtin.file:
+    src: "{{ maven_install_dir }}/bin/{{ maven_alternative }}"
+    dest: "/usr/bin/{{ maven_alternative }}"
+    state: link
+    mode: a+x
+  loop: "{{ maven_alternatives }}"
+  loop_control:
+    loop_var: maven_alternative
+  when:
+    - maven_is_default
+
+- name: Make sure /etc/profile.d/ directory exists
+  ansible.builtin.file:
+    path: "/etc/profile.d/"
+    mode: '0755'
+    state: directory
+  when:
+    - maven_is_default
+
+- name: Set the M2_* variable in global environment file
+  ansible.builtin.lineinfile:
+    dest: "/etc/environment"
+    regexp: "{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  loop:
+    - key: "M2_HOME"
+      value: "{{ install_dir }}"
+
+- name: Set the M2_HOME
+  ansible.builtin.template:
+    src: "templates/maven_home.sh.j2"
+    dest: "/etc/profile.d/maven_home.sh"
+    mode: a+x
+  when:
+    - maven_is_default
+
+- name: Make sure directory exists {{ maven_settings_directory }}
+  ansible.builtin.file:
+    path: "{{ maven_settings_directory }}"
+    mode: '0755'
+    state: directory
+    owner: "{{ maven_user }}"
+    group: "{{ maven_group }}"
+
+- name: Make sure directory exists {{ maven_local_repository }}
+  ansible.builtin.file:
+    path: "{{ maven_local_repository }}"
+    mode: '0755'
+    state: directory
+    owner: "{{ maven_user }}"
+    group: "{{ maven_group }}"
+
+- name: Generate Maven Settings
+  ansible.builtin.template:
+    src: "templates/maven_settings.xml.j2"
+    dest: "{{ maven_settings_directory | regex_replace('\\/$', '') }}/settings.xml"
+    mode: '0755'
+    owner: "{{ maven_user }}"
+    group: "{{ maven_group }}"

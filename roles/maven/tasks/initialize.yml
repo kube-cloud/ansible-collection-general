@@ -1,0 +1,11 @@
+---
+
+- name: Check Maven minimum version (maven_v_major >= 3)
+  ansible.builtin.fail:
+    msg: "Vérifier la version de maven que vous souhaitez installer : MIN V3+"
+  when:
+    maven_v_major|int < 3
+
+- name: Define maven settings repository
+  ansible.builtin.set_fact:
+    maven_settings_directory: "{{ '/root' if maven_user == 'root' else '/home/' + maven_user }}/.m2"

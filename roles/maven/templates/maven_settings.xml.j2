@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	
+	<!-- Maven Local repository -->
+	<localRepository>{{ maven_local_repository }}</localRepository> 
+{% if maven_plugins_groups is defined and maven_plugins_groups|length > 0 %}
+	
+	<!-- Plugins groups -->
+	<pluginGroups>
+{% for maven_plugins_group in maven_plugins_groups %}
+		
+		<!-- Plugin group {{ maven_plugins_group }} -->
+		<pluginGroup>{{ maven_plugins_group }}</pluginGroup>
+		
+{% endfor %}
+	</pluginGroups>
+{% endif %}
+{% if maven_proxies is defined and maven_proxies|length > 0 %}
+	
+	<!-- Maven Proxies -->
+	<proxies>
+{% for maven_proxy in maven_proxies %}
+		
+		<!-- Proxy {{ maven_proxy.id | default('NO_ID') }} -->
+		<proxy>
+{% if maven_proxy.id is defined and maven_proxy.id | trim != '' %}
+			
+			<!-- Proxy ID -->
+			<id>{{ maven_proxy.id | trim }}</id>
+{% endif %}
+			
+			<!-- Proxy activation -->
+			<active>{{ (maven_proxy.active | default(true)) | lower }}</active>
+			
+			<!-- Proxy protocol -->
+			<protocol>{{ maven_proxy.protocol | default('http') }}</protocol>
+{% if maven_proxy.username is defined and maven_proxy.username | trim != '' %}
+			
+			<!-- Proxy user name -->
+			<username>{{ maven_proxy.username | trim }}</username>
+{% endif %}
+{% if maven_proxy.password is defined and maven_proxy.password | trim != '' %}
+			
+			<!-- Proxy user password -->
+			<password>{{ maven_proxy.password | trim }}</password>
+{% endif %}
+			
+			<!-- Proxy hosts -->
+			<host>{{ maven_proxy.host | default('') }}</host>
+			
+			<!-- Proxy port -->
+			<port>{{ maven_proxy.port | default(80) }}</port>
+			
+			<!-- Non proxy hosts -->
+			<nonProxyHosts>{{ maven_proxy.exclusions | default('localhost|127.0.0.1') }}</nonProxyHosts>
+			
+		</proxy>
+{% endfor %}
+	
+	</proxies>
+{% endif %}
+{% if maven_servers is defined and maven_servers|length > 0 %}
+	
+	<!-- Maven Servers -->
+	<servers>
+{% for maven_server in maven_servers %}
+		
+		<!-- Proxy {{ maven_server.id | default('NO_ID') }} -->
+		<server>
+{% if maven_server.id is defined and maven_server.id | trim != '' %}
+			
+			<!-- Server ID -->
+			<id>{{ maven_server.id | trim }}</id>
+{% endif %}
+{% if maven_server.username is defined and maven_server.username | trim != '' %}
+			
+			<!-- Server user name -->
+			<username>{{ maven_server.username | trim }}</username>
+{% endif %}
+{% if maven_server.password is defined and maven_server.password | trim != '' %}
+			
+			<!-- Server user password -->
+			<password>{{ maven_server.password | trim }}</password>
+{% endif %}
+{% if maven_server.key is defined and maven_server.key | trim != '' %}
+			
+			<!-- Server user key -->
+			<privateKey>{{ maven_server.key | trim }}</privateKey>
+{% endif %}
+{% if maven_server.passphrase is defined and maven_server.passphrase | trim != '' %}
+			
+			<!-- Server user passphrase -->
+			<passphrase>{{ maven_server.passphrase | trim }}</passphrase>
+{% endif %}
+		
+		</server>
+{% endfor %}
+	
+	</servers>
+{% endif %}
+{% if maven_mirrors is defined and maven_mirrors|length > 0 %}
+	
+	<!-- Maven Mirrors -->
+	<mirrors>
+{% for maven_mirror in maven_mirrors %}
+		
+		<!-- Maven Mirror {{ maven_mirror.id | default('NO_ID') }} -->
+		<mirror>
+{% if maven_mirror.id is defined and maven_mirror.id | trim != '' %}
+			
+			<!-- Mirror ID -->
+			<id>{{ maven_mirror.id | trim }}</id>
+{% endif %}
+			
+			<!-- Mirror name -->
+			<name>{{ maven_mirror.name | default('Central maven repository mirror') }}</name>
+			
+			<!-- Mirror target -->
+			<mirrorOf>{{ maven_mirror.target | default('central') }}</mirrorOf>
+			
+			<!-- Mirror URL -->
+			<url>{{ maven_mirror.url | default('https://artifact.lab.kube-cloud.be/repository/maven-central/') }}</url>
+			
+		</mirror>
+{% endfor %}
+	
+	</mirrors>
+{% endif %}
+
+</settings>

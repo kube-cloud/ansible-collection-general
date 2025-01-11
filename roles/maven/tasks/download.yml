@@ -1,0 +1,7 @@
+---
+
+- name: Download Maven Archive
+  ansible.builtin.get_url:
+    url: "{{ maven_url }}"
+    dest: "{{ maven_downloaded_file }}"
+    mode: '0755'

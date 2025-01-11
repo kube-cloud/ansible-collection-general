@@ -1,0 +1,41 @@
+---
+maven_user: "root"
+maven_group: "root"
+maven_v_major: "3"
+maven_v_minor: "0.5"
+maven_is_default: true
+maven_base_url: "https://archive.apache.org/dist/maven"
+maven_url: "{{ maven_base_url }}/maven-{{ maven_v_major }}/{{ maven_v_major }}.{{ maven_v_minor }}/binaries/apache-maven-{{ maven_v_major }}.{{ maven_v_minor }}-bin.tar.gz"
+maven_install_dir: "/opt/maven/maven-{{ maven_v_major }}.{{ maven_v_minor }}"
+maven_downloaded_file: "/tmp/maven-{{ maven_v_major }}.{{ maven_v_minor }}.tar.gz"
+maven_alternatives:
+  - 'mvn'
+  - 'mvnDebug'
+maven_local_repository: "/opt/maven/repository"
+maven_plugins_group: []
+# - "org.sonatype.nexus.group"
+# - "be.kubecloud.kis.group"
+
+maven_proxies: []
+# - id: "cntlm_maven_proxy"
+#  active: true
+#  protocol: "http"
+#  username: "jetune"
+#  password: "mypassword"
+#  host: "localhost"
+#  port: 3286
+#  exclusions: "localhost|127.0.0.1|some.other.host"
+
+maven_servers: []
+# - id: "sonatype-nexus"
+#   username: "admin"
+#   password: "admin"
+# - id: "bitbucket"
+#   privateKey: "/opt/security/key"
+#   passphrase: "p@ssw0rd"
+
+maven_mirrors: []
+#  - id: "mirror-central"
+#    name: "Central maven repository mirror"
+#    target: "central"
+#    url: "https://artifact.lab.kube-cloud.be/repository/maven-central/"
