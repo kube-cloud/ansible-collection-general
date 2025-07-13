@@ -4,3 +4,4 @@ ansible-lint
 flake8
 molecule
 molecule-vagrant
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
