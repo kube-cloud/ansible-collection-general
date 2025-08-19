@@ -1,5 +1,10 @@
 ---
 
+# Set K3S service name based on node role
+- name: "K3S::INSTALL - Set service name based on node role [{{ ansible_distribution }}]"
+  ansible.builtin.set_fact:
+    k3s_service_name: "{{ 'k3s-agent' if k3s_node_role == 'agent' else 'k3s' }}"
+
 # Find installed K3S Version
 - name: "K3S::INSTALL - Get k3s version if installed [{{ ansible_distribution }}]"
   ansible.builtin.command: k3s --version
@@ -55,6 +60,6 @@
 # Ensure K3S is Started
 - name: "K3S::INSTALL - Ensure K3S is Started [{{ ansible_distribution }}]"
   ansible.builtin.service:
-    name: k3s
+    name: "{{ k3s_service_name }}"
     state: started
     sleep: 5
