@@ -55,9 +55,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo add-apt-repository -y ppa:rmescandon/yq
+
+          # Install jq via apt
           sudo apt-get update -y
-          sudo apt-get install -y jq yq
+          sudo apt-get install -y jq
+
+          # Install yq via direct download from GitHub releases
+          YQ_VERSION="v4.44.3"
+          sudo wget -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
+          sudo chmod +x /usr/local/bin/yq
+
+          # Install Python dependencies
           python -m pip install --upgrade pip
           pip install ansible passlib
 
