@@ -11,3 +11,13 @@ k3s_node_role: ""
 
 # Data Dir
 k3s_data_dir: "/etc/k3s/var/lib/rancher/k3s/data"
+
+# Log Dir
+k3s_log_dir: "/etc/k3s/var/log"
+
+# Health Check Configuration
+k3s_health_check_enabled: true
+k3s_health_check_delay: 5
+k3s_health_check_retries: 10
+k3s_health_check_url: https://127.0.0.1:6443/readyz
+k3s_health_check_accepted_codes: [200, 401]

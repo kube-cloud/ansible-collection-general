@@ -63,3 +63,23 @@
     name: "{{ k3s_service_name }}"
     state: started
     sleep: 5
+
+# K3S Health Check Block only if Enabled and Control Plane Node
+- name: "K3S::HEALTHCHECK - K3S Health Check Block"
+  when: k3s_health_check_enabled and k3s_node_role != "agent"
+  block:
+
+    # For server nodes, check API server health
+    - name: "K3S::HEALTHCHECK - Check API server health (server only) [{{ ansible_distribution }}]"
+      ansible.builtin.uri:
+        url: "{{ k3s_health_check_url }}"
+        method: GET
+        validate_certs: false
+        return_content: no
+        client_cert: "{{ k3s_data_dir }}/server/tls/client-admin.crt"
+        client_key: "{{ k3s_data_dir }}/server/tls/client-admin.key"
+        ca_path: "{{ k3s_data_dir }}/server/tls/server-ca.crt"
+      register: k3s_api_health
+      retries: "{{ k3s_health_check_retries }}"
+      delay: "{{ k3s_health_check_delay }}"
+      until: k3s_api_health.status in k3s_health_check_accepted_codes
