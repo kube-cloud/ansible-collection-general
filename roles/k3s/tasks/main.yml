@@ -4,6 +4,10 @@
 - name: "K3S::INSTALL - Set service name based on node role [{{ ansible_distribution }}]"
   ansible.builtin.set_fact:
     k3s_service_name: "{{ 'k3s-agent' if k3s_node_role == 'agent' else 'k3s' }}"
+    k3s_node_labels_params: >-
+      {{
+        k3s_node_labels | map('regex_replace', '^(.*)$', '--node-label \1') | join(' ') | lower
+      }}
 
 # Find installed K3S Version
 - name: "K3S::INSTALL - Get k3s version if installed [{{ ansible_distribution }}]"
@@ -53,7 +57,7 @@
       environment:
         INSTALL_K3S_SKIP_START: "true"
         INSTALL_K3S_VERSION: "{{ k3s_version }}"
-        INSTALL_K3S_EXEC: " {{ k3s_node_role }} --data-dir {{ k3s_data_dir }} {{ k3s_install_options }}"
+        INSTALL_K3S_EXEC: "{{ k3s_node_role }} --data-dir {{ k3s_data_dir }} {{ k3s_node_labels_params }} {{ k3s_install_options }}"
       args:
         creates: /usr/local/bin/k3s
 

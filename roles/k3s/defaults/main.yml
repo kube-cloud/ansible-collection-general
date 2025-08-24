@@ -6,6 +6,9 @@ k3s_version: "v1.29.3+k3s1"
 # Installed Option
 k3s_install_options: "--debug"
 
+# Node Labels List
+k3s_node_labels: []
+
 # Node Role
 k3s_node_role: ""
 
