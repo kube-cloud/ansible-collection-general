@@ -1,0 +1,61 @@
+---
+
+# Find installed FLUXCD Version
+- name: "FLUXCD::INSTALL - Get Flux CD version if installed"
+  ansible.builtin.command: flux version --client
+  register: flux_version_output
+  changed_when: false
+  ignore_errors: true
+
+# Define Flux CD Version as Variable if Installed
+- name: "FLUXCD::INSTALL - Define FLUXCD Version as Variable if Installed"
+  ansible.builtin.set_fact:
+    installed_flux_version: "{{ flux_version_output.stdout | regex_replace('^flux\\s*:\\s*v([0-9.]+).*', '\\1') | regex_replace('^v', '') }}"
+    flux_semantic_version: "{{ flux_version.split('+')[0] | regex_replace('^v', '') }}"
+  when: flux_version_output.rc == 0
+
+# Print Vars
+- name: "FLUXCD::INSTALL - Show Installed Version Result [({{ ansible_distribution }})]"
+  ansible.builtin.debug:
+    var: flux_version_output
+
+# Print Vars
+- name: "FLUXCD::INSTALL - Show Facts [({{ ansible_distribution }})]"
+  ansible.builtin.debug:
+    msg:
+      - "FLUXCD Installed Version : {{ installed_flux_version | default('') }}"
+      - "FLUXCD Required  Version : {{ flux_semantic_version | default('') }}"
+      - "FLUXCD Original Version  : {{ flux_version }}"
+
+# Download and install FLUXCD if not yet installed
+- name: "FLUXCD::INSTALL - Installation Block [({{ ansible_distribution }})]"
+  when:
+    - flux_version_output.rc != 0 or installed_flux_version is version(flux_semantic_version, '<')
+  block:
+
+    # Create Required Directories
+    - name: "FLUXCD::INSTALL - Ensure FLUXCD directories are created [({{ ansible_distribution }})]"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode | default('u+rwx,g+rwx,o+x') }}"
+        recurse: true
+      loop:
+        - { path: "{{ flux_extraction_root_dir }}", mode: "u+rwx,g+rwx,o+rwx" }
+
+    # Download and Unarchive Flux CD
+    - name: "FLUXCD::INSTALL - Download and Unarchive FLUXCD [({{ ansible_distribution }})]"
+      ansible.builtin.unarchive:
+        src: "{{ flux_archive_url }}"
+        dest: "{{ flux_extraction_root_dir }}"
+        remote_src: true
+
+    # Install Flux CD
+    - name: "FLUXCD::INSTALL - Install FLUXCD [({{ ansible_distribution }})]"
+      ansible.builtin.copy:
+        src: "{{ flux_extraction_root_dir }}/flux"
+        dest: "{{ fluxcd_binary_path }}/flux"
+        remote_src: true
+        force: true
+        backup: true
+        mode: '0755'

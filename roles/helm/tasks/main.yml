@@ -52,6 +52,10 @@
 
     # Install Helm
     - name: "HELM::INSTALL - Install HELM [({{ ansible_distribution }})]"
-      ansible.builtin.command:
-        cmd: "mv {{ helm_unarchive_dir }}/helm /usr/local/bin/"
-        creates: /usr/local/bin/helm
+      ansible.builtin.copy:
+        src: "{{ helm_extraction_root_dir }}/helm"
+        dest: "/usr/local/bin/helm"
+        remote_src: true
+        force: true
+        backup: true
+        mode: '0755'
