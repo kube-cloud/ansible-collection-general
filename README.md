@@ -1,9 +1,9 @@
-| Type	   | Status			|
-|:---          |     :---:      |
-| Sanity Checks | [![Sanity Checks](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/sanity-checks.yml/badge.svg)](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/sanity-checks.yml)     |
-| Collection Publish | [![Collection Publish](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/publish-collection.yml/badge.svg)](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/publish-collection.yml)        |
-
 # Ansible Collection : General (kube_cloud.general)
+
+| Type    | Status   |
+|:---     |     :---:|
+| Sanity Checks | [![Sanity Checks](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/sanity-checks.yml/badge.svg)](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/sanity-checks.yml)|
+| Collection Publish | [![Collection Publish](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/publish-collection.yml/badge.svg)](https://github.com/kube-cloud/ansible-collection-general/actions/workflows/publish-collection.yml) |
 
 An Ansible Collection of modules and plugins that target General usages (HA Proxy, Sonarqube, Jenkins, Nexus, and Others Installation and Configuration on Linux Based Operating Systems).
 
@@ -23,7 +23,6 @@ Name | Description
 ```bash
 ansible-test sanity --python 3.8
 ```
-
 
 ## Installing this collection
 
@@ -63,7 +62,6 @@ ansible-galaxy collection install -r requirements.yml
 - [Pull Requests](https://github.com/kube-cloud/ansible-collection-general/pulls)
 
 ## Roadmap
-
 
 ## Licensing
 
