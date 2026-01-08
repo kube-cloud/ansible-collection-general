@@ -46,7 +46,7 @@
     # Download and Unarchive Flux CD
     - name: "FLUX-CLI::INSTALL - Download and Unarchive FLUX-CLI [({{ ansible_distribution }})]"
       ansible.builtin.unarchive:
-        src: "{{ fluxcli_archive_url }}"
+        src: "{{ fluxcli_download_url }}"
         dest: "{{ fluxcli_extraction_root_dir }}"
         remote_src: true
 
