@@ -54,7 +54,7 @@
     - name: "FLUX-CLI::INSTALL - Install FLUX-CLI [({{ ansible_distribution }})]"
       ansible.builtin.copy:
         src: "{{ fluxcli_extraction_root_dir }}/flux"
-        dest: "{{ fluxcd_binary_path }}/flux"
+        dest: "{{ fluxcli_binary_path }}/flux"
         remote_src: true
         force: true
         backup: true
