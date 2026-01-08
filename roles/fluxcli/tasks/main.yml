@@ -30,7 +30,7 @@
 # Download and install FLUX-CLI if not yet installed
 - name: "FLUX-CLI::INSTALL - Installation Block [({{ ansible_distribution }})]"
   when:
-    - fluxcli_version_output.rc != 0 or installed_fluxcli_version is version(fluxcli_semantic_version, '<')
+    - fluxcli_version_output.rc != 0 or installed_fluxcli_version is version(fluxcli_version, '<')
   block:
 
     # Create Required Directories
