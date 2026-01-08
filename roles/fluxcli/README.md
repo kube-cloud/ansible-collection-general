@@ -1,6 +1,6 @@
-# Ansible Role: FLUXCD
+# Ansible Role: FLUX-CLI
 
-Ansible Role for FLUXCD Installation.
+Ansible Role for FLUX-CLI Installation.
 
 ## Supported OS
 
@@ -13,9 +13,9 @@ Ansible Role for FLUXCD Installation.
 Install Collection `ansible-galaxy collections install kube_cloud.general`
 
 ```yaml
-- name: "FLUXCD::INSTALL - Ensure FLUXCD Installed and Configured"
+- name: "FLUX-CLI::INSTALL - Ensure FLUX-CLI Installed and Configured"
     ansible.builtin.include_role:
-      name: kube_cloud.general.fluxcd
+      name: kube_cloud.general.fluxcli
     vars:
       fluxcd_version: "2.7.5"
 ```

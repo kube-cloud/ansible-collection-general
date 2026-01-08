@@ -1,13 +1,13 @@
 ---
 
-# FLUX Version
-fluxcd_version: "2.7.5"
+# FLUX CLI Version
+fluxcli_version: "2.7.5"
 
-# FLUX Release
-fluxcd_release: "v{{ fluxcd_version }}"
+# FLUX CLI Release
+fluxcli_release: "v{{ fluxcli_version }}"
 
 # OS Architecture
-fluxcd_os_architecture: >-
+fluxcli_os_architecture: >-
   {% if ansible_architecture == 'x86_64' %}
     amd64
   {% elif ansible_architecture == 'i386' %}
