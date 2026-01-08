@@ -1,0 +1,10 @@
+---
+
+# Archive URL
+fluxcd_download_url: "https://github.com/fluxcd/flux2/releases/download/{{ fluxcd_release }}/flux_{{ fluxcd_version }}_linux_{{ fluxcd_os_architecture }}.tar.gz"
+
+# Extraction Directory
+fluxcd_extraction_root_dir: "/tmp/fluxcd"
+
+# Flux Binary Path
+fluxcd_binary_path: "/usr/local/bin/flux"
