@@ -49,11 +49,38 @@
         src: "{{ helm_archive_url }}"
         dest: "{{ helm_extraction_root_dir }}"
         remote_src: true
+    
+    # Find Extracted HELM Binary Anywhere in the extracted dir
+    - name: "HELM::INSTALL - Find Extracted HELM Binary Anywhere in the extracted dir [({{ ansible_distribution }})]"
+      ansible.builtin.find:
+        paths: "{{ helm_extraction_root_dir }}"
+        patterns: "helm"
+        file_type: file
+        recurse: true
+      register: helm_find
+    
+    # Fail if Helm Not Found
+    - name: "HELM::INSTALL - Fail if helm binary not found [({{ ansible_distribution }})]"
+      ansible.builtin.fail:
+        msg: "helm binary not found after unarchive in {{ helm_extraction_root_dir }}"
+      when: helm_find.matched | int == 0
+    
+    # Get the Good File
+    - name: "HELM::INSTALL - Choose Executable file or First file if NOT [({{ ansible_distribution }})]"
+      ansible.builtin.set_fact:
+        helm_candidate: >-
+          {{
+            (helm_find.files
+              | selectattr('mode', 'match', '.*x.*')
+              | list
+              | first
+            ) | default(helm_find.files[0])
+          }}
 
     # Install Helm
     - name: "HELM::INSTALL - Install HELM [({{ ansible_distribution }})]"
       ansible.builtin.copy:
-        src: "{{ helm_extraction_root_dir }}/helm"
+        src: "{{ helm_candidate.path }}"
         dest: "/usr/local/bin/helm"
         remote_src: true
         force: true
