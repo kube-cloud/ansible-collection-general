@@ -4,3 +4,4 @@ ansible-lint
 flake8
 molecule
 molecule-vagrant
+setuptools>=78.1.1 # not directly required, pinned by Snyk to avoid a vulnerability
